@@ -81,12 +81,31 @@
     border-radius: 100px;
   }
 
-  .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--good);
-    box-shadow: 0 0 8px var(--good);
-  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); box-shadow: 0 0 8px var(--good); }
   .dot.stale { background: var(--alert); box-shadow: 0 0 8px var(--alert); }
+  .dot.recording { background: var(--alert); box-shadow: 0 0 8px var(--alert); animation: pulse 1.2s ease-in-out infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(1.25); }
+  }
+
+  .mic-toggle {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    background: var(--surface);
+    color: var(--wax);
+    border: 1px solid var(--hairline);
+    border-radius: 100px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .mic-toggle:hover { border-color: var(--honey-dim); }
+  .mic-toggle:focus-visible { outline: 2px solid var(--honey); outline-offset: 2px; }
+  .mic-toggle.off { background: rgba(217,102,61,0.12); border-color: var(--alert); color: var(--alert); }
+  .mic-toggle:disabled { opacity: 0.5; cursor: wait; }
 
   .grid {
     display: grid;
@@ -242,7 +261,13 @@
       <div class="eyebrow">Apiary / Colony 01</div>
       <h1>Real-Time Hive Health Monitor</h1>
     </div>
-    <div class="status-pill"><span class="dot" id="statusDot"></span><span id="statusText">connecting…</span></div>
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <div class="status-pill" id="recPill"><span class="dot" id="recDot"></span><span id="recText">checking…</span></div>
+      <div class="status-pill"><span class="dot" id="statusDot"></span><span id="statusText">connecting…</span></div>
+      <button id="micToggle" class="mic-toggle">
+        <span id="micToggleLabel">Mic: —</span>
+      </button>
+    </div>
   </header>
 
   <div class="grid">
@@ -289,6 +314,7 @@
 
   const el = id => document.getElementById(id);
   let chart = null;
+  let currentMicEnabled = null; // null until we know the real state
 
   function fmtTime(ts) {
     if (!ts) return "no data yet";
@@ -301,10 +327,81 @@
     return res.json();
   }
 
+  async function putJSON(path, value) {
+    const res = await fetch(`https://${FIREBASE_HOST}/${path}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(value)
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
+
   function setStatus(ok) {
     el('statusDot').classList.toggle('stale', !ok);
     el('statusText').textContent = ok ? 'live' : 'connection issue';
   }
+
+  function renderDeviceStatus(status) {
+    const recDot = el('recDot');
+    const recText = el('recText');
+    const toggle = el('micToggle');
+    const toggleLabel = el('micToggleLabel');
+
+    if (!status) {
+      recDot.className = 'dot stale';
+      recText.textContent = 'no device seen yet';
+      toggleLabel.textContent = 'Mic: —';
+      return;
+    }
+
+    // Treat the device as offline if we haven't heard from it in a while
+    const lastSeenMs = Date.parse(status.last_seen.replace(' ', 'T'));
+    const staleDevice = isNaN(lastSeenMs) || (Date.now() - lastSeenMs) > 40000;
+
+    if (staleDevice) {
+      recDot.className = 'dot stale';
+      recText.textContent = 'device offline';
+    } else if (status.recording) {
+      recDot.className = 'dot recording';
+      recText.textContent = 'recording now';
+    } else {
+      recDot.className = 'dot';
+      recText.textContent = status.mic_enabled ? 'listening' : 'mic off';
+    }
+
+    // Only sync the toggle's shown state from the device when the user
+    // isn't mid-click - avoids the button flickering back before the
+    // device has had time to pick up a command.
+    if (!toggle.dataset.pending) {
+      currentMicEnabled = status.mic_enabled;
+      toggleLabel.textContent = status.mic_enabled ? 'Mic: ON' : 'Mic: OFF';
+      toggle.classList.toggle('off', !status.mic_enabled);
+    }
+  }
+
+  async function toggleMic() {
+    const toggle = el('micToggle');
+    if (currentMicEnabled === null) return;
+    const next = !currentMicEnabled;
+    toggle.disabled = true;
+    toggle.dataset.pending = '1';
+    el('micToggleLabel').textContent = next ? 'Turning ON…' : 'Turning OFF…';
+    try {
+      await putJSON('hive_control/mic_enabled', next);
+      currentMicEnabled = next;
+      el('micToggleLabel').textContent = next ? 'Mic: ON' : 'Mic: OFF';
+      toggle.classList.toggle('off', !next);
+    } catch (err) {
+      console.error(err);
+      el('micToggleLabel').textContent = 'Failed - retry';
+    } finally {
+      toggle.disabled = false;
+      delete toggle.dataset.pending;
+    }
+  }
+
+  el('micToggle').addEventListener('click', toggleMic);
 
   function renderChart(entries) {
     const labels = entries.map(e => e.timestamp.slice(11)); // HH:MM:SS
@@ -382,9 +479,10 @@
 
   async function refresh() {
     try {
-      const [logRaw, audioRaw] = await Promise.all([
+      const [logRaw, audioRaw, status] = await Promise.all([
         fetchJSON('hive_log'),
-        fetchJSON('hive_audio')
+        fetchJSON('hive_audio'),
+        fetchJSON('hive_status')
       ]);
 
       const logEntries = logRaw ? Object.values(logRaw).sort((a, b) => a.timestamp.localeCompare(b.timestamp)) : [];
@@ -403,6 +501,7 @@
       if (audioEntries.length) el('clipTime').textContent = fmtTime(audioEntries[0].timestamp);
       renderClips(audioEntries.slice(0, 30));
 
+      renderDeviceStatus(status);
       setStatus(true);
     } catch (err) {
       console.error(err);
