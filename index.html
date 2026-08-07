@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hive Monitor — Real-Time Hive Health Monitoring and Prediction System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #17130E;
+    --surface: #211B14;
+    --surface-2: #2B2319;
+    --hairline: #3A3021;
+    --honey: #E8A93B;
+    --honey-dim: #B8842C;
+    --wax: #F2E9D8;
+    --wax-dim: #A89A80;
+    --alert: #D9663D;
+    --good: #8FA876;
+    --font-display: 'Fraunces', 'Georgia', serif;
+    --font-body: 'IBM Plex Sans', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  }
+
+  @font-face {
+    font-family: 'Fraunces';
+    src: local('Georgia');
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--wax);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(232,169,59,0.06), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(232,169,59,0.04), transparent 40%);
+  }
+
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: 24px;
+    margin-bottom: 36px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--honey);
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    letter-spacing: -0.01em;
+    color: var(--wax);
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--wax-dim);
+    padding: 8px 14px;
+    border: 1px solid var(--hairline);
+    border-radius: 100px;
+  }
+
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--good);
+    box-shadow: 0 0 8px var(--good);
+  }
+  .dot.stale { background: var(--alert); box-shadow: 0 0 8px var(--alert); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 90px; height: 78px;
+    background: var(--honey);
+    opacity: 0.05;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--wax-dim);
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 40px;
+    color: var(--wax);
+    line-height: 1;
+  }
+
+  .stat-value span { font-size: 20px; color: var(--wax-dim); font-family: var(--font-mono); }
+
+  .stat-time {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--honey-dim);
+    margin-top: 10px;
+  }
+
+  section { margin-bottom: 40px; }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--wax);
+  }
+
+  .section-sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--wax-dim);
+  }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    padding: 20px;
+    height: 280px;
+  }
+
+  .cells {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+
+  .cell {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    padding: 16px;
+    position: relative;
+  }
+
+  .cell::before {
+    content: '';
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 22px; height: 19px;
+    background: var(--honey);
+    opacity: 0.15;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+
+  .cell-time {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--honey);
+    margin-bottom: 4px;
+  }
+
+  .cell-date {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--wax-dim);
+    margin-bottom: 12px;
+  }
+
+  audio {
+    width: 100%;
+    height: 34px;
+    filter: sepia(0.3) saturate(0.6);
+  }
+
+  .empty {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--wax-dim);
+    padding: 32px;
+    text-align: center;
+    border: 1px dashed var(--hairline);
+    border-radius: 4px;
+  }
+
+  footer {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--wax-dim);
+    text-align: center;
+    margin-top: 60px;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="eyebrow">Apiary / Colony 01</div>
+      <h1>Real-Time Hive Health Monitor</h1>
+    </div>
+    <div class="status-pill"><span class="dot" id="statusDot"></span><span id="statusText">connecting…</span></div>
+  </header>
+
+  <div class="grid">
+    <div class="stat">
+      <div class="stat-label">Temperature</div>
+      <div class="stat-value" id="tempValue">—<span>°C</span></div>
+      <div class="stat-time" id="tempTime">no data yet</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Humidity</div>
+      <div class="stat-value" id="humValue">—<span>%</span></div>
+      <div class="stat-time" id="humTime">no data yet</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Clips Recorded</div>
+      <div class="stat-value" id="clipCount">—</div>
+      <div class="stat-time" id="clipTime">no data yet</div>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Temperature &amp; Humidity Trend</h2>
+      <div class="section-sub">last 40 readings</div>
+    </div>
+    <div class="chart-card"><canvas id="trendChart"></canvas></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Recorded Hive Sounds</h2>
+      <div class="section-sub" id="clipsSub">most recent first</div>
+    </div>
+    <div id="clipsContainer"><div class="empty">Listening for the first clip…</div></div>
+  </section>
+
+  <footer>Real-Time Hive Health Monitoring and Prediction System — auto-refreshes every 15s</footer>
+</div>
+
+<script>
+  // ---- Fill in your Firebase Realtime Database host (no https://, no trailing slash) ----
+  const FIREBASE_HOST = "hbdc-saola-default-rtdb.firebaseio.com";
+  const REFRESH_MS = 15000;
+
+  const el = id => document.getElementById(id);
+  let chart = null;
+
+  function fmtTime(ts) {
+    if (!ts) return "no data yet";
+    return ts;
+  }
+
+  async function fetchJSON(path) {
+    const res = await fetch(`https://${FIREBASE_HOST}/${path}.json`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
+
+  function setStatus(ok) {
+    el('statusDot').classList.toggle('stale', !ok);
+    el('statusText').textContent = ok ? 'live' : 'connection issue';
+  }
+
+  function renderChart(entries) {
+    const labels = entries.map(e => e.timestamp.slice(11)); // HH:MM:SS
+    const temps = entries.map(e => e.temp_C);
+    const hums = entries.map(e => e.humidity_pct);
+
+    if (chart) {
+      chart.data.labels = labels;
+      chart.data.datasets[0].data = temps;
+      chart.data.datasets[1].data = hums;
+      chart.update();
+      return;
+    }
+
+    chart = new Chart(el('trendChart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Temp °C',
+            data: temps,
+            borderColor: '#E8A93B',
+            backgroundColor: 'rgba(232,169,59,0.08)',
+            tension: 0.35,
+            pointRadius: 0,
+            borderWidth: 2,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Humidity %',
+            data: hums,
+            borderColor: '#8FA876',
+            backgroundColor: 'rgba(143,168,118,0.08)',
+            tension: 0.35,
+            pointRadius: 0,
+            borderWidth: 2,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { labels: { color: '#A89A80', font: { family: 'IBM Plex Mono', size: 11 } } }
+        },
+        scales: {
+          x: { ticks: { color: '#A89A80', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { color: '#3A3021' } },
+          y: { position: 'left', ticks: { color: '#E8A93B', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { color: '#3A3021' } },
+          y1: { position: 'right', ticks: { color: '#8FA876', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  function renderClips(entries) {
+    const container = el('clipsContainer');
+    if (!entries.length) {
+      container.innerHTML = '<div class="empty">Listening for the first clip…</div>';
+      return;
+    }
+    container.className = 'cells';
+    container.innerHTML = entries.map(c => {
+      const [date, time] = c.timestamp.split(' ');
+      return `
+        <div class="cell">
+          <div class="cell-time">${time}</div>
+          <div class="cell-date">${date}</div>
+          <audio controls preload="none" src="${c.url}"></audio>
+        </div>`;
+    }).join('');
+  }
+
+  async function refresh() {
+    try {
+      const [logRaw, audioRaw] = await Promise.all([
+        fetchJSON('hive_log'),
+        fetchJSON('hive_audio')
+      ]);
+
+      const logEntries = logRaw ? Object.values(logRaw).sort((a, b) => a.timestamp.localeCompare(b.timestamp)) : [];
+      const audioEntries = audioRaw ? Object.values(audioRaw).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) : [];
+
+      if (logEntries.length) {
+        const latest = logEntries[logEntries.length - 1];
+        el('tempValue').innerHTML = `${latest.temp_C.toFixed(1)}<span>°C</span>`;
+        el('humValue').innerHTML = `${latest.humidity_pct.toFixed(1)}<span>%</span>`;
+        el('tempTime').textContent = fmtTime(latest.timestamp);
+        el('humTime').textContent = fmtTime(latest.timestamp);
+        renderChart(logEntries.slice(-40));
+      }
+
+      el('clipCount').textContent = audioEntries.length;
+      if (audioEntries.length) el('clipTime').textContent = fmtTime(audioEntries[0].timestamp);
+      renderClips(audioEntries.slice(0, 30));
+
+      setStatus(true);
+    } catch (err) {
+      console.error(err);
+      setStatus(false);
+    }
+  }
+
+  refresh();
+  setInterval(refresh, REFRESH_MS);
+</script>
+</body>
+</html>
