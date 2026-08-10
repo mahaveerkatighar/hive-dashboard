@@ -109,7 +109,7 @@
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 16px;
     margin-bottom: 32px;
   }
@@ -251,6 +251,73 @@
     margin-top: 60px;
     letter-spacing: 0.04em;
   }
+
+  .settings-card {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    padding: 22px 24px;
+  }
+
+  .settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .settings-label {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--wax);
+    margin-bottom: 6px;
+  }
+
+  .settings-hint {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--wax-dim);
+    max-width: 420px;
+    line-height: 1.5;
+  }
+
+  .settings-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .settings-input-group input[type="number"] {
+    width: 90px;
+    background: var(--surface-2);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    color: var(--wax);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+  .settings-input-group input[type="number"]:focus {
+    outline: 2px solid var(--honey);
+    outline-offset: 1px;
+    border-color: var(--honey-dim);
+  }
+
+  .settings-unit {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--wax-dim);
+  }
+
+  .settings-current {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--honey-dim);
+    margin-top: 14px;
+  }
 </style>
 </head>
 <body>
@@ -286,6 +353,11 @@
       <div class="stat-value" id="clipCount">—</div>
       <div class="stat-time" id="clipTime">no data yet</div>
     </div>
+    <div class="stat">
+      <div class="stat-label">Bees Inside Hive</div>
+      <div class="stat-value" id="beeNetValue">—</div>
+      <div class="stat-time" id="beeDetailValue">in: — / out: —</div>
+    </div>
   </div>
 
   <section>
@@ -302,6 +374,27 @@
       <div class="section-sub" id="clipsSub">most recent first</div>
     </div>
     <div id="clipsContainer"><div class="empty">Listening for the first clip…</div></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Bee Sensor Tuning</h2>
+      <div class="section-sub">no reflash needed</div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div>
+          <div class="settings-label">Sensor timing window</div>
+          <div class="settings-hint">Max gap between the two IR sensors triggering to count as one bee. Shorter = stricter (fast bees), longer = more forgiving (slow bees or a wider tube).</div>
+        </div>
+        <div class="settings-input-group">
+          <input type="number" id="irWindowInput" min="100" max="10000" step="50" placeholder="1500">
+          <span class="settings-unit">ms</span>
+          <button id="irWindowSave" class="mic-toggle">Save</button>
+        </div>
+      </div>
+      <div class="settings-current" id="irWindowCurrent">Current: —</div>
+    </div>
   </section>
 
   <footer>Real-Time Hive Health Monitoring and Prediction System — auto-refreshes every 15s</footer>
@@ -403,6 +496,43 @@
 
   el('micToggle').addEventListener('click', toggleMic);
 
+  async function loadIrWindow() {
+    try {
+      const val = await fetchJSON('hive_control/ir_window_ms');
+      if (val !== null) {
+        el('irWindowInput').value = val;
+        el('irWindowCurrent').textContent = `Current: ${val} ms`;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function saveIrWindow() {
+    const btn = el('irWindowSave');
+    const input = el('irWindowInput');
+    const val = parseInt(input.value, 10);
+    if (!val || val < 100) {
+      el('irWindowCurrent').textContent = 'Enter a value of at least 100ms';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      await putJSON('hive_control/ir_window_ms', val);
+      el('irWindowCurrent').textContent = `Current: ${val} ms (saved - device picks this up within 5s)`;
+    } catch (err) {
+      console.error(err);
+      el('irWindowCurrent').textContent = 'Save failed - try again';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save';
+    }
+  }
+
+  el('irWindowSave').addEventListener('click', saveIrWindow);
+  loadIrWindow();
+
   function renderChart(entries) {
     const labels = entries.map(e => e.timestamp.slice(11)); // HH:MM:SS
     const temps = entries.map(e => e.temp_C);
@@ -472,17 +602,18 @@
         <div class="cell">
           <div class="cell-time">${time}</div>
           <div class="cell-date">${date}</div>
-          <audio controls preload="none" src="${c.url}"></audio>
+          <audio controls preload="metadata" src="${c.url}"></audio>
         </div>`;
     }).join('');
   }
 
   async function refresh() {
     try {
-      const [logRaw, audioRaw, status] = await Promise.all([
+      const [logRaw, audioRaw, status, beeCount] = await Promise.all([
         fetchJSON('hive_log'),
         fetchJSON('hive_audio'),
-        fetchJSON('hive_status')
+        fetchJSON('hive_status'),
+        fetchJSON('hive_bee_count')
       ]);
 
       const logEntries = logRaw ? Object.values(logRaw).sort((a, b) => a.timestamp.localeCompare(b.timestamp)) : [];
@@ -502,6 +633,13 @@
       renderClips(audioEntries.slice(0, 30));
 
       renderDeviceStatus(status);
+
+      if (beeCount) {
+        const net = beeCount.net ?? (beeCount.count_in - beeCount.count_out);
+        el('beeNetValue').textContent = net;
+        el('beeDetailValue').textContent = `in: ${beeCount.count_in} / out: ${beeCount.count_out}`;
+      }
+
       setStatus(true);
     } catch (err) {
       console.error(err);
