@@ -36,7 +36,16 @@
     min-height: 100vh;
     background-image:
       radial-gradient(circle at 15% 10%, rgba(232,169,59,0.06), transparent 40%),
-      radial-gradient(circle at 85% 90%, rgba(232,169,59,0.04), transparent 40%);
+      radial-gradient(circle at 85% 90%, rgba(232,169,59,0.04), transparent 40%),
+      linear-gradient(30deg, #2b2319 12%, transparent 12.5%, transparent 87%, #2b2319 87.5%, #2b2319),
+      linear-gradient(150deg, #2b2319 12%, transparent 12.5%, transparent 87%, #2b2319 87.5%, #2b2319),
+      linear-gradient(30deg, #2b2319 12%, transparent 12.5%, transparent 87%, #2b2319 87.5%, #2b2319),
+      linear-gradient(150deg, #2b2319 12%, transparent 12.5%, transparent 87%, #2b2319 87.5%, #2b2319),
+      linear-gradient(60deg, rgba(232,169,59,0.05) 25%, transparent 25.5%, transparent 75%, rgba(232,169,59,0.05) 75%, rgba(232,169,59,0.05)),
+      linear-gradient(60deg, rgba(232,169,59,0.05) 25%, transparent 25.5%, transparent 75%, rgba(232,169,59,0.05) 75%, rgba(232,169,59,0.05));
+    background-size: 100% 100%, 100% 100%, 44px 76px, 44px 76px, 44px 76px, 44px 76px, 44px 76px, 44px 76px;
+    background-position: 0 0, 0 0, 0 0, 0 0, 22px 38px, 22px 38px, 0 0, 22px 38px;
+    background-attachment: fixed;
   }
 
   .wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
@@ -357,6 +366,7 @@
       <div class="stat-label">Bees Inside Hive</div>
       <div class="stat-value" id="beeNetValue">—</div>
       <div class="stat-time" id="beeDetailValue">in: — / out: —</div>
+      <button id="resetCountBtn" class="mic-toggle" style="margin-top:10px; font-size:11px; padding:6px 14px;">Reset Count</button>
     </div>
   </div>
 
@@ -409,6 +419,12 @@
   let chart = null;
   let currentMicEnabled = null; // null until we know the real state
 
+  function hasSaneTimestamp(entry) {
+    if (!entry || !entry.timestamp) return false;
+    const year = parseInt(entry.timestamp.slice(0, 4), 10);
+    return year >= 2024 && year <= 2035; // guards against corrupted old records from earlier firmware versions
+  }
+
   function fmtTime(ts) {
     if (!ts) return "no data yet";
     return ts;
@@ -448,9 +464,12 @@
       return;
     }
 
-    // Treat the device as offline if we haven't heard from it in a while
-    const lastSeenMs = Date.parse(status.last_seen.replace(' ', 'T'));
-    const staleDevice = isNaN(lastSeenMs) || (Date.now() - lastSeenMs) > 40000;
+    // Treat the device as offline if we haven't heard from it in a while,
+    // or if last_seen itself looks corrupted (a leftover bad timestamp)
+    const lastSeenYear = parseInt((status.last_seen || '').slice(0, 4), 10);
+    const lastSeenMs = Date.parse((status.last_seen || '').replace(' ', 'T'));
+    const staleDevice = isNaN(lastSeenMs) || lastSeenYear < 2024 || lastSeenYear > 2035 ||
+                         Math.abs(Date.now() - lastSeenMs) > 40000;
 
     if (staleDevice) {
       recDot.className = 'dot stale';
@@ -532,6 +551,26 @@
 
   el('irWindowSave').addEventListener('click', saveIrWindow);
   loadIrWindow();
+
+  async function resetBeeCount() {
+    const btn = el('resetCountBtn');
+    btn.disabled = true;
+    btn.textContent = 'Resetting…';
+    try {
+      await putJSON('hive_control/reset_count', true);
+      el('beeNetValue').textContent = '0';
+      el('beeDetailValue').textContent = 'in: 0 / out: 0';
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = 'Reset Count';
+      }, 2000);
+    }
+  }
+
+  el('resetCountBtn').addEventListener('click', resetBeeCount);
 
   function renderChart(entries) {
     const labels = entries.map(e => e.timestamp.slice(11)); // HH:MM:SS
@@ -616,8 +655,8 @@
         fetchJSON('hive_bee_count')
       ]);
 
-      const logEntries = logRaw ? Object.values(logRaw).sort((a, b) => a.timestamp.localeCompare(b.timestamp)) : [];
-      const audioEntries = audioRaw ? Object.values(audioRaw).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) : [];
+      const logEntries = logRaw ? Object.values(logRaw).filter(hasSaneTimestamp).sort((a, b) => a.timestamp.localeCompare(b.timestamp)) : [];
+      const audioEntries = audioRaw ? Object.values(audioRaw).filter(hasSaneTimestamp).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) : [];
 
       if (logEntries.length) {
         const latest = logEntries[logEntries.length - 1];
