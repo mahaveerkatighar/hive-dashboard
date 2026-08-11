@@ -1,96 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<html lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Hive Monitor — Real-Time Hive Health Monitoring and Prediction System</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap');
+
   :root {
-    --bg: #FBF3E3;
-    --surface: #FFFFFF;
-    --surface-2: #FBEFD8;
-    --hairline: #E9DCC0;
     --honey: #E9762B;
     --honey-dim: #C25E1C;
     --wax: #2B2319;
     --wax-dim: #8A7A5C;
     --alert: #D64545;
     --good: #6B8F4E;
-    --font-display: 'Fraunces', 'Georgia', serif;
-    --font-body: 'IBM Plex Sans', -apple-system, sans-serif;
-    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+    --font-display: 'Fraunces', serif;
+    --font-body: 'IBM Plex Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
   }
-
-  @font-face {
-    font-family: 'Fraunces';
-    src: local('Georgia');
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--bg);
-    color: var(--wax);
     font-family: var(--font-body);
-    min-height: 100vh;
-    background-image:
-      radial-gradient(circle at 15% 10%, rgba(233,118,43,0.05), transparent 40%),
-      radial-gradient(circle at 85% 90%, rgba(233,118,43,0.05), transparent 40%),
-      linear-gradient(30deg, #F3E4C8 12%, transparent 12.5%, transparent 87%, #F3E4C8 87.5%, #F3E4C8),
-      linear-gradient(150deg, #F3E4C8 12%, transparent 12.5%, transparent 87%, #F3E4C8 87.5%, #F3E4C8),
-      linear-gradient(30deg, #F3E4C8 12%, transparent 12.5%, transparent 87%, #F3E4C8 87.5%, #F3E4C8),
-      linear-gradient(150deg, #F3E4C8 12%, transparent 12.5%, transparent 87%, #F3E4C8 87.5%, #F3E4C8),
-      linear-gradient(60deg, rgba(233,118,43,0.06) 25%, transparent 25.5%, transparent 75%, rgba(233,118,43,0.06) 75%, rgba(233,118,43,0.06)),
-      linear-gradient(60deg, rgba(233,118,43,0.06) 25%, transparent 25.5%, transparent 75%, rgba(233,118,43,0.06) 75%, rgba(233,118,43,0.06));
-    background-size: 100% 100%, 100% 100%, 44px 76px, 44px 76px, 44px 76px, 44px 76px, 44px 76px, 44px 76px;
-    background-position: 0 0, 0 0, 0 0, 0 0, 22px 38px, 22px 38px, 0 0, 22px 38px;
-    background-attachment: fixed;
-  }
-
-  .wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 16px;
-    border-bottom: 1px solid var(--hairline);
-    padding-bottom: 24px;
-    margin-bottom: 36px;
-  }
-
-  .eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--honey);
-    margin-bottom: 8px;
-  }
-
-  h1 {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 32px;
-    letter-spacing: -0.01em;
     color: var(--wax);
+    min-height: 100vh;
+    background-color: #fcf4e0;
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(233, 118, 43, 0.15), transparent 50%),
+      radial-gradient(circle at 85% 30%, rgba(233, 118, 43, 0.12), transparent 50%),
+      radial-gradient(circle at 50% 90%, rgba(200, 140, 60, 0.15), transparent 60%);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
   }
 
-  .status-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--wax-dim);
-    padding: 8px 14px;
-    border: 1px solid var(--hairline);
-    border-radius: 100px;
+  .bg-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    pointer-events: none;
   }
 
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); box-shadow: 0 0 8px var(--good); }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(43, 35, 25, 0.05),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+  }
+
+  .glow-effect {
+    position: absolute;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(233, 118, 43, 0.15) 0%, rgba(233, 118, 43, 0) 70%);
+    top: -50px; right: -50px;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); box-shadow: 0 0 8px var(--good); display: inline-block; }
   .dot.stale { background: var(--alert); box-shadow: 0 0 8px var(--alert); }
   .dot.recording { background: var(--alert); box-shadow: 0 0 8px var(--alert); animation: pulse 1.2s ease-in-out infinite; }
 
@@ -100,366 +83,251 @@
   }
 
   .mic-toggle {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    background: var(--surface);
-    color: var(--wax);
-    border: 1px solid var(--hairline);
-    border-radius: 100px;
-    padding: 8px 18px;
-    cursor: pointer;
-    transition: border-color 0.15s ease, background 0.15s ease;
+    transition: all 0.2s ease;
   }
-  .mic-toggle:hover { border-color: var(--honey-dim); }
+  .mic-toggle:hover:not(:disabled) { border-color: var(--honey-dim); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(233,118,43,0.15); }
   .mic-toggle:focus-visible { outline: 2px solid var(--honey); outline-offset: 2px; }
-  .mic-toggle.off { background: rgba(217,102,61,0.12); border-color: var(--alert); color: var(--alert); }
-  .mic-toggle:disabled { opacity: 0.5; cursor: wait; }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
-
-  .stat {
-    background: var(--surface);
-    border: 1px solid var(--hairline);
-    border-radius: 4px;
-    padding: 22px 24px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .stat::before {
-    content: '';
-    position: absolute;
-    top: -20px; right: -20px;
-    width: 90px; height: 78px;
-    background: var(--honey);
-    opacity: 0.05;
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  }
-
-  .stat-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--wax-dim);
-    margin-bottom: 10px;
-  }
-
-  .stat-value {
-    font-family: var(--font-display);
-    font-size: 40px;
-    color: var(--wax);
-    line-height: 1;
-  }
-
-  .stat-value span { font-size: 20px; color: var(--wax-dim); font-family: var(--font-mono); }
-
-  .stat-time {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--honey-dim);
-    margin-top: 10px;
-  }
-
-  section { margin-bottom: 40px; }
-
-  .section-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 16px;
-  }
-
-  h2 {
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--wax);
-  }
-
-  .section-sub {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--wax-dim);
-  }
-
-  .chart-card {
-    background: var(--surface);
-    border: 1px solid var(--hairline);
-    border-radius: 4px;
-    padding: 20px;
-    height: 280px;
-  }
-
-  .cells {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 14px;
-  }
-
-  .cell {
-    background: var(--surface);
-    border: 1px solid var(--hairline);
-    border-radius: 4px;
-    padding: 16px;
-    position: relative;
-  }
-
-  .cell::before {
-    content: '';
-    position: absolute;
-    top: 12px; right: 12px;
-    width: 22px; height: 19px;
-    background: var(--honey);
-    opacity: 0.15;
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  }
-
-  .cell-time {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--honey);
-    margin-bottom: 4px;
-  }
-
-  .cell-date {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--wax-dim);
-    margin-bottom: 12px;
-  }
-
-  audio {
-    width: 100%;
-    height: 34px;
-    filter: sepia(0.3) saturate(0.6);
-  }
-
-  .empty {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--wax-dim);
-    padding: 32px;
-    text-align: center;
-    border: 1px dashed var(--hairline);
-    border-radius: 4px;
-  }
-
-  footer {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--wax-dim);
-    text-align: center;
-    margin-top: 60px;
-    letter-spacing: 0.04em;
-  }
-
-  .settings-card {
-    background: var(--surface);
-    border: 1px solid var(--hairline);
-    border-radius: 4px;
-    padding: 22px 24px;
-  }
-
-  .settings-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-
-  .settings-label {
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--wax);
-    margin-bottom: 6px;
-  }
-
-  .settings-hint {
-    font-family: var(--font-body);
-    font-size: 12px;
-    color: var(--wax-dim);
-    max-width: 420px;
-    line-height: 1.5;
-  }
-
-  .settings-input-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-
-  .settings-input-group input[type="number"] {
-    width: 90px;
-    background: var(--surface-2);
-    border: 1px solid var(--hairline);
-    border-radius: 4px;
-    color: var(--wax);
-    font-family: var(--font-mono);
-    font-size: 14px;
-    padding: 8px 10px;
-  }
-  .settings-input-group input[type="number"]:focus {
-    outline: 2px solid var(--honey);
-    outline-offset: 1px;
-    border-color: var(--honey-dim);
-  }
-
-  .settings-unit {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--wax-dim);
-  }
-
-  .settings-current {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--honey-dim);
-    margin-top: 14px;
-  }
+  .mic-toggle.off { background: rgba(214, 69, 69, 0.1); border-color: var(--alert); color: var(--alert); }
+  .mic-toggle:disabled { opacity: 0.5; cursor: wait; transform: none; }
 
   .wandering-bee {
     position: fixed;
-    font-size: 22px;
-    z-index: 1;
+    font-size: 28px;
+    z-index: 5;
     pointer-events: none;
-    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.12));
+    opacity: 0.85;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
   }
 
-  .bee-1 {
-    top: 8%;
-    left: -5%;
-    animation: bee-path-1 26s ease-in-out infinite;
-  }
-  .bee-2 {
-    top: 40%;
-    left: -5%;
-    animation: bee-path-2 32s ease-in-out infinite;
-    animation-delay: -8s;
-  }
-  .bee-3 {
-    top: 70%;
-    left: -5%;
-    animation: bee-path-3 22s ease-in-out infinite;
-    animation-delay: -15s;
+  .bee-inner {
+    display: inline-block;
+    animation: flutter 0.05s linear infinite alternate;
   }
 
-  @keyframes bee-path-1 {
-    0%   { transform: translate(0, 0) rotate(0deg); }
-    20%  { transform: translate(30vw, -6vh) rotate(8deg); }
-    45%  { transform: translate(60vw, 4vh) rotate(-6deg); }
-    70%  { transform: translate(85vw, -8vh) rotate(10deg); }
-    100% { transform: translate(110vw, 2vh) rotate(0deg); }
+  @keyframes flutter {
+    0% { transform: scaleY(1) skewX(0deg); }
+    100% { transform: scaleY(0.6) skewX(12deg); }
   }
-  @keyframes bee-path-2 {
-    0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
-    25%  { transform: translate(35vw, 8vh) rotate(-10deg) scale(0.9); }
-    50%  { transform: translate(65vw, -5vh) rotate(6deg) scale(1); }
-    75%  { transform: translate(90vw, 6vh) rotate(-8deg) scale(0.95); }
-    100% { transform: translate(110vw, 0) rotate(0deg) scale(1); }
+
+  .bee-1 { top: 15%; left: -5%; animation: path-1 25s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+  .bee-2 { top: 45%; left: -5%; animation: path-2 30s cubic-bezier(0.35, 0.1, 0.65, 0.9) infinite; animation-delay: -5s; }
+  .bee-3 { top: 20%; right: -5%; animation: path-3 35s cubic-bezier(0.4, 0, 0.2, 1) infinite; animation-delay: -12s; }
+  .bee-4 { top: 85%; right: -5%; animation: path-4 40s cubic-bezier(0.5, 0.2, 0.3, 0.8) infinite; animation-delay: -18s; }
+  .bee-5 { top: 70%; left: -5%; animation: path-5 28s cubic-bezier(0.4, 0, 0.2, 1) infinite; animation-delay: -2s; }
+  .bee-6 { top: 90%; left: -5%; animation: path-6 32s cubic-bezier(0.3, 0.3, 0.7, 0.7) infinite; animation-delay: -8s; }
+  .bee-7 { top: 55%; left: 50%; animation: path-7 22s cubic-bezier(0.4, 0.1, 0.6, 0.9) infinite; animation-delay: -15s; }
+  .bee-8 { top: 35%; right: -5%; animation: path-8 18s cubic-bezier(0.2, 0.8, 0.8, 0.2) infinite; animation-delay: -20s; }
+
+  @keyframes path-1 {
+    0%   { transform: translate(0, 0) rotate(15deg); }
+    33%  { transform: translate(35vw, -5vh) rotate(-10deg); }
+    66%  { transform: translate(75vw, 10vh) rotate(5deg); }
+    100% { transform: translate(110vw, -2vh) rotate(15deg); }
   }
-  @keyframes bee-path-3 {
+  @keyframes path-2 {
     0%   { transform: translate(0, 0) rotate(0deg); }
-    30%  { transform: translate(40vw, -10vh) rotate(12deg); }
-    60%  { transform: translate(70vw, 5vh) rotate(-10deg); }
-    100% { transform: translate(110vw, -4vh) rotate(0deg); }
+    25%  { transform: translate(25vw, -20vh) rotate(-20deg); }
+    50%  { transform: translate(50vw, 10vh) rotate(15deg); }
+    75%  { transform: translate(80vw, -15vh) rotate(-10deg); }
+    100% { transform: translate(110vw, 5vh) rotate(0deg); }
+  }
+  @keyframes path-3 {
+    0%   { transform: translate(0, 0) rotate(-165deg); left: 105vw; }
+    30%  { transform: translate(-15vw, 25vh) rotate(-150deg); }
+    70%  { transform: translate(-80vw, 50vh) rotate(-175deg); }
+    100% { transform: translate(-115vw, 10vh) rotate(-165deg); left: 105vw; }
+  }
+  @keyframes path-4 {
+    0%   { transform: translate(0, 0) rotate(-145deg); left: 105vw; }
+    50%  { transform: translate(-60vw, -45vh) rotate(-130deg); }
+    100% { transform: translate(-115vw, -80vh) rotate(-150deg); left: 105vw; }
+  }
+  @keyframes path-5 {
+    0%   { transform: translate(0, 0) rotate(10deg); }
+    33%  { transform: translate(45vw, 25vh) rotate(50deg); }
+    66%  { transform: translate(70vw, -10vh) rotate(-25deg); }
+    100% { transform: translate(115vw, 15vh) rotate(10deg); }
+  }
+  @keyframes path-6 {
+    0%   { transform: translate(0, 0) rotate(5deg); }
+    50%  { transform: translate(55vw, -15vh) rotate(-10deg); }
+    100% { transform: translate(115vw, 5vh) rotate(5deg); }
+  }
+  @keyframes path-7 {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(15vw, -15vh) rotate(55deg); }
+    50%  { transform: translate(-5vw, -30vh) rotate(190deg); }
+    75%  { transform: translate(-20vw, -10vh) rotate(325deg); }
+    100% { transform: translate(0, 0) rotate(360deg); }
+  }
+  @keyframes path-8 {
+    0%   { transform: translate(0, 0) rotate(-170deg); left: 105vw; }
+    40%  { transform: translate(-40vw, -10vh) rotate(-190deg); }
+    80%  { transform: translate(-90vw, 20vh) rotate(-160deg); }
+    100% { transform: translate(-115vw, 0vh) rotate(-170deg); left: 105vw; }
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+
+  /* Audio player styling for premium feel */
+  audio {
+    width: 100%;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.5);
+  }
+  audio::-webkit-media-controls-panel {
+    background: rgba(253, 246, 227, 0.8);
   }
 </style>
-</head>
-<body>
-<span class="wandering-bee bee-1">🐝</span>
-<span class="wandering-bee bee-2">🐝</span>
-<span class="wandering-bee bee-3">🐝</span>
-<div class="wrap" style="position: relative; z-index: 2;">
-
-  <header>
-    <div>
-      <div class="eyebrow">Apiary / Colony 01</div>
-      <h1>Real-Time Hive Health Monitor</h1>
-    </div>
-    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-      <div class="status-pill" id="recPill"><span class="dot" id="recDot"></span><span id="recText">checking…</span></div>
-      <div class="status-pill"><span class="dot" id="statusDot"></span><span id="statusText">connecting…</span></div>
-      <button id="micToggle" class="mic-toggle">
-        <span id="micToggleLabel">Mic: —</span>
-      </button>
-    </div>
-  </header>
-
-  <div class="grid">
-    <div class="stat">
-      <div class="stat-label">Temperature</div>
-      <div class="stat-value" id="tempValue">—<span>°C</span></div>
-      <div class="stat-time" id="tempTime">no data yet</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Humidity</div>
-      <div class="stat-value" id="humValue">—<span>%</span></div>
-      <div class="stat-time" id="humTime">no data yet</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Clips Recorded</div>
-      <div class="stat-value" id="clipCount">—</div>
-      <div class="stat-time" id="clipTime">no data yet</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Bees Inside Hive</div>
-      <div class="stat-value" id="beeNetValue">—</div>
-      <div class="stat-time" id="beeDetailValue">in: — / out: —</div>
-      <button id="resetCountBtn" class="mic-toggle" style="margin-top:10px; font-size:11px; padding:6px 14px;">Reset Count</button>
-    </div>
-  </div>
-
-  <section>
-    <div class="section-head">
-      <h2>Temperature &amp; Humidity Trend</h2>
-      <div class="section-sub">last 40 readings</div>
-    </div>
-    <div class="chart-card"><canvas id="trendChart"></canvas></div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <h2>Recorded Hive Sounds</h2>
-      <div class="section-sub" id="clipsSub">most recent first</div>
-    </div>
-    <div id="clipsContainer"><div class="empty">Listening for the first clip…</div></div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <h2>Bee Sensor Tuning</h2>
-      <div class="section-sub">no reflash needed</div>
-    </div>
-    <div class="settings-card">
-      <div class="settings-row">
-        <div>
-          <div class="settings-label">Sensor timing window</div>
-          <div class="settings-hint">Max gap between the two IR sensors triggering to count as one bee. Shorter = stricter (fast bees), longer = more forgiving (slow bees or a wider tube).</div>
-        </div>
-        <div class="settings-input-group">
-          <input type="number" id="irWindowInput" min="100" max="10000" step="50" placeholder="1500">
-          <span class="settings-unit">ms</span>
-          <button id="irWindowSave" class="mic-toggle">Save</button>
-        </div>
-      </div>
-      <div class="settings-current" id="irWindowCurrent">Current: —</div>
-    </div>
-  </section>
-
-  <footer>Real-Time Hive Health Monitoring and Prediction System — auto-refreshes every 15s</footer>
+<link data-snapdom="injected-import" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;600&amp;display=swap" rel="stylesheet"/></head>
+<body class="antialiased" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDMQOicZY2yrycMMjEwLK8RK3QU48IxVYblJctdFgUVqYlWkLK7lT9PoSyNlYalnnO3wZPOaDg7-73H65P1oZ9mKxEkw-VGa3SMfpzx1aqF4iV1b087AKZn7cXRhnavpOk6tJxL95358qYwdyWWG-JRoAyNhm3z4fIXSApgpPrW6JG8DI8JDJ_Cw8A_Kh1YhZXYgiZFnHe0_sI2Gr8I__JGtigrc6Na0YEF2OJ2geh10KauQIB8uMEeGI2sMNnqoxBZMfg"); background-size: 180px; background-repeat: repeat; background-attachment: fixed; background-color: rgb(252, 244, 224);'><div class="fixed inset-0 bg-[#fcf4e0]/90 z-0 pointer-events-none backdrop-blur-[2px]"></div>
+<div class="wandering-bee bee-1"><span class="bee-inner">🐝</span></div>
+<div class="wandering-bee bee-2"><span class="bee-inner">🐝</span></div>
+<div class="wandering-bee bee-3"><span class="bee-inner">🐝</span></div>
+<div class="wandering-bee bee-4"><span class="bee-inner">🐝</span></div>
+<div class="wandering-bee bee-5"><span class="bee-inner">🐝</span></div>
+<div class="wandering-bee bee-6"><span class="bee-inner">🐝</span></div>
+<div class="wandering-bee bee-7"><span class="bee-inner">🐝</span></div>
+<div class="wandering-bee bee-8"><span class="bee-inner">🐝</span></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-20">
+<header class="glass-card p-6 mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 items-center">
+<div class="relative z-10">
+<div class="font-mono text-xs tracking-[0.15em] text-[#E9762B] uppercase mb-2">Apiary / Colony 01</div>
+<h1 class="text-4xl font-semibold text-[#2B2319] tracking-tight" style="font-family: var(--font-display)">SMART HONEY BEE HIVE</h1>
 </div>
-
+<div class="flex items-center gap-3 flex-wrap relative z-10">
+<div class="flex items-center gap-2 font-mono text-xs text-[#8A7A5C] px-4 py-2 border border-[#E9DCC0] rounded-full bg-white/40 backdrop-blur-sm shadow-sm" id="recPill">
+<span class="dot recording" id="recDot"></span><span class="" id="recText">recording now</span>
+</div>
+<div class="flex items-center gap-2 font-mono text-xs text-[#8A7A5C] px-4 py-2 border border-[#E9DCC0] rounded-full bg-white/40 backdrop-blur-sm shadow-sm">
+<span class="dot" id="statusDot"></span><span class="" id="statusText">live</span>
+</div>
+<button class="mic-toggle font-mono text-xs tracking-wide bg-white text-[#2B2319] border border-[#E9DCC0] rounded-full px-5 py-2 shadow-sm flex items-center gap-2" id="micToggle">
+<span class="material-symbols-outlined text-[16px]">mic</span>
+<span class="" id="micToggleLabel">Mic: ON</span>
+</button>
+</div>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+<!-- Temp -->
+<div class="glass-card p-6">
+<div class="glow-effect"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="font-mono text-xs tracking-widest text-[#8A7A5C] uppercase">Temperature</div>
+<span class="material-symbols-outlined text-[#E9762B] opacity-80">device_thermostat</span>
+</div>
+<div class="relative z-10">
+<div class="font-['Fraunces'] text-[44px] text-[#2B2319] leading-none mb-2" id="tempValue">29.6<span class="text-xl text-[#8A7A5C] font-mono ml-1">°C</span></div>
+<div class="font-mono text-xs text-[#C25E1C]" id="tempTime">2026-08-11 11:54:08</div>
+</div>
+</div>
+<!-- Humidity -->
+<div class="glass-card p-6">
+<div class="glow-effect" style="background: radial-gradient(circle, rgba(107, 143, 78, 0.15) 0%, rgba(107, 143, 78, 0) 70%);"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="font-mono text-xs tracking-widest text-[#8A7A5C] uppercase">Humidity</div>
+<span class="material-symbols-outlined text-[#6B8F4E] opacity-80">humidity_mid</span>
+</div>
+<div class="relative z-10">
+<div class="font-['Fraunces'] text-[44px] text-[#2B2319] leading-none mb-2" id="humValue">53.3<span class="text-xl text-[#8A7A5C] font-mono ml-1">%</span></div>
+<div class="font-mono text-xs text-[#C25E1C]" id="humTime">2026-08-11 11:54:08</div>
+</div>
+</div>
+<!-- Clips -->
+<div class="glass-card p-6">
+<div class="glow-effect"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="font-mono text-xs tracking-widest text-[#8A7A5C] uppercase">Audio Clips</div>
+<span class="material-symbols-outlined text-[#E9762B] opacity-80">audio_file</span>
+</div>
+<div class="relative z-10">
+<div class="font-['Fraunces'] text-[44px] text-[#2B2319] leading-none mb-2" id="clipCount">114</div>
+<div class="font-mono text-xs text-[#C25E1C]" id="clipTime">2026-08-11 11:23:56</div>
+</div>
+</div>
+<!-- Bees -->
+<div class="glass-card p-6 flex flex-col justify-between">
+<div class="glow-effect"></div>
+<div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="font-mono text-xs tracking-widest text-[#8A7A5C] uppercase">Bees Inside Hive</div>
+<span class="material-symbols-outlined text-[#E9762B] opacity-80">hive</span>
+</div>
+<div class="relative z-10 flex items-end gap-3 mb-2">
+<div class="font-['Fraunces'] text-[44px] text-[#2B2319] leading-none" id="beeNetValue">6</div>
+<div class="font-mono text-xs text-[#C25E1C] pb-1 font-medium" id="beeDetailValue">in: 17 / out: 11</div>
+</div>
+</div>
+<button class="mic-toggle w-full mt-2 font-mono text-[11px] tracking-wide bg-white/60 text-[#2B2319] border border-[#E9DCC0] rounded-md px-3 py-2 shadow-sm relative z-10" id="resetCountBtn">
+        Reset Count
+      </button>
+</div>
+</div>
+<section class="mb-12">
+<div class="flex justify-between items-baseline mb-6 px-1">
+<h2 class="text-2xl font-semibold text-[#2B2319]" style="font-family: var(--font-display)">Hive Environmental Conditions</h2>
+<div class="font-mono text-xs text-[#8A7A5C]">last 40 readings</div>
+</div>
+<div class="glass-card p-6 h-[320px]">
+<canvas height="338" id="trendChart" style="display: block; box-sizing: border-box; height: 270px; width: 1166px;" width="1458"></canvas>
+</div>
+</section>
+<section class="mb-12">
+<div class="flex justify-between items-baseline mb-6 px-1">
+<h2 class="text-2xl font-semibold text-[#2B2319]" style="font-family: var(--font-display)">Hive Acoustic Monitoring</h2>
+<div class="font-mono text-xs text-[#8A7A5C]" id="clipsSub">most recent 5</div>
+</div>
+<div class="glass-card p-4 mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+<div class="text-sm font-semibold text-[#2B2319] flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#E9762B]">search</span>
+    Search Hive Recordings
+  </div>
+<div class="flex items-center gap-3 flex-wrap">
+<input class="bg-white/50 border border-[#E9DCC0] rounded-md text-[#2B2319] font-mono text-sm px-3 py-2 focus:ring-2 focus:ring-[#E9762B] focus:border-transparent" id="searchDate" type="date"/>
+<input class="bg-white/50 border border-[#E9DCC0] rounded-md text-[#2B2319] font-mono text-sm px-3 py-2 focus:ring-2 focus:ring-[#E9762B] focus:border-transparent" id="searchTime" type="time"/>
+<button class="mic-toggle bg-[#E9762B] text-white border-none rounded-md px-4 py-2 font-mono text-sm shadow-md hover:bg-[#C25E1C]" id="searchBtn">Search</button>
+<button class="mic-toggle bg-white/60 text-[#2B2319] border border-[#E9DCC0] rounded-md px-4 py-2 font-mono text-sm shadow-sm hover:border-[#E9762B]" id="clearBtn">Clear</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="clipsContainer">
+</div>
+</section>
+<section class="mb-16">
+<div class="flex justify-between items-baseline mb-6 px-1">
+<h2 class="text-2xl font-semibold text-[#2B2319]" style="font-family: var(--font-display)">BEE ENTRY / EXIT SENSOR</h2>
+<div class="font-mono text-xs text-[#8A7A5C]">no reflash needed</div>
+</div>
+<div class="glass-card p-6">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+<div class="max-w-2xl relative z-10">
+<div class="text-sm font-semibold text-[#2B2319] mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#E9762B]">tune</span>
+            Sensor timing window
+          </div>
+<div class="text-sm text-[#8A7A5C] leading-relaxed">
+            Max gap between the two IR sensors triggering to count as one bee. Shorter = stricter (fast bees), longer = more forgiving (slow bees or a wider tube).
+          </div>
+</div>
+<div class="flex flex-col items-end gap-2 shrink-0 relative z-10 w-full md:w-auto">
+<div class="flex items-center gap-3 w-full md:w-auto">
+<input class="w-24 bg-white/50 border border-[#E9DCC0] rounded-md text-[#2B2319] font-mono text-sm px-3 py-2 focus:ring-2 focus:ring-[#E9762B] focus:border-transparent" id="irWindowInput" max="10000" min="100" placeholder="1500" step="50" type="number"/>
+<span class="font-mono text-xs text-[#8A7A5C]">ms</span>
+<button class="mic-toggle bg-[#E9762B] text-white border-none rounded-md px-5 py-2 font-mono text-sm shadow-md hover:bg-[#C25E1C]" id="irWindowSave">
+              Save
+            </button>
+</div>
+<div class="font-mono text-[11px] text-[#C25E1C] w-full text-right" id="irWindowCurrent">Current: 1500 ms</div>
+</div>
+</div>
+</div>
+</section>
+<footer class="font-mono text-xs text-[#8A7A5C] text-center tracking-wide pb-8">
+    Real-Time Hive Health Monitoring and Prediction System — auto-refreshes every 15s
+  </footer>
+</div>
 <script>
   // ---- Fill in your Firebase Realtime Database host (no https://, no trailing slash) ----
   const FIREBASE_HOST = "hbdc-saola-default-rtdb.firebaseio.com";
@@ -468,6 +336,10 @@
   const el = id => document.getElementById(id);
   let chart = null;
   let currentMicEnabled = null; // null until we know the real state
+  let allAudioEntries = [];
+  let isSearchActive = false;
+  let searchFilterDate = "";
+  let searchFilterTime = "";
 
   function hasSaneTimestamp(entry) {
     if (!entry || !entry.timestamp) return false;
@@ -643,9 +515,10 @@
           {
             label: 'Temp °C',
             data: temps,
-            borderColor: '#E8A93B',
-            backgroundColor: 'rgba(232,169,59,0.08)',
-            tension: 0.35,
+            borderColor: '#E9762B',
+            backgroundColor: 'rgba(233,118,43,0.1)',
+            fill: true,
+            tension: 0.4,
             pointRadius: 0,
             borderWidth: 2,
             yAxisID: 'y'
@@ -653,11 +526,12 @@
           {
             label: 'Humidity %',
             data: hums,
-            borderColor: '#8FA876',
-            backgroundColor: 'rgba(143,168,118,0.08)',
-            tension: 0.35,
+            borderColor: '#6B8F4E',
+            backgroundColor: 'transparent',
+            tension: 0.4,
             pointRadius: 0,
             borderWidth: 2,
+            borderDash: [5, 5],
             yAxisID: 'y1'
           }
         ]
@@ -667,12 +541,19 @@
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
         plugins: {
-          legend: { labels: { color: '#A89A80', font: { family: 'IBM Plex Mono', size: 11 } } }
+          legend: { labels: { color: '#8A7A5C', font: { family: 'IBM Plex Mono', size: 12 } } },
+          tooltip: {
+            backgroundColor: 'rgba(43, 35, 25, 0.9)',
+            titleFont: { family: 'IBM Plex Mono', size: 12 },
+            bodyFont: { family: 'IBM Plex Mono', size: 12 },
+            padding: 10,
+            cornerRadius: 8
+          }
         },
         scales: {
-          x: { ticks: { color: '#A89A80', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { color: '#3A3021' } },
-          y: { position: 'left', ticks: { color: '#E8A93B', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { color: '#3A3021' } },
-          y1: { position: 'right', ticks: { color: '#8FA876', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { display: false } }
+          x: { ticks: { color: '#8A7A5C', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { color: 'rgba(138, 122, 92, 0.1)' } },
+          y: { position: 'left', ticks: { color: '#E9762B', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { color: 'rgba(138, 122, 92, 0.1)' } },
+          y1: { position: 'right', ticks: { color: '#6B8F4E', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { display: false } }
         }
       }
     });
@@ -681,20 +562,67 @@
   function renderClips(entries) {
     const container = el('clipsContainer');
     if (!entries.length) {
-      container.innerHTML = '<div class="empty">Listening for the first clip…</div>';
+      container.innerHTML = '<div class="col-span-full glass-card p-12 text-center border-dashed"><div class="font-mono text-sm text-[#8A7A5C]">No recordings found for the selected date/time.</div></div>';
       return;
     }
-    container.className = 'cells';
+    
     container.innerHTML = entries.map(c => {
       const [date, time] = c.timestamp.split(' ');
       return `
-        <div class="cell">
-          <div class="cell-time">${time}</div>
-          <div class="cell-date">${date}</div>
-          <audio controls preload="metadata" src="${c.url}"></audio>
+        <div class="glass-card p-4 hover:shadow-lg transition-shadow">
+          <div class="flex items-center gap-2 mb-1 relative z-10">
+            <span class="material-symbols-outlined text-[16px] text-[#E9762B]">graphic_eq</span>
+            <div class="font-mono text-sm text-[#E9762B] font-medium">${time}</div>
+          </div>
+          <div class="font-mono text-[11px] text-[#8A7A5C] mb-4 relative z-10 pl-6">${date}</div>
+          <div class="relative z-10">
+            <audio controls preload="metadata" src="${c.url}"></audio>
+          </div>
         </div>`;
     }).join('');
   }
+
+  function updateClipsDisplay() {
+    if (!allAudioEntries.length) {
+      el('clipsContainer').innerHTML = '<div class="col-span-full glass-card p-12 text-center border-dashed"><div class="font-mono text-sm text-[#8A7A5C]">Listening for the first clip…</div></div>';
+      return;
+    }
+    let filtered = allAudioEntries;
+    if (isSearchActive) {
+      filtered = filtered.filter(c => {
+        let match = true;
+        const [date, time] = c.timestamp.split(' ');
+        if (searchFilterDate && date !== searchFilterDate) match = false;
+        if (searchFilterTime) {
+           if (!time.startsWith(searchFilterTime)) match = false;
+        }
+        return match;
+      });
+      el('clipsSub').textContent = `showing ${filtered.length} results`;
+      renderClips(filtered);
+    } else {
+      el('clipsSub').textContent = 'most recent 5';
+      renderClips(filtered.slice(0, 5));
+    }
+  }
+
+  el('searchBtn').addEventListener('click', () => {
+    searchFilterDate = el('searchDate').value;
+    searchFilterTime = el('searchTime').value;
+    if (searchFilterDate || searchFilterTime) {
+      isSearchActive = true;
+      updateClipsDisplay();
+    }
+  });
+
+  el('clearBtn').addEventListener('click', () => {
+    el('searchDate').value = "";
+    el('searchTime').value = "";
+    isSearchActive = false;
+    searchFilterDate = "";
+    searchFilterTime = "";
+    updateClipsDisplay();
+  });
 
   async function refresh() {
     try {
@@ -706,20 +634,21 @@
       ]);
 
       const logEntries = logRaw ? Object.values(logRaw).filter(hasSaneTimestamp).sort((a, b) => a.timestamp.localeCompare(b.timestamp)) : [];
-      const audioEntries = audioRaw ? Object.values(audioRaw).filter(hasSaneTimestamp).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) : [];
+      allAudioEntries = audioRaw ? Object.values(audioRaw).filter(hasSaneTimestamp).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) : [];
 
       if (logEntries.length) {
         const latest = logEntries[logEntries.length - 1];
-        el('tempValue').innerHTML = `${latest.temp_C.toFixed(1)}<span>°C</span>`;
-        el('humValue').innerHTML = `${latest.humidity_pct.toFixed(1)}<span>%</span>`;
+        el('tempValue').innerHTML = `${latest.temp_C.toFixed(1)}<span class="text-xl text-[#8A7A5C] font-mono ml-1">°C</span>`;
+        el('humValue').innerHTML = `${latest.humidity_pct.toFixed(1)}<span class="text-xl text-[#8A7A5C] font-mono ml-1">%</span>`;
         el('tempTime').textContent = fmtTime(latest.timestamp);
         el('humTime').textContent = fmtTime(latest.timestamp);
         renderChart(logEntries.slice(-40));
       }
 
-      el('clipCount').textContent = audioEntries.length;
-      if (audioEntries.length) el('clipTime').textContent = fmtTime(audioEntries[0].timestamp);
-      renderClips(audioEntries.slice(0, 30));
+      el('clipCount').textContent = allAudioEntries.length;
+      if (allAudioEntries.length) el('clipTime').textContent = fmtTime(allAudioEntries[0].timestamp);
+      
+      updateClipsDisplay();
 
       renderDeviceStatus(status);
 
@@ -739,5 +668,4 @@
   refresh();
   setInterval(refresh, REFRESH_MS);
 </script>
-</body>
-</html>
+</body></html>
