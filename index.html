@@ -5,6 +5,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Hive Monitor — Real-Time Hive Health Monitoring and Prediction System</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <style>
@@ -271,6 +272,26 @@
 <h2 class="text-2xl font-semibold text-[#2B2319]" style="font-family: var(--font-display)">Hive Environmental Conditions</h2>
 <div class="font-mono text-xs text-[#8A7A5C]">last 40 readings</div>
 </div>
+<div class="glass-card p-4 mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+<div class="text-sm font-semibold text-[#2B2319] flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#E9762B]">download</span>
+    Export Environmental Data
+  </div>
+<div class="flex items-center gap-3 flex-wrap">
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs text-[#8A7A5C]">From:</span>
+<input class="bg-white/50 border border-[#E9DCC0] rounded-md text-[#2B2319] font-mono text-sm px-3 py-2 focus:ring-2 focus:ring-[#E9762B] focus:border-transparent" id="exportFromDate" type="date"/>
+<input class="bg-white/50 border border-[#E9DCC0] rounded-md text-[#2B2319] font-mono text-sm px-3 py-2 focus:ring-2 focus:ring-[#E9762B] focus:border-transparent" id="exportFromTime" type="time"/>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs text-[#8A7A5C]">To:</span>
+<input class="bg-white/50 border border-[#E9DCC0] rounded-md text-[#2B2319] font-mono text-sm px-3 py-2 focus:ring-2 focus:ring-[#E9762B] focus:border-transparent" id="exportToDate" type="date"/>
+<input class="bg-white/50 border border-[#E9DCC0] rounded-md text-[#2B2319] font-mono text-sm px-3 py-2 focus:ring-2 focus:ring-[#E9762B] focus:border-transparent" id="exportToTime" type="time"/>
+</div>
+<button class="mic-toggle bg-[#E9762B] text-white border-none rounded-md px-4 py-2 font-mono text-sm shadow-md hover:bg-[#C25E1C]" id="exportBtn">Export Excel</button>
+</div>
+</div>
+<div class="font-mono text-sm text-[#D64545] mb-4 hidden px-2" id="exportMsg"></div>
 <div class="glass-card p-6 h-[320px]">
 <canvas height="338" id="trendChart" style="display: block; box-sizing: border-box; height: 270px; width: 1166px;" width="1458"></canvas>
 </div>
@@ -623,6 +644,92 @@
     searchFilterTime = "";
     updateClipsDisplay();
   });
+
+  el('exportBtn').addEventListener('click', async () => {
+    const btn = el('exportBtn');
+    const msg = el('exportMsg');
+    const fDate = el('exportFromDate').value;
+    const fTime = el('exportFromTime').value;
+    const tDate = el('exportToDate').value;
+    const tTime = el('exportToTime').value;
+
+    msg.classList.add('hidden');
+    msg.textContent = "";
+
+    if (!fDate && !tDate) {
+      msg.textContent = "Please select at least a 'From' date.";
+      msg.classList.remove('hidden');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Exporting...';
+
+    try {
+      const logRaw = await fetchJSON('hive_log');
+      if (!logRaw) {
+        msg.textContent = "No environmental data found.";
+        msg.classList.remove('hidden');
+        return;
+      }
+
+      let entries = Object.values(logRaw).filter(hasSaneTimestamp);
+      entries.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+
+      const fromDateTime = fDate ? `${fDate} ${fTime || '00:00:00'}` : "";
+      const toDateTime = tDate ? `${tDate} ${tTime || '23:59:59'}` : (fDate && !tDate && !fTime && !tTime ? `${fDate} 23:59:59` : "");
+
+      entries = entries.filter(e => {
+        let ok = true;
+        if (fromDateTime && e.timestamp < fromDateTime) ok = false;
+        if (toDateTime && e.timestamp > toDateTime) ok = false;
+        return ok;
+      });
+
+      if (entries.length === 0) {
+        msg.textContent = "No environmental data found for the selected date/time range.";
+        msg.classList.remove('hidden');
+        return;
+      }
+
+      if (typeof XLSX === "undefined") {
+        throw new Error("Excel export library is not loaded.");
+      }
+
+      const rows = entries.map(e => {
+        const [d, t] = e.timestamp.split(' ');
+        return {
+          "Date": d,
+          "Time": t,
+          "Temperature (°C)": Number(e.temp_C),
+          "Humidity (%)": Number(e.humidity_pct)
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      worksheet["!cols"] = [
+        { wch: 14 },
+        { wch: 12 },
+        { wch: 20 },
+        { wch: 16 }
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Environmental Data");
+
+      const filenameDate = fDate || tDate || new Date().toISOString().split('T')[0];
+      XLSX.writeFile(workbook, `hive_environment_${filenameDate}.xlsx`);
+
+    } catch (err) {
+      console.error(err);
+      msg.textContent = "Export failed. Please try again.";
+      msg.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Export Excel';
+    }
+  });
+
 
   async function refresh() {
     try {
