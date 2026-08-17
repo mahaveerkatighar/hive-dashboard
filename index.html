@@ -550,28 +550,34 @@ function normalizeAudio(key,value){
 }
 async function loadAudio(){
   if(!db)return[];
-  const paths=["audio","audioClips","recordings","hive/audio"],map=new Map();
-  for(const path of paths){
-    try{
-      const snap=await db.ref(path).once("value"),v=snap.val();
-      if(!v)continue;
-      const entries=Array.isArray(v)?v.map((x,i)=>[String(i),x]):Object.entries(v);
-      entries.forEach(([k,x])=>{
+  const map=new Map();
+  try{
+    const v=(await db.ref("hive_audio").once("value")).val();
+    if(v && typeof v==="object"){
+      Object.entries(v).forEach(([k,x])=>{
         const r=normalizeAudio(k,x);
         if(r)map.set(r.filename+"|"+r.date+"|"+r.time,r);
       });
-    }catch(e){console.warn("Audio path unavailable",path)}
-  }
-  return[...map.values()].sort((a,b)=>b.timestamp-a.timestamp);
+    }
+  }catch(e){console.error("hive_audio read failed",e)}
+  return [...map.values()].sort((a,b)=>b.timestamp-a.timestamp);
 }
 async function resolveAudioUrl(r){
   if(r.url)return r.url;
-  if(!storage)return"";
-  for(const p of [r.path,r.filename,`audio/${r.filename}`,`recordings/${r.filename}`]){
-    if(!p)continue;
-    try{return await storage.ref(p).getDownloadURL()}catch(e){}
+  if(r.path && storage){
+    try{return await storage.ref(r.path).getDownloadURL()}catch(e){}
   }
-  return"";
+  if(storage && r.filename){
+    for(const p of [
+      `HONEYBEEHIVE/${r.filename}`,
+      r.filename,
+      `audio/${r.filename}`,
+      `recordings/${r.filename}`
+    ]){
+      try{return await storage.ref(p).getDownloadURL()}catch(e){}
+    }
+  }
+  return "";
 }
 function renderAudio(records,showAll=true){
   const c=document.getElementById("clipsContainer");if(!c)return;
@@ -590,7 +596,7 @@ function renderAudio(records,showAll=true){
         <button class="bg-primary text-on-primary font-label-sm px-4 py-2 rounded shadow-sm hover:bg-primary/90"
           data-download-index="${i}">Download WAV</button>
       </div>
-      <audio class="w-full mt-3" controls preload="metadata" data-key="${escapeHtml(r.key)}" src="${escapeHtml(r.url)}"></audio>
+      <audio class="w-full mt-3" controls preload="metadata" data-key="${escapeHtml(r.key)}" src="${escapeHtml(r.url||"")}"></audio>
       <div class="audio-status text-sm text-on-surface-variant mt-2" id="audioStatus_${i}">
         ${r.url?"Ready to play":"Resolving audio file..."}
       </div>
@@ -622,6 +628,7 @@ async function refreshAudio(){
   allAudioRecords=await loadAudio();
   filteredAudioRecords=allAudioRecords;
   const n=document.getElementById("audioClipsCount");if(n)n.textContent=allAudioRecords.length;
+  // Dashboard always shows only the 5 newest recordings.
   renderAudio(allAudioRecords.slice(0,5),true);
 }
 document.getElementById("searchBtn")?.addEventListener("click",()=>{
@@ -648,6 +655,67 @@ document.getElementById("downloadMatchesBtn")?.addEventListener("click",async()=
     }catch(e){console.error(e)}
   }
 });
+
+function sensorValue(o,keys){
+  for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&o[k]!=="")return Number(o[k]);
+  return null;
+}
+function parseFirebaseTimestamp(raw,key){
+  const s=String(raw||key||"");
+  let dt=new Date(s);
+  if(!isNaN(dt.getTime()))return dt;
+  const m=s.match(/^(\d{4})(\d{2})(\d{2})[_-]?(\d{2})(\d{2})(\d{2})$/);
+  if(m)return new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]);
+  return null;
+}
+function normalizeSensor(v,key,kind="hive"){
+  const o=v&&typeof v==="object"?v:{};
+  const raw=o.timestamp||o.time||o.datetime||o.dateTime||key;
+  const dt=parseFirebaseTimestamp(raw,key);
+  if(!dt||isNaN(dt.getTime()))return null;
+  return{
+    timestamp:dt.getTime(),dateTime:dt,
+    hiveTemp:kind==="hive"?sensorValue(o,["temp_C","temperature","temp","hiveTemp","insideTemperature"]):null,
+    hiveHum:kind==="hive"?sensorValue(o,["humidity_pct","humidity","hum","hiveHumidity","insideHumidity"]):null,
+    outTemp:kind==="outside"?sensorValue(o,["temp_outside_C","outsideTemperature","outsideTemp","outTemp","ambientTemperature"]):null,
+    outHum:kind==="outside"?sensorValue(o,["humidity_outside_pct","outsideHumidity","outsideHum","outHum","ambientHumidity"]):null
+  };
+}
+async function loadSensors(){
+  if(!db)return[];
+  const map=new Map();
+  const readLog=async(path,kind)=>{
+    try{
+      const v=(await db.ref(path).once("value")).val();
+      if(!v||typeof v!=="object")return;
+      Object.entries(v).forEach(([k,x])=>{
+        const r=normalizeSensor(x,k,kind);
+        if(!r)return;
+        const old=map.get(r.timestamp)||{timestamp:r.timestamp,dateTime:r.dateTime,hiveTemp:null,hiveHum:null,outTemp:null,outHum:null};
+        if(kind==="hive"){old.hiveTemp=r.hiveTemp;old.hiveHum=r.hiveHum;}
+        else {old.outTemp=r.outTemp;old.outHum=r.outHum;}
+        map.set(r.timestamp,old);
+      });
+    }catch(e){console.error(path,e)}
+  };
+  await readLog("hive_log","hive");
+  await readLog("hive_log_outside","outside");
+  return [...map.values()].sort((a,b)=>a.timestamp-b.timestamp);
+}
+
+async function refreshBeeCount(){
+  if(!db)return;
+  try{
+    const v=(await db.ref("hive_bee_count").once("value")).val()||{};
+    const cin=Number(v.count_in ?? v.in ?? 0);
+    const cout=Number(v.count_out ?? v.out ?? 0);
+    const net=Number(v.net ?? (cin-cout));
+    const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=String(val)};
+    set("netValue",net);set("inValue",cin);set("outValue",cout);
+    const status=document.getElementById("lastSeen");
+    if(status && v.last_updated) status.textContent="Last Seen: "+v.last_updated;
+  }catch(e){console.error("Bee count read failed",e)}
+}
 function sensorValue(o,keys){
   for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&o[k]!=="")return Number(o[k]);
   return null;
@@ -730,9 +798,10 @@ function createBee(){
 }
 async function startDashboard(){
   if(!initFirebase()){renderAudio([]);return}
-  await Promise.all([refreshAudio(),refreshSensors()]);
+  await Promise.all([refreshAudio(),refreshSensors(),refreshBeeCount()]);
   setInterval(refreshAudio,30000);
   setInterval(refreshSensors,30000);
+  setInterval(refreshBeeCount,5000);
 }
 startDashboard();
 </script>
