@@ -14,53 +14,53 @@
     theme: {
       extend: {
         "colors": {
-                "on-secondary-fixed-variant": "#5e4200",
-                "on-tertiary-fixed": "#231a11",
-                "tertiary-fixed-dim": "#d4c4b6",
-                "surface-dim": "#dddad1",
-                "error-container": "#ffdad6",
-                "on-secondary-fixed": "#271900",
-                "inverse-surface": "#31312b",
-                "on-primary-container": "#512000",
-                "surface-container-highest": "#e6e2d9",
-                "surface-tint": "#9c4400",
-                "on-error-container": "#93000a",
-                "outline": "#8a7266",
-                "outline-variant": "#dec1b3",
-                "surface": "#fdf9f0",
-                "surface-container": "#f1eee5",
-                "primary-fixed": "#ffdbca",
-                "tertiary": "#695c51",
-                "on-surface": "#1c1c17",
-                "secondary-fixed": "#ffdea8",
-                "surface-container-high": "#ece8df",
-                "on-primary": "#ffffff",
-                "secondary-container": "#feb700",
-                "on-background": "#1c1c17",
-                "secondary-fixed-dim": "#ffba20",
-                "primary-container": "#e9762b",
-                "on-surface-variant": "#574238",
-                "tertiary-fixed": "#f1dfd1",
-                "secondary": "#7c5800",
-                "on-error": "#ffffff",
-                "background": "#fdf9f0",
-                "on-secondary-container": "#6b4b00",
-                "inverse-on-surface": "#f4f0e7",
-                "on-secondary": "#ffffff",
-                "error": "#ba1a1a",
                 "on-tertiary-fixed-variant": "#50453b",
-                "tertiary-container": "#a29387",
-                "on-tertiary": "#ffffff",
-                "on-primary-fixed-variant": "#773300",
-                "surface-container-low": "#f7f3ea",
-                "surface-container-lowest": "#ffffff",
-                "on-primary-fixed": "#331200",
+                "secondary-fixed-dim": "#ffba20",
+                "primary-fixed": "#ffdbca",
+                "on-secondary-container": "#6b4b00",
+                "background": "#fdf9f0",
                 "surface-variant": "#e6e2d9",
-                "on-tertiary-container": "#362c23",
-                "primary": "#9c4400",
+                "primary-fixed-dim": "#ffb68e",
+                "on-secondary": "#ffffff",
+                "tertiary": "#695c51",
                 "surface-bright": "#fdf9f0",
+                "on-surface-variant": "#574238",
+                "surface-container-lowest": "#ffffff",
+                "on-error": "#ffffff",
+                "on-secondary-fixed-variant": "#5e4200",
+                "secondary": "#7c5800",
+                "secondary-container": "#feb700",
+                "on-error-container": "#93000a",
+                "surface-container-low": "#f7f3ea",
+                "on-primary": "#ffffff",
                 "inverse-primary": "#ffb68e",
-                "primary-fixed-dim": "#ffb68e"
+                "on-background": "#1c1c17",
+                "outline": "#8a7266",
+                "primary-container": "#e9762b",
+                "surface": "#fdf9f0",
+                "outline-variant": "#dec1b3",
+                "primary": "#9c4400",
+                "on-primary-container": "#512000",
+                "secondary-fixed": "#ffdea8",
+                "inverse-on-surface": "#f4f0e7",
+                "on-primary-fixed-variant": "#773300",
+                "on-tertiary": "#ffffff",
+                "error-container": "#ffdad6",
+                "surface-tint": "#9c4400",
+                "error": "#ba1a1a",
+                "surface-dim": "#dddad1",
+                "tertiary-fixed-dim": "#d4c4b6",
+                "surface-container-high": "#ece8df",
+                "tertiary-container": "#a29387",
+                "on-primary-fixed": "#331200",
+                "on-secondary-fixed": "#271900",
+                "surface-container-highest": "#e6e2d9",
+                "surface-container": "#f1eee5",
+                "on-tertiary-container": "#362c23",
+                "on-tertiary-fixed": "#231a11",
+                "tertiary-fixed": "#f1dfd1",
+                "inverse-surface": "#31312b",
+                "on-surface": "#1c1c17"
         },
         "borderRadius": {
                 "DEFAULT": "0.25rem",
@@ -70,23 +70,20 @@
         },
         "spacing": {
                 "container-padding": "32px",
-                "card-gap": "16px",
-                "stack-md": "12px",
-                "stack-sm": "4px",
+                "gutter": "24px",
                 "unit": "8px",
-                "gutter": "24px"
+                "stack-md": "12px",
+                "card-gap": "16px",
+                "stack-sm": "4px"
         },
         "fontFamily": {
-                "body-md": [
-                        "IBM Plex Sans"
-                ],
-                "headline-lg": [
-                        "\"Source Serif 4\""
-                ],
                 "label-sm": [
                         "JetBrains Mono"
                 ],
                 "headline-lg-mobile": [
+                        "\"Source Serif 4\""
+                ],
+                "headline-lg": [
                         "\"Source Serif 4\""
                 ],
                 "display-lg": [
@@ -94,23 +91,12 @@
                 ],
                 "data-lg": [
                         "JetBrains Mono"
+                ],
+                "body-md": [
+                        "IBM Plex Sans"
                 ]
         },
         "fontSize": {
-                "body-md": [
-                        "16px",
-                        {
-                                "lineHeight": "24px",
-                                "fontWeight": "400"
-                        }
-                ],
-                "headline-lg": [
-                        "32px",
-                        {
-                                "lineHeight": "40px",
-                                "fontWeight": "600"
-                        }
-                ],
                 "label-sm": [
                         "12px",
                         {
@@ -122,6 +108,13 @@
                         "24px",
                         {
                                 "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
                                 "fontWeight": "600"
                         }
                 ],
@@ -139,6 +132,13 @@
                                 "lineHeight": "44px",
                                 "letterSpacing": "-0.04em",
                                 "fontWeight": "500"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
                         }
                 ]
         }
@@ -229,10 +229,13 @@
       }
 
     </style>
-<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<!-- Add Firebase products that you want to use -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<!-- Libraries -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body class="text-on-background font-body-md antialiased min-h-screen relative pb-24 md:pb-0 md:pt-20">
 <!-- TopNavBar (Desktop) -->
@@ -269,6 +272,10 @@
 <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-primary/10">
 <span class="material-symbols-outlined text-tertiary text-[16px]" data-icon="schedule">schedule</span>
 <span class="text-on-surface" id="lastSeen">Last Seen: --</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-primary/10">
+<span class="material-symbols-outlined text-tertiary text-[16px]" data-icon="watch_later">watch_later</span>
+<span class="text-on-surface" id="currentTimeDisplay">--:--:--</span>
 </div>
 </div>
 </header>
@@ -451,7 +458,7 @@
                                 Clear
                             </button>
 </div>
-<button class="hidden bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-2 rounded shadow-sm hover:bg-primary/90 transition-colors items-center gap-2" id="downloadMatchesBtn">
+<button class="hidden bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-2 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-2" id="downloadMatchesBtn">
 <span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
         Download Matches
     </button>
@@ -504,8 +511,8 @@
 </main>
 <!-- Footer -->
 <footer class="fixed bottom-0 left-0 w-full z-40 flex flex-col md:flex-row justify-between items-center px-container-padding py-2 bg-surface-container-lowest/50 dark:bg-surface-dim/20 backdrop-blur-md border-t border-outline-variant/30 text-tertiary dark:text-tertiary-fixed-dim font-label-sm text-label-sm">
-<div class="font-black uppercase text-primary mb-1 md:mb-0">
-            © 2026 Smart Hive Monitoring System
+<div class="font-black uppercase text-primary mb-1 md:mb-0" id="footerYearText">
+            © SMART HIVE MONITORING SYSTEM
         </div>
 <div class="flex gap-4">
 <a class="text-on-tertiary-fixed-variant hover:text-primary transition-colors" href="#">System Health: Optimal</a>
@@ -513,1080 +520,511 @@
 <a class="text-on-tertiary-fixed-variant hover:text-primary transition-colors" href="#">API Status</a>
 </div>
 </footer>
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-<!-- Scripts -->
 <script>
-/*
-  SMART HONEY BEE HIVE DASHBOARD
-  Compatible with the CURRENT ESP32-S3 code supplied by the user.
+        // --- Navigation Logic ---
+        function switchPage(pageId) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.dataset.target === pageId) {
+                    link.classList.add('text-primary', 'font-semibold', 'border-b-2', 'border-primary');
+                    link.classList.remove('text-on-surface-variant', 'font-medium', 'hover:bg-primary-container/10');
+                } else {
+                    link.classList.remove('text-primary', 'font-semibold', 'border-b-2', 'border-primary');
+                    link.classList.add('text-on-surface-variant', 'font-medium', 'hover:bg-primary-container/10');
+                }
+            });
 
-  Firebase paths written by the ESP32-S3:
-    hive_log/<timestamp-key>
-      timestamp
-      temp_C
-      humidity_pct
-      temp_outside_C       <-- outside data is HERE
-      humidity_outside_pct <-- outside data is HERE
-
-    hive_audio/<timestamp-key>
-      timestamp
-      filename
-      url
-
-    hive_bee_count
-      count_in
-      count_out
-      net
-      last_updated
-
-    hive_status
-      recording
-      mic_enabled
-      last_seen
-
-    hive_control
-      mic_enabled
-      ir_window_ms
-      reset_count
-*/
-
-const firebaseConfig = {
-    apiKey: "AIzaSyCwJM0pmtuGZIU2ThHzyasd0c8AL9HTRno",
-    authDomain: "hbdc-saola.firebaseapp.com",
-    databaseURL: "https://hbdc-saola-default-rtdb.firebaseio.com",
-    projectId: "hbdc-saola",
-    storageBucket: "hbdc-saola.firebasestorage.app",
-    messagingSenderId: "736079100825",
-    appId: "1:736079100825:web:624ec1814543271d4cf108",
-    measurementId: "G-X1C7ZF09XP"
-};
-
-let db = null;
-let chart = null;
-let currentAudioMatches = [];
-
-/* ---------- Basic helpers ---------- */
-
-function esc(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-function numberOrNull(value) {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : null;
-}
-
-/*
-  The ESP32-S3 uses:
-  YYYY-MM-DD HH:MM:SS
-
-  We intentionally reject year 2000/default DateTime(0) records so
-  old bad records cannot appear as current readings.
-*/
-function validTimestamp(value) {
-    if (typeof value !== "string") return false;
-
-    const m = value.match(
-        /^(20\d{2})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/
-    );
-
-    if (!m) return false;
-
-    const y = Number(m[1]);
-    const mo = Number(m[2]);
-    const d = Number(m[3]);
-    const h = Number(m[4]);
-    const mi = Number(m[5]);
-    const s = Number(m[6]);
-
-    if (y < 2024 || y > 2099) return false;
-    if (mo < 1 || mo > 12 || d < 1 || d > 31) return false;
-    if (h > 23 || mi > 59 || s > 59) return false;
-
-    const dt = new Date(y, mo - 1, d, h, mi, s);
-
-    return dt.getFullYear() === y &&
-        dt.getMonth() === mo - 1 &&
-        dt.getDate() === d &&
-        dt.getHours() === h &&
-        dt.getMinutes() === mi &&
-        dt.getSeconds() === s;
-}
-
-function toDate(value) {
-    if (!validTimestamp(value)) return null;
-    return new Date(value.replace(" ", "T"));
-}
-
-function formatDate(value) {
-    const dt = toDate(value);
-    return dt ? dt.toLocaleDateString("en-IN") : "--";
-}
-
-function formatTime(value) {
-    const dt = toDate(value);
-    return dt
-        ? dt.toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true
-        })
-        : "--:--";
-}
-
-function formatDateTime(value) {
-    const dt = toDate(value);
-    return dt
-        ? dt.toLocaleString("en-IN", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true
-        })
-        : "--";
-}
-
-/* ---------- Firebase ---------- */
-
-function initFirebase() {
-    try {
-        if (!window.firebase) {
-            throw new Error("Firebase SDK is not loaded.");
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`page-${pageId}`).classList.add('active');
+            
+            if(pageId === 'analytics' && window.trendChartInstance) {
+                window.trendChartInstance.resize();
+            }
         }
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+        // --- Date & Time Utils ---
+        function parseFirebaseTimestampToDate(tsString) {
+            if (tsString === null || tsString === undefined || tsString === '') return null;
+
+            if (tsString instanceof Date) {
+                return Number.isNaN(tsString.getTime()) ? null : tsString;
+            }
+
+            if (typeof tsString === 'number') {
+                const d = new Date(tsString);
+                return Number.isNaN(d.getTime()) ? null : d;
+            }
+
+            if (typeof tsString !== 'string') return null;
+
+            // Firebase stores timestamps as India local time:
+            // YYYY-MM-DD HH:MM:SS
+            const match = tsString.trim().match(
+                /^(\\d{4})-(\\d{2})-(\\d{2})[ T](\\d{2}):(\\d{2})(?::(\\d{2}))?$/
+            );
+
+            if (!match) return null;
+
+            const year = Number(match[1]);
+            const month = Number(match[2]);
+            const day = Number(match[3]);
+            const hour = Number(match[4]);
+            const minute = Number(match[5]);
+            const second = Number(match[6] || 0);
+
+            if (
+                year < 2020 ||
+                year > new Date().getFullYear() + 1 ||
+                month < 1 || month > 12 ||
+                day < 1 || day > 31 ||
+                hour < 0 || hour > 23 ||
+                minute < 0 || minute > 59 ||
+                second < 0 || second > 59
+            ) return null;
+
+            // Interpret the Firebase timestamp as Asia/Kolkata,
+            // independent of the computer's local timezone.
+            const utcMillis =
+                Date.UTC(year, month - 1, day, hour, minute, second) -
+                (5.5 * 60 * 60 * 1000);
+
+            const d = new Date(utcMillis);
+            return Number.isNaN(d.getTime()) ? null : d;
         }
 
-        db = firebase.database();
+        function formatFirebaseTimestamp(tsString) {
+            const dt = parseFirebaseTimestampToDate(tsString);
+            if (!dt) return '--';
 
-        setConnectionStatus(true);
+            return new Intl.DateTimeFormat('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            }).format(dt);
+        }
 
-        subscribeEnvironment();
-        subscribeBeeCount();
-        subscribeStatus();
-        subscribeControls();
+        // --- Animated Bees & Main Logic ---
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('footerYearText').textContent = `© ${new Date().getFullYear()} SMART HIVE MONITORING SYSTEM`;
+            
+            const numBees = 8;
+            for (let i = 0; i < numBees; i++) {
+                createBee();
+            }
+            startClock();
+            initFirebase();
+            
+            setInterval(() => {
+                 checkSensorStatus();
+            }, 5000);
+        });
+        
+        function startClock() {
+            const clockElement = document.getElementById('currentTimeDisplay');
 
-        loadRecentAudio();
-        loadAudioCount();
+            function updateClock() {
+                if (!clockElement) return;
 
-        console.log("Smart Honey Bee Hive dashboard connected.");
-    } catch (error) {
-        console.error("Firebase initialization error:", error);
-        setConnectionStatus(false);
-    }
-}
+                clockElement.textContent = new Intl.DateTimeFormat('en-IN', {
+                    timeZone: 'Asia/Kolkata',
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                }).format(new Date());
+            }
 
-function setConnectionStatus(connected) {
-    const dot = document.getElementById("deviceStatusIcon");
-    const label = document.getElementById("deviceStatusText");
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
 
-    if (!dot || !label) return;
+        function createBee() {
+            const bee = document.createElement('div');
+            bee.className = 'bee';
+            document.body.appendChild(bee);
 
-    dot.className = connected
-        ? "w-2 h-2 rounded-full bg-green-500"
-        : "w-2 h-2 rounded-full bg-error";
+            let x = Math.random() * window.innerWidth;
+            let y = Math.random() * window.innerHeight;
+            let angle = Math.random() * Math.PI * 2;
+            let speed = 1 + Math.random();
 
-    label.textContent = connected
-        ? "Firebase connected"
-        : "Firebase connection error";
-}
+            function animateBee() {
+                angle += (Math.random() - 0.5) * 0.2;
+                x += Math.cos(angle) * speed;
+                y += Math.sin(angle) * speed;
 
-/* ---------- Navigation ---------- */
+                if (x < -20) x = window.innerWidth + 20;
+                if (x > window.innerWidth + 20) x = -20;
+                if (y < -20) y = window.innerHeight + 20;
+                if (y > window.innerHeight + 20) y = -20;
 
-function switchPage(pageId) {
-    document.querySelectorAll(".nav-link").forEach(link => {
-        const active = link.dataset.target === pageId;
+                const rotation = angle * (180 / Math.PI) + 90;
+                bee.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
 
-        link.classList.toggle("text-primary", active);
-        link.classList.toggle("font-semibold", active);
-        link.classList.toggle("border-b-2", active);
-        link.classList.toggle("border-primary", active);
+                requestAnimationFrame(animateBee);
+            }
+            animateBee();
+        }
 
-        link.classList.toggle("text-on-surface-variant", !active);
-        link.classList.toggle("font-medium", !active);
-    });
+        let isConnected = false;
+        let lastSeenDate = null;
+        
+        function checkSensorStatus() {
+            if (!isConnected) {
+                updateStatus('error');
+                return;
+            }
+            if (lastSeenDate) {
+                 const now = new Date();
+                 const diff = (now - lastSeenDate) / 1000;
+                 if (diff > 120) {
+                     updateStatus('offline');
+                 } else {
+                     updateStatus('online');
+                 }
+            }
+        }
 
-    document.querySelectorAll(".page-section").forEach(section => {
-        section.classList.remove("active");
-    });
-
-    const page = document.getElementById("page-" + pageId);
-    if (page) page.classList.add("active");
-
-    if (pageId === "analytics") loadAnalytics();
-    if (pageId === "acoustic") loadRecentAudio();
-}
-
-/* ---------- ENVIRONMENT ---------- */
-
-/*
-  IMPORTANT:
-  Current ESP32-S3 code writes BOTH inside and outside values to hive_log.
-
-  Therefore the dashboard MUST NOT read hive_log_outside.
-*/
-function subscribeEnvironment() {
-    db.ref("hive_log")
-        .orderByChild("timestamp")
-        .limitToLast(1)
-        .on("value", snapshot => {
-            if (!snapshot.exists()) return;
-
-            const rows = Object.values(snapshot.val() || {})
-                .filter(row => validTimestamp(row?.timestamp))
-                .sort((a, b) =>
-                    String(a.timestamp).localeCompare(String(b.timestamp))
-                );
-
-            if (!rows.length) return;
-
-            const data = rows[rows.length - 1];
-
-            const insideTemp = numberOrNull(data.temp_C);
-            const insideHum = numberOrNull(data.humidity_pct);
-            const outsideTemp = numberOrNull(data.temp_outside_C);
-            const outsideHum = numberOrNull(data.humidity_outside_pct);
-
-            const set = (id, value) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = value;
+        function initFirebase() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyCwJM0pmtuGZIU2ThHzyasd0c8AL9HTRno",
+                databaseURL: "https://hbdc-saola-default-rtdb.firebaseio.com",
             };
-
-            set(
-                "tempValue",
-                insideTemp === null ? "--" : insideTemp.toFixed(1)
-            );
-
-            set(
-                "humValue",
-                insideHum === null ? "--" : insideHum.toFixed(1)
-            );
-
-            set(
-                "outTempValue",
-                outsideTemp === null ? "--" : outsideTemp.toFixed(1)
-            );
-
-            set(
-                "outHumValue",
-                outsideHum === null ? "--" : outsideHum.toFixed(1)
-            );
-
-            set("tempTime", formatTime(data.timestamp));
-            set("humTime", formatTime(data.timestamp));
-            set("outTempTime", formatTime(data.timestamp));
-            set("outHumTime", formatTime(data.timestamp));
-        }, error => {
-            console.error("hive_log listener error:", error);
-            setConnectionStatus(false);
-        });
-}
-
-/* ---------- BEE COUNT ---------- */
-
-function subscribeBeeCount() {
-    db.ref("hive_bee_count").on("value", snapshot => {
-        if (!snapshot.exists()) return;
-
-        const data = snapshot.val();
-
-        // CURRENT ESP32-S3 field names:
-        // count_in / count_out / net
-        const countIn =
-            numberOrNull(data.count_in ?? data.in ?? 0) ?? 0;
-
-        const countOut =
-            numberOrNull(data.count_out ?? data.out ?? 0) ?? 0;
-
-        const storedNet = numberOrNull(data.net);
-        const net = storedNet === null
-            ? countIn - countOut
-            : storedNet;
-
-        const set = (id, value) => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = value;
-        };
-
-        set("inValue", countIn);
-        set("outValue", countOut);
-        set("netValue", net);
-    }, console.error);
-}
-
-function initBeeReset() {
-    document.getElementById("resetCountBtn")
-        ?.addEventListener("click", async () => {
-            if (!confirm("Reset bee IN, OUT and NET count to zero?")) {
-                return;
+            
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
             }
+            
+            const database = firebase.database();
 
-            try {
-                /*
-                  ESP32 checks this exact Firebase path:
-                  hive_control/reset_count
-                */
-                await db.ref("hive_control/reset_count").set(true);
-            } catch (error) {
-                console.error("Reset error:", error);
-                alert("Unable to send reset command.");
-            }
-        });
-}
+            // Status and Connectivity
+            database.ref('.info/connected').on('value', function(snap) {
+                isConnected = snap.val() === true;
+                checkSensorStatus();
+            });
 
-/* ---------- DEVICE / MIC STATUS ---------- */
-
-function subscribeStatus() {
-    db.ref("hive_status").on("value", snapshot => {
-        if (!snapshot.exists()) return;
-
-        const data = snapshot.val();
-
-        const lastSeen = document.getElementById("lastSeen");
-
-        if (lastSeen && validTimestamp(data.last_seen)) {
-            lastSeen.textContent =
-                "Last Seen: " + formatDateTime(data.last_seen);
-        }
-
-        const enabled =
-            data.mic_enabled === true ||
-            data.mic_enabled === "true";
-
-        const recording =
-            data.recording === true ||
-            data.recording === "true";
-
-        const micIcon = document.getElementById("micToggle");
-        const micText = document.getElementById("micStatusText");
-
-        if (micIcon) {
-            micIcon.textContent = enabled ? "mic" : "mic_off";
-        }
-
-        if (micText) {
-            micText.textContent =
-                recording
-                    ? "Mic Recording"
-                    : enabled
-                        ? "Mic Enabled"
-                        : "Mic Offline";
-        }
-    }, console.error);
-}
-
-/* ---------- CONTROLS ---------- */
-
-function subscribeControls() {
-    db.ref("hive_control/ir_window_ms").on("value", snapshot => {
-        const input = document.getElementById("sensorTiming");
-
-        if (input && snapshot.exists()) {
-            input.value = snapshot.val();
-        }
-    });
-
-    document.getElementById("saveSettingsBtn")
-        ?.addEventListener("click", async () => {
-            const input = document.getElementById("sensorTiming");
-            const value = Number(input?.value);
-
-            if (!Number.isFinite(value) || value <= 0) {
-                alert("Enter a valid positive timing value.");
-                return;
-            }
-
-            try {
-                await db.ref("hive_control/ir_window_ms").set(value);
-                alert("Sensor timing saved.");
-            } catch (error) {
-                console.error(error);
-                alert("Unable to save sensor timing.");
-            }
-        });
-
-    document.getElementById("resetSettingsBtn")
-        ?.addEventListener("click", async () => {
-            try {
-                const snapshot =
-                    await db.ref("hive_control/ir_window_ms").once("value");
-
-                const input = document.getElementById("sensorTiming");
-
-                if (input) {
-                    input.value = snapshot.exists()
-                        ? snapshot.val()
-                        : 1500;
+            database.ref('hive_status/last_seen').on('value', function(snap) {
+                if (snap.exists()) {
+                    const ts = snap.val();
+                    lastSeenDate = parseFirebaseTimestampToDate(ts);
+                    document.getElementById('lastSeen').textContent = `Last Seen: ${formatFirebaseTimestamp(ts)}`;
+                    checkSensorStatus();
                 }
-            } catch (error) {
-                console.error(error);
-            }
-        });
-}
-
-/* ---------- AUDIO ---------- */
-
-function makeAudioCard(item) {
-    const clip = item.clip || {};
-
-    if (!clip.url || !validTimestamp(clip.timestamp)) {
-        return "";
-    }
-
-    const filename =
-        clip.filename || `audio_${item.key}.wav`;
-
-    return `
-        <div class="bg-surface-container-low p-4 rounded-lg
-                    border border-outline-variant/30">
-            <div class="flex flex-col xl:flex-row xl:items-center
-                        xl:justify-between gap-4">
-
-                <div class="flex items-center gap-3 min-w-0">
-                    <span class="material-symbols-outlined
-                                 text-primary p-2 bg-primary/10 rounded-full">
-                        audio_file
-                    </span>
-
-                    <div class="min-w-0">
-                        <div class="font-label-sm text-on-surface font-semibold">
-                            ${esc(formatDateTime(clip.timestamp))}
-                        </div>
-
-                        <div class="text-xs text-on-surface-variant truncate">
-                            ${esc(filename)}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2">
-                    <audio
-                        controls
-                        preload="none"
-                        class="h-9 w-[320px] max-w-full"
-                        src="${esc(clip.url)}">
-                    </audio>
-
-                    <a
-                        href="${esc(clip.url)}"
-                        download="${esc(filename)}"
-                        target="_blank"
-                        rel="noopener"
-                        class="bg-primary text-on-primary px-4 py-2
-                               rounded font-label-sm flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[18px]">
-                            download
-                        </span>
-                        Download WAV
-                    </a>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-function renderAudio(items) {
-    const container = document.getElementById("clipsContainer");
-    if (!container) return;
-
-    const valid = items.filter(item =>
-        item.clip?.url &&
-        validTimestamp(item.clip.timestamp)
-    );
-
-    if (!valid.length) {
-        container.innerHTML = `
-            <div class="text-on-surface-variant italic p-6 text-center">
-                No audio recordings found.
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = valid.map(makeAudioCard).join("");
-}
-
-/*
-  The ESP32 writes audio metadata into:
-  hive_audio/YYYYMMDD_HHMMSS
-*/
-async function readAllAudio() {
-    const snapshot =
-        await db.ref("hive_audio").orderByChild("timestamp").once("value");
-
-    if (!snapshot.exists()) return [];
-
-    return Object.entries(snapshot.val())
-        .map(([key, clip]) => ({ key, clip }))
-        .filter(item =>
-            item.clip?.url &&
-            validTimestamp(item.clip.timestamp)
-        )
-        .sort((a, b) =>
-            String(b.clip.timestamp)
-                .localeCompare(String(a.clip.timestamp))
-        );
-}
-
-async function loadRecentAudio() {
-    const container = document.getElementById("clipsContainer");
-    if (!container) return;
-
-    container.innerHTML = `
-        <div class="text-on-surface-variant italic p-6 text-center">
-            Loading latest 5 recordings...
-        </div>
-    `;
-
-    try {
-        /*
-          Dashboard only displays the most recent 5.
-          Old recordings remain in Firebase and can be searched.
-        */
-        const snapshot =
-            await db.ref("hive_audio")
-                .orderByChild("timestamp")
-                .limitToLast(5)
-                .once("value");
-
-        if (!snapshot.exists()) {
-            currentAudioMatches = [];
-            renderAudio([]);
-            return;
-        }
-
-        currentAudioMatches = Object.entries(snapshot.val())
-            .map(([key, clip]) => ({ key, clip }))
-            .filter(item =>
-                item.clip?.url &&
-                validTimestamp(item.clip.timestamp)
-            )
-            .sort((a, b) =>
-                String(b.clip.timestamp)
-                    .localeCompare(String(a.clip.timestamp))
-            );
-
-        renderAudio(currentAudioMatches);
-    } catch (error) {
-        console.error("Audio load error:", error);
-
-        container.innerHTML = `
-            <div class="text-error p-6 text-center">
-                Unable to load audio recordings.
-                Check Firebase Storage URL and Storage rules.
-            </div>
-        `;
-    }
-}
-
-async function loadAudioCount() {
-    try {
-        const snapshot =
-            await db.ref("hive_audio").once("value");
-
-        const count =
-            snapshot.exists() ? snapshot.numChildren() : 0;
-
-        const el = document.getElementById("dashboardAudioCount");
-
-        if (el) {
-            el.textContent =
-                count.toLocaleString("en-IN");
-        }
-    } catch (error) {
-        console.error("Audio count error:", error);
-    }
-}
-
-/* ---------- AUDIO SEARCH ---------- */
-
-async function searchAudio() {
-    const date = document.getElementById("searchDate")?.value || "";
-    const time = document.getElementById("searchTime")?.value || "";
-
-    const container = document.getElementById("clipsContainer");
-    const downloadButton =
-        document.getElementById("downloadMatchesBtn");
-
-    if (!date && !time) {
-        downloadButton?.classList.add("hidden");
-        loadRecentAudio();
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="text-on-surface-variant italic p-6 text-center">
-            Searching all Firebase recordings...
-        </div>
-    `;
-
-    try {
-        const all = await readAllAudio();
-
-        currentAudioMatches = all.filter(item => {
-            const timestamp = item.clip.timestamp;
-
-            const itemDate = timestamp.substring(0, 10);
-            const itemTime = timestamp.substring(11, 16);
-
-            const dateMatches =
-                !date || itemDate === date;
-
-            const timeMatches =
-                !time || itemTime === time;
-
-            return dateMatches && timeMatches;
-        });
-
-        renderAudio(currentAudioMatches);
-
-        if (downloadButton) {
-            if (currentAudioMatches.length) {
-                downloadButton.classList.remove("hidden");
-                downloadButton.classList.add("flex");
-
-                downloadButton.innerHTML = `
-                    <span class="material-symbols-outlined text-[18px]">
-                        download
-                    </span>
-                    Download ${currentAudioMatches.length}
-                    Match${currentAudioMatches.length === 1 ? "" : "es"}
-                `;
-            } else {
-                downloadButton.classList.add("hidden");
-                downloadButton.classList.remove("flex");
-            }
-        }
-    } catch (error) {
-        console.error("Audio search error:", error);
-
-        container.innerHTML = `
-            <div class="text-error p-6 text-center">
-                Audio search failed.
-            </div>
-        `;
-    }
-}
-
-function clearAudioSearch() {
-    const date = document.getElementById("searchDate");
-    const time = document.getElementById("searchTime");
-
-    if (date) date.value = "";
-    if (time) time.value = "";
-
-    currentAudioMatches = [];
-
-    const button =
-        document.getElementById("downloadMatchesBtn");
-
-    button?.classList.add("hidden");
-    button?.classList.remove("flex");
-
-    loadRecentAudio();
-}
-
-function downloadMatches() {
-    if (!currentAudioMatches.length) return;
-
-    currentAudioMatches.forEach((item, index) => {
-        const url = item.clip?.url;
-        if (!url) return;
-
-        const filename =
-            item.clip.filename ||
-            `audio_${item.key}.wav`;
-
-        setTimeout(() => {
-            const a = document.createElement("a");
-
-            a.href = url;
-            a.download = filename;
-            a.target = "_blank";
-            a.rel = "noopener";
-
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-        }, index * 500);
-    });
-}
-
-/* ---------- ANALYTICS ---------- */
-
-/*
-  Current ESP32 stores outside data in the SAME hive_log record.
-  Therefore analytics reads only hive_log.
-*/
-async function getHistory() {
-    const snapshot =
-        await db.ref("hive_log").once("value");
-
-    if (!snapshot.exists()) return [];
-
-    return Object.values(snapshot.val() || {})
-        .filter(data => validTimestamp(data?.timestamp))
-        .map(data => ({
-            timestamp: data.timestamp,
-            hiveTemp: numberOrNull(data.temp_C),
-            hiveHum: numberOrNull(data.humidity_pct),
-            outsideTemp: numberOrNull(data.temp_outside_C),
-            outsideHum: numberOrNull(data.humidity_outside_pct)
-        }))
-        .sort((a, b) =>
-            String(a.timestamp)
-                .localeCompare(String(b.timestamp))
-        );
-}
-
-function filterHistory(rows) {
-    const startValue =
-        document.getElementById("exportStart")?.value || "";
-
-    const endValue =
-        document.getElementById("exportEnd")?.value || "";
-
-    let result = rows;
-
-    if (startValue) {
-        const start = new Date(startValue);
-
-        result = result.filter(row => {
-            const dt = toDate(row.timestamp);
-            return dt && dt >= start;
-        });
-    }
-
-    if (endValue) {
-        const end = new Date(endValue);
-
-        result = result.filter(row => {
-            const dt = toDate(row.timestamp);
-            return dt && dt <= end;
-        });
-    }
-
-    return result;
-}
-
-function renderAnalyticsTable(rows) {
-    const body =
-        document.getElementById("analyticsTableBody");
-
-    if (!body) return;
-
-    if (!rows.length) {
-        body.innerHTML = `
-            <tr>
-                <td colspan="6"
-                    class="py-6 px-4 text-center italic
-                           text-on-surface-variant">
-                    No environmental records found.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    body.innerHTML = rows.slice().reverse().map(row => `
-        <tr class="border-b border-outline-variant/30
-                   hover:bg-primary/5">
-
-            <td class="py-3 px-4">
-                ${esc(formatDate(row.timestamp))}
-            </td>
-
-            <td class="py-3 px-4">
-                ${esc(formatTime(row.timestamp))}
-            </td>
-
-            <td class="py-3 px-4">
-                ${row.hiveTemp == null
-                    ? "--"
-                    : row.hiveTemp.toFixed(1)}
-            </td>
-
-            <td class="py-3 px-4">
-                ${row.hiveHum == null
-                    ? "--"
-                    : row.hiveHum.toFixed(1)}
-            </td>
-
-            <td class="py-3 px-4">
-                ${row.outsideTemp == null
-                    ? "--"
-                    : row.outsideTemp.toFixed(1)}
-            </td>
-
-            <td class="py-3 px-4">
-                ${row.outsideHum == null
-                    ? "--"
-                    : row.outsideHum.toFixed(1)}
-            </td>
-        </tr>
-    `).join("");
-}
-
-function renderChart(rows) {
-    const canvas =
-        document.getElementById("trendChart");
-
-    if (!canvas || !window.Chart) return;
-
-    if (chart) {
-        chart.destroy();
-        chart = null;
-    }
-
-    const graphRows =
-        rows.length > 500
-            ? rows.slice(-500)
-            : rows;
-
-    chart = new Chart(canvas, {
-        type: "line",
-
-        data: {
-            labels:
-                graphRows.map(row =>
-                    formatTime(row.timestamp)
-                ),
-
-            datasets: [
-                {
-                    label: "Hive Temperature (°C)",
-                    data:
-                        graphRows.map(row => row.hiveTemp),
-                    borderColor: "#9c4400",
-                    tension: 0.25,
-                    spanGaps: true
-                },
-
-                {
-                    label: "Hive Humidity (%)",
-                    data:
-                        graphRows.map(row => row.hiveHum),
-                    borderColor: "#feb700",
-                    tension: 0.25,
-                    spanGaps: true
-                },
-
-                {
-                    label: "Outside Temperature (°C)",
-                    data:
-                        graphRows.map(row => row.outsideTemp),
-                    borderColor: "#e9762b",
-                    borderDash: [6, 4],
-                    tension: 0.25,
-                    spanGaps: true
-                },
-
-                {
-                    label: "Outside Humidity (%)",
-                    data:
-                        graphRows.map(row => row.outsideHum),
-                    borderColor: "#7c5800",
-                    borderDash: [6, 4],
-                    tension: 0.25,
-                    spanGaps: true
-                }
-            ]
-        },
-
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-
-            interaction: {
-                mode: "index",
-                intersect: false
-            },
-
-            scales: {
-                x: {
-                    ticks: {
-                        maxTicksLimit: 12
+            });
+
+            // Hive Log
+            database.ref('hive_log').orderByChild('timestamp').limitToLast(100).on('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    let dataArray = [];
+                    snapshot.forEach(child => {
+                        let val = child.val();
+                        if(val.timestamp) {
+                            dataArray.push(val);
+                        }
+                    });
+                    
+                    if(dataArray.length > 0) {
+                        dataArray.sort((a, b) => {
+                            const da = parseFirebaseTimestampToDate(a.timestamp);
+                            const db = parseFirebaseTimestampToDate(b.timestamp);
+                            return (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
+                        });
+
+                        let latest = dataArray[dataArray.length - 1];
+                        
+                        document.getElementById('tempValue').textContent = latest.temp_C !== undefined ? parseFloat(latest.temp_C).toFixed(1) : '--';
+                        document.getElementById('humValue').textContent = latest.humidity_pct !== undefined ? parseFloat(latest.humidity_pct).toFixed(0) : '--';
+                        
+                        let latestOut = latest;
+                        if (latest.temp_outside_C === undefined || latest.humidity_outside_pct === undefined) {
+                            for (let i = dataArray.length - 2; i >= 0; i--) {
+                                if (dataArray[i].temp_outside_C !== undefined && dataArray[i].humidity_outside_pct !== undefined) {
+                                    latestOut = dataArray[i];
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        document.getElementById('outTempValue').textContent = latestOut.temp_outside_C !== undefined ? parseFloat(latestOut.temp_outside_C).toFixed(1) : '--';
+                        document.getElementById('outHumValue').textContent = latestOut.humidity_outside_pct !== undefined ? parseFloat(latestOut.humidity_outside_pct).toFixed(0) : '--';
+                        
+                        let formattedTime = formatFirebaseTimestamp(latest.timestamp);
+                        let formattedOutTime = formatFirebaseTimestamp(latestOut.timestamp);
+                        
+                        document.getElementById('tempTime').textContent = formattedTime;
+                        document.getElementById('humTime').textContent = formattedTime;
+                        document.getElementById('outTempTime').textContent = formattedOutTime;
+                        document.getElementById('outHumTime').textContent = formattedOutTime;
+                        
+                        updateAnalyticsTable(dataArray);
+                        updateChart(dataArray);
                     }
                 }
+            });
+            
+            // Bee Count
+            database.ref('hive_bee_count').on('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    let data = snapshot.val();
+                    let inCount = data.count_in || data.in || 0;
+                    let outCount = data.count_out || data.out || 0;
+                    let net = data.net !== undefined ? data.net : (inCount - outCount);
+                    
+                    document.getElementById('netValue').textContent = net >= 0 ? net : 0;
+                    document.getElementById('inValue').textContent = inCount;
+                    document.getElementById('outValue').textContent = outCount;
+                }
+            });
+            
+            document.getElementById('resetCountBtn').addEventListener('click', () => {
+                database.ref('hive_bee_count').set({in: 0, out: 0, count_in: 0, count_out: 0, net: 0});
+            });
+
+            // Audio
+            database.ref('hive_audio').on('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    const clipsObj = snapshot.val();
+                    const clipKeys = Object.keys(clipsObj).sort((a, b) => {
+                        const dateA = parseFirebaseTimestampToDate(clipsObj[a].timestamp || a) || new Date(0);
+                        const dateB = parseFirebaseTimestampToDate(clipsObj[b].timestamp || b) || new Date(0);
+                        return dateB - dateA;
+                    });
+                    
+                    document.getElementById('dashboardAudioCount').textContent = clipKeys.length;
+                    
+                    let clipsHtml = '';
+                    clipKeys.slice(0, 50).forEach(key => {
+                        const clip = clipsObj[key];
+                        const audioUrl = clip.url || clip.record_url || '#';
+                        clipsHtml += `
+                            <div class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-primary/30 transition-colors">
+                                <div class="flex items-center gap-4">
+                                    <input type="checkbox" class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" value="${audioUrl}">
+                                    <span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full" data-icon="audio_file">audio_file</span>
+                                    <div>
+                                        <div class="font-label-sm text-on-surface font-semibold">${formatFirebaseTimestamp(clip.timestamp) || key}</div>
+                                        <div class="text-xs text-on-surface-variant font-body-md">${clip.filename || 'Unknown File'}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 w-full md:w-auto">
+                                    <audio controls class="h-8 max-w-[200px]" src="${audioUrl}" onerror="this.parentElement.innerHTML='<span class=\\'text-error text-xs\\'>Audio Unavailable</span>'"></audio>
+                                    <a href="${audioUrl}" target="_blank" download class="text-primary hover:bg-primary/10 p-2 rounded transition-colors" title="Download WAV">
+                                        <span class="material-symbols-outlined text-[20px]" data-icon="download">download</span>
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('clipsContainer').innerHTML = clipsHtml;
+                } else {
+                    document.getElementById('dashboardAudioCount').textContent = '0';
+                    document.getElementById('clipsContainer').innerHTML = '<div class="text-on-surface-variant font-body-md italic p-4 text-center">No recordings found</div>';
+                }
+            });
+
+            // Settings
+            database.ref('settings/ir_window_ms').on('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    document.getElementById('sensorTiming').value = snapshot.val();
+                }
+            });
+            
+            document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+                const val = document.getElementById('sensorTiming').value;
+                if(val) database.ref('settings/ir_window_ms').set(parseInt(val));
+            });
+
+            // Mic Toggle & Status
+            let micEnabled = false;
+            let micRecording = false;
+
+            database.ref('hive_control/mic_enabled').on('value', (snap) => {
+                micEnabled = !!snap.val();
+                updateMicUI();
+            });
+
+            database.ref('hive_status/recording').on('value', (snap) => {
+                micRecording = !!snap.val();
+                updateMicUI();
+            });
+
+            document.getElementById('micToggle').addEventListener('click', () => {
+                micEnabled = !micEnabled;
+                database.ref('hive_control/mic_enabled').set(micEnabled);
+            });
+
+            function updateMicUI() {
+                const icon = document.getElementById('micToggle');
+                const text = document.getElementById('micStatusText');
+                if (micRecording) {
+                    icon.textContent = 'mic';
+                    icon.classList.add('text-error');
+                    text.textContent = 'Recording...';
+                } else if(micEnabled) {
+                    icon.textContent = 'mic';
+                    icon.classList.remove('text-error');
+                    text.textContent = 'Mic Online';
+                } else {
+                    icon.textContent = 'mic_off';
+                    icon.classList.remove('text-error');
+                    text.textContent = 'Mic Offline';
+                }
+            }
+
+            initChart();
+        }
+        
+        function updateStatus(state) {
+            const icon = document.getElementById('deviceStatusIcon');
+            const text = document.getElementById('deviceStatusText');
+            
+            if (state === 'online') {
+                icon.className = 'w-2 h-2 rounded-full bg-green-500';
+                text.textContent = 'Sensor Online';
+            } else if (state === 'offline') {
+                icon.className = 'w-2 h-2 rounded-full bg-error';
+                text.textContent = 'Sensor Offline';
+            } else if (state === 'error') {
+                icon.className = 'w-2 h-2 rounded-full bg-error';
+                text.textContent = 'Firebase Connection Error';
             }
         }
-    });
-}
+        
+        function updateAnalyticsTable(dataArray) {
+            const tbody = document.getElementById('analyticsTableBody');
+            let html = '';
+            
+            [...dataArray].reverse().forEach(row => {
+                const parsed = parseFirebaseTimestampToDate(row.timestamp);
+                const dateText = parsed ? new Intl.DateTimeFormat('en-IN', {
+                    timeZone: 'Asia/Kolkata',
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                }).format(parsed) : '--';
 
-async function loadAnalytics() {
-    const body =
-        document.getElementById("analyticsTableBody");
+                const timeText = parsed ? new Intl.DateTimeFormat('en-IN', {
+                    timeZone: 'Asia/Kolkata',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                }).format(parsed) : '--';
 
-    if (body) {
-        body.innerHTML = `
-            <tr>
-                <td colspan="6"
-                    class="py-6 px-4 text-center italic
-                           text-on-surface-variant">
-                    Loading Firebase data...
-                </td>
-            </tr>
-        `;
-    }
-
-    try {
-        const rows =
-            filterHistory(await getHistory());
-
-        renderAnalyticsTable(rows);
-        renderChart(rows);
-    } catch (error) {
-        console.error("Analytics error:", error);
-
-        if (body) {
-            body.innerHTML = `
-                <tr>
-                    <td colspan="6"
-                        class="py-6 px-4 text-center text-error">
-                        Unable to load Firebase environmental data.
-                    </td>
-                </tr>
-            `;
-        }
-    }
-}
-
-/* ---------- EXCEL EXPORT ---------- */
-
-async function exportEnvironmentExcel() {
-    try {
-        if (!window.XLSX) {
-            alert("Excel library is not loaded.");
-            return;
+                html += `
+                    <tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">
+                        <td class="py-3 px-4">${dateText}</td>
+                        <td class="py-3 px-4">${timeText}</td>
+                        <td class="py-3 px-4">${row.temp_C !== undefined ? parseFloat(row.temp_C).toFixed(1) : '--'}</td>
+                        <td class="py-3 px-4">${row.humidity_pct !== undefined ? parseFloat(row.humidity_pct).toFixed(1) : '--'}</td>
+                        <td class="py-3 px-4">${row.temp_outside_C !== undefined ? parseFloat(row.temp_outside_C).toFixed(1) : '--'}</td>
+                        <td class="py-3 px-4">${row.humidity_outside_pct !== undefined ? parseFloat(row.humidity_outside_pct).toFixed(1) : '--'}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html || '<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="6">No data available</td></tr>';
         }
 
-        const rows =
-            filterHistory(await getHistory());
-
-        if (!rows.length) {
-            alert("No data found for the selected range.");
-            return;
+        function updateChart(dataArray) {
+            if(!window.trendChartInstance) return;
+            
+            const labels = [];
+            const tIn = [];
+            const hIn = [];
+            const tOut = [];
+            const hOut = [];
+            
+            dataArray.forEach(row => {
+                labels.push(formatFirebaseTimestamp(row.timestamp));
+                tIn.push(row.temp_C);
+                hIn.push(row.humidity_pct);
+                tOut.push(row.temp_outside_C);
+                hOut.push(row.humidity_outside_pct);
+            });
+            
+            window.trendChartInstance.data.labels = labels;
+            window.trendChartInstance.data.datasets[0].data = tIn;
+            window.trendChartInstance.data.datasets[1].data = hIn;
+            window.trendChartInstance.data.datasets[2].data = tOut;
+            window.trendChartInstance.data.datasets[3].data = hOut;
+            window.trendChartInstance.update();
         }
 
-        const excelRows = rows.map(row => ({
-            Date: formatDate(row.timestamp),
-            Time: formatTime(row.timestamp),
-            "Hive Temperature (°C)":
-                row.hiveTemp ?? "",
-            "Hive Humidity (%)":
-                row.hiveHum ?? "",
-            "Outside Temperature (°C)":
-                row.outsideTemp ?? "",
-            "Outside Humidity (%)":
-                row.outsideHum ?? ""
-        }));
-
-        const ws =
-            XLSX.utils.json_to_sheet(excelRows);
-
-        ws["!cols"] = [
-            { wch: 14 },
-            { wch: 14 },
-            { wch: 24 },
-            { wch: 20 },
-            { wch: 27 },
-            { wch: 25 }
-        ];
-
-        const wb =
-            XLSX.utils.book_new();
-
-        XLSX.utils.book_append_sheet(
-            wb,
-            ws,
-            "Hive Environment"
-        );
-
-        const date =
-            new Date().toISOString().slice(0, 10);
-
-        XLSX.writeFile(
-            wb,
-            `Smart_Honey_Bee_Environment_${date}.xlsx`
-        );
-    } catch (error) {
-        console.error("Excel export error:", error);
-        alert("Excel export failed.");
-    }
-}
-
-/* ---------- BEE ANIMATION ---------- */
-
-function createBee() {
-    const bee =
-        document.createElement("div");
-
-    bee.className = "bee";
-    document.body.appendChild(bee);
-
-    let x = Math.random() * window.innerWidth;
-    let y = Math.random() * window.innerHeight;
-    let angle = Math.random() * Math.PI * 2;
-
-    const speed =
-        0.5 + Math.random() * 0.8;
-
-    function move() {
-        angle +=
-            (Math.random() - 0.5) * 0.12;
-
-        x += Math.cos(angle) * speed;
-        y += Math.sin(angle) * speed;
-
-        if (x < -30) x = window.innerWidth + 30;
-        if (x > window.innerWidth + 30) x = -30;
-
-        if (y < -30) y = window.innerHeight + 30;
-        if (y > window.innerHeight + 30) y = -30;
-
-        bee.style.transform =
-            `translate(${x}px,${y}px)
-             rotate(${angle * 180 / Math.PI + 90}deg)`;
-
-        requestAnimationFrame(move);
-    }
-
-    move();
-}
-
-/* ---------- START ---------- */
-
-document.addEventListener("DOMContentLoaded", () => {
-    for (let i = 0; i < 6; i++) {
-        createBee();
-    }
-
-    document.getElementById("searchBtn")
-        ?.addEventListener("click", searchAudio);
-
-    document.getElementById("clearSearchBtn")
-        ?.addEventListener("click", clearAudioSearch);
-
-    document.getElementById("downloadMatchesBtn")
-        ?.addEventListener("click", downloadMatches);
-
-    document.getElementById("exportEnvBtn")
-        ?.addEventListener("click", exportEnvironmentExcel);
-
-    initBeeReset();
-    initFirebase();
-});
-</script>
+        function initChart() {
+            const ctx = document.getElementById('trendChart');
+            if(ctx) {
+                window.trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Hive Temp (°C)',
+                            data: [],
+                            borderColor: '#9c4400',
+                            backgroundColor: 'rgba(156, 68, 0, 0.1)',
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            label: 'Hive Humidity (%)',
+                            data: [],
+                            borderColor: '#feb700',
+                            backgroundColor: 'rgba(254, 183, 0, 0.1)',
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            label: 'Outside Temp (°C)',
+                            data: [],
+                            borderColor: '#e9762b',
+                            backgroundColor: 'rgba(233, 118, 43, 0.1)',
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            label: 'Outside Humidity (%)',
+                            data: [],
+                            borderColor: '#7c5800',
+                            backgroundColor: 'rgba(124, 88, 0, 0.1)',
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    font: {
+                                        family: "'JetBrains Mono', monospace",
+                                        size: 12
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(156, 68, 0, 0.05)' }
+                            },
+                            y: {
+                                grid: { color: 'rgba(156, 68, 0, 0.05)' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
 </body></html>
