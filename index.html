@@ -740,11 +740,46 @@ async function refreshSensors(){
 
   if(!db)return;
   environmentalRows=await loadSensors();if(!environmentalRows.length)return;
-  const r=environmentalRows.at(-1),t=r.dateTime.toLocaleTimeString("en-IN");
-  const set=(id,v)=>{const e=document.getElementById(id);if(e&&v!==null)e.textContent=Number(v).toFixed(1)};
-  set("tempValue",r.hiveTemp);set("humValue",r.hiveHum);set("outTempValue",r.outTemp);set("outHumValue",r.outHum);
-  ["tempTime","humTime","outTempTime","outHumTime"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t});
-  const l=document.getElementById("lastSeen");if(l)l.textContent="Last Seen: "+r.dateTime.toLocaleString("en-IN");
+
+  // Hive and outside sensors log independently, so do NOT require identical timestamps.
+  const hiveRows = environmentalRows.filter(r => r.hiveTemp !== null || r.hiveHum !== null);
+  const outsideRows = environmentalRows.filter(r => r.outTemp !== null || r.outHum !== null);
+
+  const hive = hiveRows.at(-1);
+  const outside = outsideRows.at(-1);
+
+  const set=(id,v)=>{
+    const e=document.getElementById(id);
+    if(!e)return;
+    e.textContent=(v!==null && v!==undefined && !Number.isNaN(Number(v)))
+      ? Number(v).toFixed(1) : "--";
+  };
+
+  const setTime=(id,row)=>{
+    const e=document.getElementById(id);
+    if(!e)return;
+    e.textContent=(row && row.dateTime)
+      ? row.dateTime.toLocaleString("en-IN") : "--";
+  };
+
+  if(hive){
+    set("tempValue",hive.hiveTemp);
+    set("humValue",hive.hiveHum);
+    setTime("tempTime",hive);
+    setTime("humTime",hive);
+  }
+
+  if(outside){
+    set("outTempValue",outside.outTemp);
+    set("outHumValue",outside.outHum);
+    setTime("outTempTime",outside);
+    setTime("outHumTime",outside);
+  }
+
+  const newest=[hive,outside].filter(Boolean).sort((a,b)=>a.timestamp-b.timestamp).at(-1);
+  const l=document.getElementById("lastSeen");
+  if(l && newest)l.textContent="Last Seen: "+newest.dateTime.toLocaleString("en-IN");
+
   renderChart(environmentalRows);
   } catch (e) {
     console.error("[Honey Bee] refreshSensors failed:", e);
