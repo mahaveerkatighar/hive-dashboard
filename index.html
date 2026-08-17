@@ -151,7 +151,7 @@
       
       body {
         background-color: #fdf9f0;
-        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBbMy0lQZVHFOyFPyy67f3MPyZlgi-PnYBvowcZJlmTwVLQqEjpAoy9Onhv0kxacc2H0CeG7wYNeIAw0N9JDXtsbJ4H32_ORea2x_iRKn66PlydN9Q4XITHldJkHlG3Hrtizh4rFLcV_s89R5OXUJj62tdVz_FBJ2gvJQwRtce9h_MJffi9zraW0EbuC7zhka9pam4nEeflhV4dkWUIpC2CZ5xXqZ5zdQc7lZQHne1xhC8_i18uCFSXL4Ison6E3zyfTJ0');
+        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAk7XwO23HCUl9E320SWnigQoWnWPMqevXTXyafG5GIG3cQpSJlhILr0DBtJdGzX8HOM5s9x3eiJOBJiPSW80_G7K5HKVw4pkaPgkZyyT6qKZaACL3zkZun4972PeRhaCLEhuSgdaHJZhojxoO_77RhAhfSjK6x80zLOYS4ZY0eFTz86lUvZOQnbtIVzqN6HbEcyquTO4OMTUtnFkVTQ5RuoA0YdklUEKBW_jaFf6jlyz35KX3GSkBgdygJ9zBgirw3ONA');
         background-size: 192px;
         background-repeat: repeat;
         background-attachment: fixed;
@@ -220,21 +220,31 @@
         0% { transform: scaleY(1) rotate(-30deg); }
         100% { transform: scaleY(0.2) rotate(-30deg); }
       }
+      
+      .page-section {
+          display: none;
+      }
+      .page-section.active {
+          display: block;
+      }
 
     </style>
+<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body class="text-on-background font-body-md antialiased min-h-screen relative pb-24 md:pb-0 md:pt-20">
 <!-- TopNavBar (Desktop) -->
 <nav class="hidden md:flex fixed top-0 left-0 w-full z-50 justify-between items-center px-container-padding h-20 bg-surface/70 dark:bg-surface/70 backdrop-blur-xl border-b border-primary/10 dark:border-outline-variant/20 shadow-sm transition-colors hover:bg-primary-container/10">
-<div class="font-headline-lg text-headline-lg font-bold tracking-tight text-primary dark:text-primary-fixed-dim">
+<div class="font-headline-lg text-headline-lg font-bold tracking-tight text-primary dark:text-primary-fixed-dim cursor-pointer" onclick="switchPage('dashboard')">
             SMART HONEY BEE HIVE
         </div>
-<div class="flex items-center gap-gutter">
-<!-- Active Tab: Dashboard -->
-<a class="text-primary font-semibold border-b-2 border-primary h-20 flex items-center px-2 font-label-sm text-label-sm" href="#">Dashboard</a>
-<a class="text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors" href="#">Hive Analytics</a>
-<a class="text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors" href="#">Acoustic Data</a>
-<a class="text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors" href="#">Settings</a>
+<div class="flex items-center gap-gutter" id="navLinks">
+<a class="nav-link text-primary font-semibold border-b-2 border-primary h-20 flex items-center px-2 font-label-sm text-label-sm cursor-pointer" data-target="dashboard" onclick="switchPage('dashboard')">Dashboard</a>
+<a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="analytics" onclick="switchPage('analytics')">Hive Analytics</a>
+<a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="acoustic" onclick="switchPage('acoustic')">Acoustic Data</a>
+<a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="settings" onclick="switchPage('settings')">Settings</a>
 <div class="flex items-center gap-unit ml-4">
 <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:bg-primary-container/10 transition-colors p-2 rounded-full cursor-pointer" data-icon="sensors">sensors</span>
 <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:bg-primary-container/10 transition-colors p-2 rounded-full cursor-pointer" data-icon="mic">mic</span>
@@ -243,7 +253,7 @@
 </div>
 </nav>
 <main class="max-w-[1440px] mx-auto px-container-padding py-gutter">
-<!-- Header Section -->
+<!-- Header Section (Always Visible) -->
 <header class="mb-8 md:mt-8 pt-8 md:pt-0">
 <h1 class="font-headline-lg-mobile md:font-display-lg text-headline-lg-mobile md:text-display-lg text-primary mb-2">SMART HONEY BEE HIVE</h1>
 <p class="font-body-md text-on-surface-variant mb-6 max-w-2xl">Real-Time Hive Health Monitoring and Prediction System</p>
@@ -262,6 +272,8 @@
 </div>
 </div>
 </header>
+<!-- PAGE: DASHBOARD -->
+<div class="page-section active" id="page-dashboard">
 <!-- Hero Stats (Bento Grid) -->
 <section class="grid grid-cols-1 md:grid-cols-12 gap-card-gap mb-gutter">
 <!-- Hive Temperature -->
@@ -362,25 +374,28 @@
 <span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-primary/5 select-none" data-icon="hive">hive</span>
 </div>
 <!-- Audio Clips -->
-<div class="glass-card rounded-xl p-[24px] md:col-span-4 flex flex-col justify-between h-48 bg-primary-container text-on-primary-container border-none shadow-md">
+<div class="glass-card rounded-xl p-[24px] md:col-span-4 flex flex-col justify-between h-48 bg-primary-container text-on-primary-container border-none shadow-md cursor-pointer hover:bg-primary-container/90 transition-colors" onclick="switchPage('acoustic')">
 <div class="flex justify-between items-start">
-<span class="font-label-sm text-label-sm text-on-primary-container/80 uppercase tracking-wider">Audio Clips</span>
+<span class="font-label-sm text-label-sm text-on-primary-container/80 uppercase tracking-wider">Latest Audio</span>
 <span class="material-symbols-outlined icon-filled" data-icon="graphic_eq">graphic_eq</span>
 </div>
 <div>
 <div class="flex items-baseline gap-2">
-<span class="font-data-lg text-data-lg" id="audioClipsCount">--</span>
+<span class="font-data-lg text-data-lg" id="dashboardAudioCount">--</span>
 </div>
 <div class="mt-2 font-label-sm text-label-sm text-on-primary-container/80">
-                        Total Recordings
+                        View Acoustic Data
                     </div>
 </div>
 </div>
 </section>
+</div>
+<!-- PAGE: HIVE ANALYTICS -->
+<div class="page-section" id="page-analytics">
 <!-- Environmental Section -->
 <section class="mb-gutter glass-card rounded-xl p-[24px]">
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Hive Environmental Conditions</h2>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Historical Trend</h2>
 <div class="flex flex-wrap items-center gap-3">
 <div class="flex items-center bg-surface-container-low border border-outline-variant rounded focus-within:border-secondary transition-colors">
 <input class="bg-transparent border-none text-on-surface font-label-sm text-label-sm focus:ring-0 p-2" id="exportStart" type="datetime-local"/>
@@ -395,14 +410,34 @@
                     </button>
 </div>
 </div>
-<div class="w-full h-80 relative">
+<div class="w-full h-80 relative mb-8">
 <canvas id="trendChart"></canvas>
 </div>
+<!-- Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left font-label-sm text-label-sm text-on-surface">
+<thead>
+<tr class="border-b border-outline-variant text-on-surface-variant uppercase tracking-wider">
+<th class="py-3 px-4 font-semibold">Date</th>
+<th class="py-3 px-4 font-semibold">Time</th>
+<th class="py-3 px-4 font-semibold">Hive Temp (°C)</th>
+<th class="py-3 px-4 font-semibold">Hive Hum (%)</th>
+<th class="py-3 px-4 font-semibold">Outside Temp (°C)</th>
+<th class="py-3 px-4 font-semibold">Outside Hum (%)</th>
+</tr>
+</thead>
+<tbody id="analyticsTableBody">
+<!-- Populated by JS -->
+<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="6">Loading historical data...</td></tr>
+</tbody>
+</table>
+</div>
 </section>
-<div class="grid grid-cols-1 md:grid-cols-12 gap-card-gap mb-gutter">
-<!-- Acoustic Section -->
-<section class="glass-card rounded-xl p-[24px] md:col-span-8 flex flex-col">
-<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-6">Hive Acoustic Monitoring</h2>
+</div>
+<!-- PAGE: ACOUSTIC DATA -->
+<div class="page-section" id="page-acoustic">
+<section class="glass-card rounded-xl p-[24px] flex flex-col">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-6">Hive Acoustic Search</h2>
 <!-- Search Bar -->
 <div class="flex flex-wrap gap-3 mb-6 p-4 bg-surface-container-low rounded-lg border border-primary/10 justify-between items-center">
 <div class="flex flex-wrap gap-3">
@@ -422,30 +457,47 @@
     </button>
 </div>
 <!-- Clips Container -->
-<div class="flex flex-col gap-3 overflow-y-auto max-h-[400px] pr-2" id="clipsContainer">
+<div class="flex flex-col gap-3 overflow-y-auto max-h-[600px] pr-2" id="clipsContainer">
 <!-- Populated by JS -->
 <div class="text-on-surface-variant font-body-md italic p-4 text-center">Loading recordings...</div>
 </div>
 </section>
-<!-- Settings / Tuning Section -->
-<section class="glass-card rounded-xl p-[24px] md:col-span-4 flex flex-col">
-<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-6">Bee Sensor Tuning</h2>
-<div class="flex flex-col gap-4">
-<div class="flex flex-col gap-2">
-<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" for="sensorTiming">Sensor Timing Window (ms)</label>
-<input class="bg-surface-container-low border border-outline-variant rounded text-on-surface font-data-lg text-lg focus:ring-1 focus:ring-secondary focus:border-secondary p-3 w-full" id="sensorTiming" placeholder="e.g. 50" type="number"/>
 </div>
-<div class="flex gap-2 mt-2">
-<button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-3 rounded shadow-sm hover:bg-primary/90 transition-colors w-full flex-1" id="saveSettingsBtn">
+<!-- PAGE: SETTINGS -->
+<div class="page-section" id="page-settings">
+<section class="glass-card rounded-xl p-[24px] flex flex-col max-w-2xl">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-6">System Settings</h2>
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<h3 class="font-headline-lg-mobile text-lg text-primary">Bee Sensor Tuning</h3>
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mt-2" for="sensorTiming">Sensor Timing Window (ms)</label>
+<input class="bg-surface-container-low border border-outline-variant rounded text-on-surface font-data-lg text-lg focus:ring-1 focus:ring-secondary focus:border-secondary p-3 w-full" id="sensorTiming" placeholder="e.g. 50" type="number"/>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">
+                        Adjusting this window affects the sensitivity of the IR break-beam sensors used for IN/OUT counting.
+                    </p>
+<div class="flex gap-2 mt-4">
+<button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-6 py-3 rounded shadow-sm hover:bg-primary/90 transition-colors" id="saveSettingsBtn">
                             Save Tuning
                         </button>
-<button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase tracking-wider px-4 py-3 rounded shadow-sm hover:bg-surface-variant transition-colors w-full flex-1" id="resetSettingsBtn">
+<button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase tracking-wider px-6 py-3 rounded shadow-sm hover:bg-surface-variant transition-colors" id="resetSettingsBtn">
                             Reset
                         </button>
 </div>
-<p class="font-label-sm text-label-sm text-on-surface-variant mt-4 opacity-70">
-                        Adjusting this window affects the sensitivity of the IR break-beam sensors used for IN/OUT counting.
-                    </p>
+</div>
+<hr class="border-outline-variant/30"/>
+<div class="flex flex-col gap-2">
+<h3 class="font-headline-lg-mobile text-lg text-primary">Device Details</h3>
+<div class="grid grid-cols-2 gap-4 mt-2 font-label-sm text-label-sm">
+<div>
+<span class="text-on-surface-variant uppercase tracking-wider">Device ID:</span>
+<div class="font-data-lg text-on-surface text-base">HIVE-MON-001</div>
+</div>
+<div>
+<span class="text-on-surface-variant uppercase tracking-wider">Firmware Version:</span>
+<div class="font-data-lg text-on-surface text-base">v1.2.4</div>
+</div>
+</div>
+</div>
 </div>
 </section>
 </div>
@@ -453,7 +505,7 @@
 <!-- Footer -->
 <footer class="fixed bottom-0 left-0 w-full z-40 flex flex-col md:flex-row justify-between items-center px-container-padding py-2 bg-surface-container-lowest/50 dark:bg-surface-dim/20 backdrop-blur-md border-t border-outline-variant/30 text-tertiary dark:text-tertiary-fixed-dim font-label-sm text-label-sm">
 <div class="font-black uppercase text-primary mb-1 md:mb-0">
-            © 2024 Smart Hive Monitoring System
+            © 2026 Smart Hive Monitoring System
         </div>
 <div class="flex gap-4">
 <a class="text-on-tertiary-fixed-variant hover:text-primary transition-colors" href="#">System Health: Optimal</a>
@@ -463,361 +515,779 @@
 </footer>
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<!-- Scripts -->
 <script>
-const firebaseConfig={
-  apiKey:"AIzaSyCwJM0pmtuGZIU2ThHzyasd0c8AL9HTRno",
-  authDomain:"hbdc-saola.firebaseapp.com",
-  databaseURL:"https://hbdc-saola-default-rtdb.firebaseio.com",
-  projectId:"hbdc-saola",
-  storageBucket:"hbdc-saola.firebasestorage.app",
-  messagingSenderId:"736079100825",
-  appId:"1:736079100825:web:624ec1814543271d4cf108",
-  measurementId:"G-X1C7ZF09XP"
+const firebaseConfig = {
+    apiKey: "AIzaSyCwJM0pmtuGZIU2ThHzyasd0c8AL9HTRno",
+    authDomain: "hbdc-saola.firebaseapp.com",
+    databaseURL: "https://hbdc-saola-default-rtdb.firebaseio.com",
+    projectId: "hbdc-saola",
+    storageBucket: "hbdc-saola.firebasestorage.app",
+    messagingSenderId: "736079100825",
+    appId: "1:736079100825:web:624ec1814543271d4cf108",
+    measurementId: "G-X1C7ZF09XP"
 };
 
-let db=null,storage=null,chart=null;
-let allAudioRecords=[],filteredAudioRecords=[],environmentalRows=[];
+let db = null;
+let chart = null;
+let currentAudioMatches = [];
 
-function firebaseReady(){
-  return firebaseConfig.apiKey!=="YOUR_API_KEY" &&
-    firebaseConfig.databaseURL &&
-    !firebaseConfig.databaseURL.includes("YOUR_PROJECT");
-}
-function setDeviceStatus(ok,text){
-  const d=document.getElementById("deviceStatusIcon"),t=document.getElementById("deviceStatusText");
-  if(d){d.classList.remove("bg-secondary","bg-green-500","bg-red-500");d.classList.add(ok?"bg-green-500":"bg-red-500")}
-  if(t)t.textContent=text;
-}
-function initFirebase(){
-  if(!firebaseReady()){setDeviceStatus(false,"Firebase config required");return false}
-  try{
-    if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
-    db=firebase.database();storage=firebase.storage();
-    setDeviceStatus(true,"Firebase connected");return true;
-  }catch(e){console.error(e);setDeviceStatus(false,"Firebase error");return false}
-}
-function pad2(n){return String(n).padStart(2,"0")}
-function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
-function downloadBlob(blob,name){
-  const u=URL.createObjectURL(blob),a=document.createElement("a");
-  a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(u),1500);
-}
-function parseAudioFilename(name){
-  const base=String(name||"").split("/").pop();
-  let m=base.match(/(?:audio[_-])?(\d{8})[_-](\d{6})(?:\.[^.]+)?$/i);
-  if(!m)return null;
-  const y=+m[1].slice(0,4),mo=+m[1].slice(4,6),d=+m[1].slice(6,8);
-  const h=+m[2].slice(0,2),mi=+m[2].slice(2,4),s=+m[2].slice(4,6);
-  if(mo<1||mo>12||d<1||d>31||h>23||mi>59||s>59)return null;
-  return{
-    date:`${y}-${pad2(mo)}-${pad2(d)}`,
-    time:`${pad2(h)}:${pad2(mi)}:${pad2(s)}`,
-    timestamp:new Date(y,mo-1,d,h,mi,s).getTime()
-  };
-}
-function prettyDateTime(date,time){
-  if(!date)return"--";
-  const p=date.split("-");
-  const month=new Date(2000,+p[1]-1,1).toLocaleString("en",{month:"short"});
-  return `${p[2]} ${month} ${p[0]}${time?", "+time:""}`;
-}
-function normalizeAudio(key,value){
-  const o=value&&typeof value==="object"?value:{};
-  const filename=o.filename||o.fileName||o.name||o.file||key||"";
-  let p=parseAudioFilename(filename);
-  if(!p){
-    const raw=o.timestamp||o.createdAt||o.datetime;
-    if(raw){
-      const dt=new Date(raw);
-      if(!isNaN(dt.getTime()))p={
-        date:`${dt.getFullYear()}-${pad2(dt.getMonth()+1)}-${pad2(dt.getDate())}`,
-        time:`${pad2(dt.getHours())}:${pad2(dt.getMinutes())}:${pad2(dt.getSeconds())}`,
-        timestamp:dt.getTime()
-      };
+function initFirebase() {
+    try {
+        if (!window.firebase) throw new Error("Firebase SDK did not load.");
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+
+        setStatus(true);
+        subscribeHive();
+        subscribeOutside();
+        subscribeBeeCount();
+        subscribeDeviceStatus();
+        subscribeSettings();
+        loadAudioCount();
+        loadRecentAudio();
+
+        console.log("Smart Honey Bee Hive connected to Firebase.");
+    } catch (error) {
+        console.error("Firebase initialization error:", error);
+        setStatus(false);
     }
-  }
-  if(!p)return null;
-  return{
-    key,filename:filename||`audio_${p.date.replaceAll("-","")}_${p.time.replaceAll(":","")}.wav`,
-    date:p.date,time:p.time,timestamp:p.timestamp,
-    url:o.url||o.downloadURL||o.audioUrl||o.audioURL||"",
-    path:o.path||o.storagePath||""
-  };
 }
-async function loadAudio(){
-  if(!db)return[];
-  const map=new Map();
-  try{
-    const v=(await db.ref("hive_audio").once("value")).val();
-    if(v && typeof v==="object"){
-      Object.entries(v).forEach(([k,x])=>{
-        const r=normalizeAudio(k,x);
-        if(r)map.set(r.filename+"|"+r.date+"|"+r.time,r);
-      });
-    }
-  }catch(e){console.error("hive_audio read failed",e)}
-  return [...map.values()].sort((a,b)=>b.timestamp-a.timestamp);
+
+function setStatus(connected) {
+    const dot = document.getElementById("deviceStatusIcon");
+    const label = document.getElementById("deviceStatusText");
+    if (!dot || !label) return;
+
+    dot.className = connected
+        ? "w-2 h-2 rounded-full bg-green-500"
+        : "w-2 h-2 rounded-full bg-error";
+
+    label.textContent = connected
+        ? "Firebase connected"
+        : "Firebase connection error";
 }
-async function resolveAudioUrl(r){
-  if(r.url)return r.url;
-  if(r.path && storage){
-    try{return await storage.ref(r.path).getDownloadURL()}catch(e){}
-  }
-  if(storage && r.filename){
-    for(const p of [
-      `HONEYBEEHIVE/${r.filename}`,
-      r.filename,
-      `audio/${r.filename}`,
-      `recordings/${r.filename}`
-    ]){
-      try{return await storage.ref(p).getDownloadURL()}catch(e){}
-    }
-  }
-  return "";
+
+function switchPage(pageId) {
+    document.querySelectorAll(".nav-link").forEach(link => {
+        const active = link.dataset.target === pageId;
+        link.classList.toggle("text-primary", active);
+        link.classList.toggle("font-semibold", active);
+        link.classList.toggle("border-b-2", active);
+        link.classList.toggle("border-primary", active);
+        link.classList.toggle("text-on-surface-variant", !active);
+        link.classList.toggle("font-medium", !active);
+    });
+
+    document.querySelectorAll(".page-section").forEach(section =>
+        section.classList.remove("active")
+    );
+
+    document.getElementById("page-" + pageId)?.classList.add("active");
+
+    if (pageId === "analytics") loadAnalytics();
+    if (pageId === "acoustic") loadRecentAudio();
 }
-function renderAudio(records,showAll=true){
-  const c=document.getElementById("clipsContainer");if(!c)return;
-  const list=showAll?records:records.slice(0,5);
-  if(!list.length){
-    c.innerHTML='<div class="text-on-surface-variant font-body-md italic p-6 text-center">No audio recordings found.</div>';
-    return;
-  }
-  c.innerHTML=list.map((r,i)=>`
-    <article class="glass-card rounded-xl p-4 border border-primary/10">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div>
-          <div class="font-label-sm text-primary font-bold">${escapeHtml(prettyDateTime(r.date,r.time))}</div>
-          <div class="text-on-surface-variant text-sm mt-1">${escapeHtml(r.filename)}</div>
+
+function validTimestamp(value) {
+    if (typeof value !== "string") return false;
+
+    const m = value.match(
+        /^(20\d{2})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/
+    );
+    if (!m) return false;
+
+    const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
+    const h = Number(m[4]), mi = Number(m[5]), s = Number(m[6]);
+
+    // Prevent corrupt/default timestamps such as 2000 and 2106.
+    if (y < 2024 || y > 2099) return false;
+    if (mo < 1 || mo > 12 || d < 1 || d > 31) return false;
+    if (h > 23 || mi > 59 || s > 59) return false;
+
+    const dt = new Date(y, mo - 1, d, h, mi, s);
+    return dt.getFullYear() === y &&
+           dt.getMonth() === mo - 1 &&
+           dt.getDate() === d &&
+           dt.getHours() === h &&
+           dt.getMinutes() === mi &&
+           dt.getSeconds() === s;
+}
+
+function toDate(value) {
+    return validTimestamp(value)
+        ? new Date(value.replace(" ", "T"))
+        : null;
+}
+
+function formatDateTime(value) {
+    const dt = toDate(value);
+    return dt ? dt.toLocaleString("en-IN", {
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit", second: "2-digit",
+        hour12: true
+    }) : "--";
+}
+
+function formatDate(value) {
+    const dt = toDate(value);
+    return dt ? dt.toLocaleDateString("en-IN") : "--";
+}
+
+function formatTime(value) {
+    const dt = toDate(value);
+    return dt ? dt.toLocaleTimeString("en-IN", {
+        hour: "2-digit", minute: "2-digit", second: "2-digit",
+        hour12: true
+    }) : "--:--";
+}
+
+function numberOrNull(value) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+}
+
+function safe(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+/* -------------------- HIVE -------------------- */
+function subscribeHive() {
+    db.ref("hive_log")
+      .orderByChild("timestamp")
+      .limitToLast(1)
+      .on("value", snapshot => {
+        if (!snapshot.exists()) return;
+
+        const entries = Object.values(snapshot.val() || {})
+            .filter(x => validTimestamp(x?.timestamp))
+            .sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)));
+
+        if (!entries.length) return;
+
+        const data = entries[entries.length - 1];
+        const temp = numberOrNull(data.temp_C);
+        const hum = numberOrNull(data.humidity_pct);
+
+        document.getElementById("tempValue").textContent =
+            temp === null ? "--" : temp.toFixed(1);
+
+        document.getElementById("humValue").textContent =
+            hum === null ? "--" : hum.toFixed(1);
+
+        document.getElementById("tempTime").textContent = formatTime(data.timestamp);
+        document.getElementById("humTime").textContent = formatTime(data.timestamp);
+    }, console.error);
+}
+
+/* -------------------- OUTSIDE -------------------- */
+function subscribeOutside() {
+    db.ref("hive_log_outside")
+      .orderByChild("timestamp")
+      .limitToLast(1)
+      .on("value", snapshot => {
+        if (!snapshot.exists()) return;
+
+        const entries = Object.values(snapshot.val() || {})
+            .filter(x => validTimestamp(x?.timestamp))
+            .sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)));
+
+        if (!entries.length) return;
+
+        const data = entries[entries.length - 1];
+        const temp = numberOrNull(data.temp_outside_C);
+        const hum = numberOrNull(data.humidity_outside_pct);
+
+        document.getElementById("outTempValue").textContent =
+            temp === null ? "--" : temp.toFixed(1);
+
+        document.getElementById("outHumValue").textContent =
+            hum === null ? "--" : hum.toFixed(1);
+
+        document.getElementById("outTempTime").textContent = formatTime(data.timestamp);
+        document.getElementById("outHumTime").textContent = formatTime(data.timestamp);
+    }, console.error);
+}
+
+/* -------------------- STATUS -------------------- */
+function subscribeDeviceStatus() {
+    db.ref("hive_status").on("value", snapshot => {
+        if (!snapshot.exists()) return;
+
+        const data = snapshot.val();
+
+        if (validTimestamp(data.last_seen)) {
+            document.getElementById("lastSeen").textContent =
+                "Last Seen: " + formatDateTime(data.last_seen);
+        }
+
+        const enabled = data.mic_enabled === true || data.mic_enabled === "true";
+        const recording = data.recording === true || data.recording === "true";
+
+        document.getElementById("micToggle").textContent =
+            enabled ? "mic" : "mic_off";
+
+        document.getElementById("micStatusText").textContent =
+            recording ? "Mic Recording" :
+            enabled ? "Mic Enabled" :
+            "Mic Offline";
+    }, console.error);
+}
+
+/* -------------------- BEE COUNT -------------------- */
+function subscribeBeeCount() {
+    db.ref("hive_bee_count").on("value", snapshot => {
+        if (!snapshot.exists()) return;
+
+        const data = snapshot.val();
+
+        const incoming = numberOrNull(
+            data.in ?? data.count_in ?? data.countIn ?? 0
+        ) ?? 0;
+
+        const outgoing = numberOrNull(
+            data.out ?? data.count_out ?? data.countOut ?? 0
+        ) ?? 0;
+
+        const storedNet = numberOrNull(data.net);
+        const net = storedNet === null ? incoming - outgoing : storedNet;
+
+        document.getElementById("netValue").textContent = net;
+        document.getElementById("inValue").textContent = incoming;
+        document.getElementById("outValue").textContent = outgoing;
+    });
+}
+
+function initBeeReset() {
+    document.getElementById("resetCountBtn")?.addEventListener("click", async () => {
+        if (!confirm("Reset bee IN, OUT and NET count to zero?")) return;
+
+        try {
+            await db.ref("hive_bee_count").update({
+                in: 0, out: 0, net: 0
+            });
+            alert("Bee count reset successfully.");
+        } catch (error) {
+            console.error(error);
+            alert("Unable to reset bee count.");
+        }
+    });
+}
+
+/* -------------------- AUDIO -------------------- */
+function makeAudioCard(item) {
+    const clip = item.clip || {};
+    if (!clip.url || !validTimestamp(clip.timestamp)) return "";
+
+    const filename = clip.filename || `audio_${item.key}.wav`;
+
+    return `
+        <div class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/30">
+            <div class="flex flex-col xl:flex-row xl:items-center
+                        xl:justify-between gap-4">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="material-symbols-outlined text-primary p-2
+                                 bg-primary/10 rounded-full">audio_file</span>
+                    <div class="min-w-0">
+                        <div class="font-label-sm text-on-surface font-semibold">
+                            ${safe(formatDateTime(clip.timestamp))}
+                        </div>
+                        <div class="text-xs text-on-surface-variant truncate">
+                            ${safe(filename)}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <audio controls preload="none"
+                           class="h-9 w-[320px] max-w-full"
+                           src="${safe(clip.url)}"></audio>
+
+                    <a href="${safe(clip.url)}"
+                       download="${safe(filename)}"
+                       target="_blank"
+                       rel="noopener"
+                       class="bg-primary text-on-primary px-4 py-2 rounded
+                              font-label-sm flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">
+                            download
+                        </span>
+                        Download WAV
+                    </a>
+                </div>
+            </div>
         </div>
-        <button class="bg-primary text-on-primary font-label-sm px-4 py-2 rounded shadow-sm hover:bg-primary/90"
-          data-download-index="${i}">Download WAV</button>
-      </div>
-      <audio class="w-full mt-3" controls preload="metadata" data-key="${escapeHtml(r.key)}" src="${escapeHtml(r.url||"")}"></audio>
-      <div class="audio-status text-sm text-on-surface-variant mt-2" id="audioStatus_${i}">
-        ${r.url?"Ready to play":"Resolving audio file..."}
-      </div>
-    </article>`).join("");
-  c.querySelectorAll("[data-download-index]").forEach(b=>b.onclick=()=>downloadAudio(list[+b.dataset.downloadIndex]));
-  list.forEach(async(r,i)=>{
-    if(!r.url){
-      const u=await resolveAudioUrl(r);r.url=u;
-      const a=c.querySelector(`audio[data-key="${CSS.escape(r.key)}"]`);
-      if(a)a.src=u;
-      const s=document.getElementById(`audioStatus_${i}`);
-      if(s)s.textContent=u?"Ready to play":"Audio file not found in Firebase Storage";
+    `;
+}
+
+function renderAudio(items) {
+    const container = document.getElementById("clipsContainer");
+    if (!container) return;
+
+    const valid = items.filter(x =>
+        x.clip?.url && validTimestamp(x.clip.timestamp)
+    );
+
+    container.innerHTML = valid.length
+        ? valid.map(makeAudioCard).join("")
+        : `<div class="text-on-surface-variant italic p-6 text-center">
+             No valid audio recordings found.
+           </div>`;
+}
+
+async function readAllAudio() {
+    const snapshot = await db.ref("hive_audio")
+        .orderByChild("timestamp")
+        .once("value");
+
+    if (!snapshot.exists()) return [];
+
+    return Object.entries(snapshot.val())
+        .map(([key, clip]) => ({ key, clip }))
+        .filter(x => x.clip?.url && validTimestamp(x.clip.timestamp))
+        .sort((a, b) =>
+            String(b.clip.timestamp).localeCompare(String(a.clip.timestamp))
+        );
+}
+
+async function loadRecentAudio() {
+    const container = document.getElementById("clipsContainer");
+    if (!container) return;
+
+    container.innerHTML =
+        `<div class="text-on-surface-variant italic p-6 text-center">
+           Loading latest 5 recordings...
+         </div>`;
+
+    try {
+        const snapshot = await db.ref("hive_audio")
+            .orderByChild("timestamp")
+            .limitToLast(5)
+            .once("value");
+
+        if (!snapshot.exists()) {
+            currentAudioMatches = [];
+            renderAudio([]);
+            return;
+        }
+
+        currentAudioMatches = Object.entries(snapshot.val())
+            .map(([key, clip]) => ({ key, clip }))
+            .filter(x => x.clip?.url && validTimestamp(x.clip.timestamp))
+            .sort((a, b) =>
+                String(b.clip.timestamp).localeCompare(String(a.clip.timestamp))
+            );
+
+        renderAudio(currentAudioMatches);
+    } catch (error) {
+        console.error("Audio error:", error);
+        container.innerHTML =
+            `<div class="text-error p-6 text-center">
+               Unable to load audio. Check Firebase Storage access.
+             </div>`;
     }
-  });
 }
-async function downloadAudio(r){
-  const u=await resolveAudioUrl(r);
-  if(!u){alert("Audio file was not found in Firebase Storage.");return}
-  try{
-    const res=await fetch(u);if(!res.ok)throw new Error("HTTP "+res.status);
-    downloadBlob(await res.blob(),r.filename||"hive_audio.wav");
-  }catch(e){
-    const a=document.createElement("a");a.href=u;a.target="_blank";a.download=r.filename;
-    document.body.appendChild(a);a.click();a.remove();
-  }
+
+async function loadAudioCount() {
+    try {
+        const snapshot = await db.ref("hive_audio").once("value");
+        document.getElementById("dashboardAudioCount").textContent =
+            (snapshot.exists() ? snapshot.numChildren() : 0).toLocaleString("en-IN");
+    } catch (error) {
+        console.error(error);
+        document.getElementById("dashboardAudioCount").textContent = "--";
+    }
 }
-async function refreshAudio(){
-  if(!db)return;
-  allAudioRecords=await loadAudio();
-  filteredAudioRecords=allAudioRecords;
-  const n=document.getElementById("audioClipsCount");if(n)n.textContent=allAudioRecords.length;
-  // Dashboard always shows only the 5 newest recordings.
-  renderAudio(allAudioRecords.slice(0,5),true);
+
+async function searchAudio() {
+    const date = document.getElementById("searchDate").value;
+    const time = document.getElementById("searchTime").value;
+    const container = document.getElementById("clipsContainer");
+    const downloadButton = document.getElementById("downloadMatchesBtn");
+
+    if (!date && !time) {
+        downloadButton.classList.add("hidden");
+        downloadButton.classList.remove("flex");
+        return loadRecentAudio();
+    }
+
+    container.innerHTML =
+        `<div class="text-on-surface-variant italic p-6 text-center">
+           Searching audio records...
+         </div>`;
+
+    try {
+        const all = await readAllAudio();
+
+        currentAudioMatches = all.filter(item => {
+            const ts = item.clip.timestamp;
+            const itemDate = ts.substring(0, 10);
+            const itemTime = ts.substring(11, 16);
+
+            return (!date || itemDate === date) &&
+                   (!time || itemTime === time);
+        });
+
+        renderAudio(currentAudioMatches);
+
+        if (currentAudioMatches.length) {
+            downloadButton.classList.remove("hidden");
+            downloadButton.classList.add("flex");
+            downloadButton.innerHTML = `
+                <span class="material-symbols-outlined text-[18px]">download</span>
+                Download ${currentAudioMatches.length}
+                Match${currentAudioMatches.length === 1 ? "" : "es"}
+            `;
+        } else {
+            downloadButton.classList.add("hidden");
+            downloadButton.classList.remove("flex");
+        }
+    } catch (error) {
+        console.error("Audio search error:", error);
+        container.innerHTML =
+            `<div class="text-error p-6 text-center">Audio search failed.</div>`;
+    }
 }
-document.getElementById("searchBtn")?.addEventListener("click",()=>{
-  const d=document.getElementById("searchDate").value,t=document.getElementById("searchTime").value;
-  filteredAudioRecords=allAudioRecords.filter(r=>(!d||r.date===d)&&(!t||r.time.startsWith(t)));
-  renderAudio(filteredAudioRecords,true);
-  const b=document.getElementById("downloadMatchesBtn");
-  if(b){b.classList.toggle("hidden",!filteredAudioRecords.length);b.classList.toggle("flex",!!filteredAudioRecords.length)}
+
+function clearAudioSearch() {
+    document.getElementById("searchDate").value = "";
+    document.getElementById("searchTime").value = "";
+    currentAudioMatches = [];
+
+    const button = document.getElementById("downloadMatchesBtn");
+    button.classList.add("hidden");
+    button.classList.remove("flex");
+
+    loadRecentAudio();
+}
+
+function downloadMatches() {
+    currentAudioMatches.forEach((item, index) => {
+        const url = item.clip?.url;
+        if (!url) return;
+
+        const filename =
+            item.clip.filename || `audio_${item.key}.wav`;
+
+        setTimeout(() => {
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            a.target = "_blank";
+            a.rel = "noopener";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }, index * 500);
+    });
+}
+
+/* -------------------- ENVIRONMENT HISTORY -------------------- */
+async function getHistory() {
+    const [hiveSnapshot, outsideSnapshot] = await Promise.all([
+        db.ref("hive_log").once("value"),
+        db.ref("hive_log_outside").once("value")
+    ]);
+
+    const map = new Map();
+
+    if (hiveSnapshot.exists()) {
+        Object.values(hiveSnapshot.val()).forEach(data => {
+            if (!validTimestamp(data?.timestamp)) return;
+
+            map.set(data.timestamp, {
+                ...(map.get(data.timestamp) || {}),
+                timestamp: data.timestamp,
+                hiveTemp: numberOrNull(data.temp_C),
+                hiveHum: numberOrNull(data.humidity_pct)
+            });
+        });
+    }
+
+    if (outsideSnapshot.exists()) {
+        Object.values(outsideSnapshot.val()).forEach(data => {
+            if (!validTimestamp(data?.timestamp)) return;
+
+            map.set(data.timestamp, {
+                ...(map.get(data.timestamp) || {}),
+                timestamp: data.timestamp,
+                outsideTemp: numberOrNull(data.temp_outside_C),
+                outsideHum: numberOrNull(data.humidity_outside_pct)
+            });
+        });
+    }
+
+    return Array.from(map.values()).sort((a, b) =>
+        String(a.timestamp).localeCompare(String(b.timestamp))
+    );
+}
+
+function filterHistory(rows) {
+    const startValue = document.getElementById("exportStart").value;
+    const endValue = document.getElementById("exportEnd").value;
+
+    let result = rows;
+
+    if (startValue) {
+        const start = new Date(startValue);
+        result = result.filter(row => {
+            const dt = toDate(row.timestamp);
+            return dt && dt >= start;
+        });
+    }
+
+    if (endValue) {
+        const end = new Date(endValue);
+        result = result.filter(row => {
+            const dt = toDate(row.timestamp);
+            return dt && dt <= end;
+        });
+    }
+
+    return result;
+}
+
+function renderAnalyticsTable(rows) {
+    const body = document.getElementById("analyticsTableBody");
+    if (!body) return;
+
+    if (!rows.length) {
+        body.innerHTML =
+            `<tr><td colspan="6" class="py-6 px-4 text-center italic
+             text-on-surface-variant">No environmental records found.</td></tr>`;
+        return;
+    }
+
+    body.innerHTML = rows.slice().reverse().map(row => `
+        <tr class="border-b border-outline-variant/30 hover:bg-primary/5">
+            <td class="py-3 px-4">${safe(formatDate(row.timestamp))}</td>
+            <td class="py-3 px-4">${safe(formatTime(row.timestamp))}</td>
+            <td class="py-3 px-4">
+                ${row.hiveTemp == null ? "--" : row.hiveTemp.toFixed(1)}
+            </td>
+            <td class="py-3 px-4">
+                ${row.hiveHum == null ? "--" : row.hiveHum.toFixed(1)}
+            </td>
+            <td class="py-3 px-4">
+                ${row.outsideTemp == null ? "--" : row.outsideTemp.toFixed(1)}
+            </td>
+            <td class="py-3 px-4">
+                ${row.outsideHum == null ? "--" : row.outsideHum.toFixed(1)}
+            </td>
+        </tr>
+    `).join("");
+}
+
+function renderChart(rows) {
+    const canvas = document.getElementById("trendChart");
+    if (!canvas || !window.Chart) return;
+
+    if (chart) chart.destroy();
+
+    const chartRows = rows.length > 500 ? rows.slice(-500) : rows;
+
+    chart = new Chart(canvas, {
+        type: "line",
+        data: {
+            labels: chartRows.map(row => formatTime(row.timestamp)),
+            datasets: [
+                {
+                    label: "Hive Temperature (°C)",
+                    data: chartRows.map(row => row.hiveTemp),
+                    borderColor: "#9c4400",
+                    backgroundColor: "rgba(156,68,0,0.08)",
+                    tension: 0.25,
+                    spanGaps: true
+                },
+                {
+                    label: "Hive Humidity (%)",
+                    data: chartRows.map(row => row.hiveHum),
+                    borderColor: "#feb700",
+                    backgroundColor: "rgba(254,183,0,0.06)",
+                    tension: 0.25,
+                    spanGaps: true
+                },
+                {
+                    label: "Outside Temperature (°C)",
+                    data: chartRows.map(row => row.outsideTemp),
+                    borderColor: "#e9762b",
+                    borderDash: [6, 4],
+                    tension: 0.25,
+                    spanGaps: true
+                },
+                {
+                    label: "Outside Humidity (%)",
+                    data: chartRows.map(row => row.outsideHum),
+                    borderColor: "#7c5800",
+                    borderDash: [6, 4],
+                    tension: 0.25,
+                    spanGaps: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            scales: {
+                x: { ticks: { maxTicksLimit: 12 } }
+            }
+        }
+    });
+}
+
+async function loadAnalytics() {
+    const body = document.getElementById("analyticsTableBody");
+
+    if (body) {
+        body.innerHTML =
+            `<tr><td colspan="6" class="py-6 px-4 text-center italic
+             text-on-surface-variant">Loading Firebase historical data...</td></tr>`;
+    }
+
+    try {
+        const rows = filterHistory(await getHistory());
+        renderAnalyticsTable(rows);
+        renderChart(rows);
+    } catch (error) {
+        console.error("Analytics error:", error);
+
+        if (body) {
+            body.innerHTML =
+                `<tr><td colspan="6" class="py-6 px-4 text-center text-error">
+                 Unable to load environmental history.</td></tr>`;
+        }
+    }
+}
+
+/* -------------------- REAL XLSX EXPORT -------------------- */
+async function exportEnvironmentExcel() {
+    try {
+        if (!window.XLSX) {
+            alert("Excel library is not loaded. Check your internet connection.");
+            return;
+        }
+
+        const rows = filterHistory(await getHistory());
+
+        if (!rows.length) {
+            alert("No environmental data found for the selected date/time range.");
+            return;
+        }
+
+        const data = rows.map(row => ({
+            "Date": formatDate(row.timestamp),
+            "Time": formatTime(row.timestamp),
+            "Hive Temperature (°C)": row.hiveTemp ?? "",
+            "Hive Humidity (%)": row.hiveHum ?? "",
+            "Outside Temperature (°C)": row.outsideTemp ?? "",
+            "Outside Humidity (%)": row.outsideHum ?? ""
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(data);
+        ws["!cols"] = [
+            { wch: 14 }, { wch: 14 }, { wch: 24 },
+            { wch: 20 }, { wch: 27 }, { wch: 25 }
+        ];
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Hive Environment");
+
+        XLSX.writeFile(
+            wb,
+            `Smart_Honey_Bee_Environment_${new Date().toISOString().slice(0, 10)}.xlsx`
+        );
+    } catch (error) {
+        console.error("Excel export error:", error);
+        alert("Excel export failed.");
+    }
+}
+
+/* -------------------- SETTINGS -------------------- */
+function subscribeSettings() {
+    db.ref("hive_control/ir_window_ms").on("value", snapshot => {
+        const input = document.getElementById("sensorTiming");
+        if (input && snapshot.exists()) input.value = snapshot.val();
+    });
+
+    document.getElementById("saveSettingsBtn")?.addEventListener("click", async () => {
+        const value = Number(document.getElementById("sensorTiming")?.value);
+
+        if (!Number.isFinite(value) || value <= 0) {
+            alert("Enter a valid positive sensor timing value.");
+            return;
+        }
+
+        try {
+            await db.ref("hive_control/ir_window_ms").set(value);
+            alert("Sensor timing saved.");
+        } catch (error) {
+            console.error(error);
+            alert("Unable to save settings.");
+        }
+    });
+
+    document.getElementById("resetSettingsBtn")?.addEventListener("click", async () => {
+        const snapshot = await db.ref("hive_control/ir_window_ms").once("value");
+        const input = document.getElementById("sensorTiming");
+        if (input) input.value = snapshot.exists() ? snapshot.val() : "";
+    });
+}
+
+/* -------------------- LIGHT BEE ANIMATION -------------------- */
+function createBee() {
+    const bee = document.createElement("div");
+    bee.className = "bee";
+    document.body.appendChild(bee);
+
+    let x = Math.random() * innerWidth;
+    let y = Math.random() * innerHeight;
+    let angle = Math.random() * Math.PI * 2;
+    const speed = 0.5 + Math.random() * 0.8;
+
+    function move() {
+        angle += (Math.random() - 0.5) * 0.12;
+        x += Math.cos(angle) * speed;
+        y += Math.sin(angle) * speed;
+
+        if (x < -30) x = innerWidth + 30;
+        if (x > innerWidth + 30) x = -30;
+        if (y < -30) y = innerHeight + 30;
+        if (y > innerHeight + 30) y = -30;
+
+        bee.style.transform =
+            `translate(${x}px,${y}px) rotate(${angle * 180 / Math.PI + 90}deg)`;
+
+        requestAnimationFrame(move);
+    }
+
+    move();
+}
+
+/* -------------------- START -------------------- */
+document.addEventListener("DOMContentLoaded", () => {
+    for (let i = 0; i < 6; i++) createBee();
+
+    document.getElementById("searchBtn")
+        ?.addEventListener("click", searchAudio);
+
+    document.getElementById("clearSearchBtn")
+        ?.addEventListener("click", clearAudioSearch);
+
+    document.getElementById("downloadMatchesBtn")
+        ?.addEventListener("click", downloadMatches);
+
+    document.getElementById("exportEnvBtn")
+        ?.addEventListener("click", exportEnvironmentExcel);
+
+    initBeeReset();
+    initFirebase();
 });
-document.getElementById("clearSearchBtn")?.addEventListener("click",()=>{
-  document.getElementById("searchDate").value="";
-  document.getElementById("searchTime").value="";
-  filteredAudioRecords=allAudioRecords;
-  renderAudio(allAudioRecords.slice(0,5),true);
-  document.getElementById("downloadMatchesBtn")?.classList.add("hidden");
-});
-document.getElementById("downloadMatchesBtn")?.addEventListener("click",async()=>{
-  for(const r of filteredAudioRecords){
-    try{
-      const u=await resolveAudioUrl(r);if(!u)continue;
-      const res=await fetch(u);if(!res.ok)continue;
-      downloadBlob(await res.blob(),r.filename||"hive_audio.wav");
-      await new Promise(x=>setTimeout(x,300));
-    }catch(e){console.error(e)}
-  }
-});
-
-function sensorValue(o,keys){
-  for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&o[k]!=="")return Number(o[k]);
-  return null;
-}
-function parseFirebaseTimestamp(raw,key){
-  const s=String(raw||key||"");
-  let dt=new Date(s);
-  if(!isNaN(dt.getTime()))return dt;
-  const m=s.match(/^(\d{4})(\d{2})(\d{2})[_-]?(\d{2})(\d{2})(\d{2})$/);
-  if(m)return new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]);
-  return null;
-}
-function normalizeSensor(v,key,kind="hive"){
-  const o=v&&typeof v==="object"?v:{};
-  const raw=o.timestamp||o.time||o.datetime||o.dateTime||key;
-  const dt=parseFirebaseTimestamp(raw,key);
-  if(!dt||isNaN(dt.getTime()))return null;
-  return{
-    timestamp:dt.getTime(),dateTime:dt,
-    hiveTemp:kind==="hive"?sensorValue(o,["temp_C","temperature","temp","hiveTemp","insideTemperature"]):null,
-    hiveHum:kind==="hive"?sensorValue(o,["humidity_pct","humidity","hum","hiveHumidity","insideHumidity"]):null,
-    outTemp:kind==="outside"?sensorValue(o,["temp_outside_C","outsideTemperature","outsideTemp","outTemp","ambientTemperature"]):null,
-    outHum:kind==="outside"?sensorValue(o,["humidity_outside_pct","outsideHumidity","outsideHum","outHum","ambientHumidity"]):null
-  };
-}
-async function loadSensors(){
-  if(!db)return[];
-  const map=new Map();
-  const readLog=async(path,kind)=>{
-    try{
-      const v=(await db.ref(path).once("value")).val();
-      if(!v||typeof v!=="object")return;
-      Object.entries(v).forEach(([k,x])=>{
-        const r=normalizeSensor(x,k,kind);
-        if(!r)return;
-        const old=map.get(r.timestamp)||{timestamp:r.timestamp,dateTime:r.dateTime,hiveTemp:null,hiveHum:null,outTemp:null,outHum:null};
-        if(kind==="hive"){old.hiveTemp=r.hiveTemp;old.hiveHum=r.hiveHum;}
-        else {old.outTemp=r.outTemp;old.outHum=r.outHum;}
-        map.set(r.timestamp,old);
-      });
-    }catch(e){console.error(path,e)}
-  };
-  await readLog("hive_log","hive");
-  await readLog("hive_log_outside","outside");
-  return [...map.values()].sort((a,b)=>a.timestamp-b.timestamp);
-}
-
-async function refreshBeeCount(){
-  if(!db)return;
-  try{
-    const v=(await db.ref("hive_bee_count").once("value")).val()||{};
-    const cin=Number(v.count_in ?? v.in ?? 0);
-    const cout=Number(v.count_out ?? v.out ?? 0);
-    const net=Number(v.net ?? (cin-cout));
-    const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=String(val)};
-    set("netValue",net);set("inValue",cin);set("outValue",cout);
-    const status=document.getElementById("lastSeen");
-    if(status && v.last_updated) status.textContent="Last Seen: "+v.last_updated;
-  }catch(e){console.error("Bee count read failed",e)}
-}
-function renderChart(rows){
-  const c=document.getElementById("trendChart");if(!c)return;
-  const r=rows.slice(-40);
-  if(chart)chart.destroy();
-  chart=new Chart(c,{type:"line",data:{
-    labels:r.map(x=>x.dateTime.toLocaleString("en-IN",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})),
-    datasets:[
-      {label:"Hive Temp (°C)",data:r.map(x=>x.hiveTemp),borderColor:"#9c4400",backgroundColor:"rgba(156,68,0,.08)",tension:.35,spanGaps:true},
-      {label:"Hive Humidity (%)",data:r.map(x=>x.hiveHum),borderColor:"#7c5800",tension:.35,spanGaps:true},
-      {label:"Outside Temp (°C)",data:r.map(x=>x.outTemp),borderColor:"#e9762b",borderDash:[5,5],tension:.35,spanGaps:true},
-      {label:"Outside Humidity (%)",data:r.map(x=>x.outHum),borderColor:"#feb700",borderDash:[5,5],tension:.35,spanGaps:true}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false}}
-  });
-}
-async function refreshSensors(){
-  if(!db)return;
-  try {
-    environmentalRows=await loadSensors();
-    console.log("[Honey Bee] environmental rows:", environmentalRows.length, environmentalRows.at(-1));
-    if(!environmentalRows.length)return;
-
-  if(!db)return;
-  environmentalRows=await loadSensors();if(!environmentalRows.length)return;
-
-  // Hive and outside sensors log independently, so do NOT require identical timestamps.
-  const hiveRows = environmentalRows.filter(r => r.hiveTemp !== null || r.hiveHum !== null);
-  const outsideRows = environmentalRows.filter(r => r.outTemp !== null || r.outHum !== null);
-
-  const hive = hiveRows.at(-1);
-  const outside = outsideRows.at(-1);
-
-  const set=(id,v)=>{
-    const e=document.getElementById(id);
-    if(!e)return;
-    e.textContent=(v!==null && v!==undefined && !Number.isNaN(Number(v)))
-      ? Number(v).toFixed(1) : "--";
-  };
-
-  const setTime=(id,row)=>{
-    const e=document.getElementById(id);
-    if(!e)return;
-    e.textContent=(row && row.dateTime)
-      ? row.dateTime.toLocaleString("en-IN") : "--";
-  };
-
-  if(hive){
-    set("tempValue",hive.hiveTemp);
-    set("humValue",hive.hiveHum);
-    setTime("tempTime",hive);
-    setTime("humTime",hive);
-  }
-
-  if(outside){
-    set("outTempValue",outside.outTemp);
-    set("outHumValue",outside.outHum);
-    setTime("outTempTime",outside);
-    setTime("outHumTime",outside);
-  }
-
-  const newest=[hive,outside].filter(Boolean).sort((a,b)=>a.timestamp-b.timestamp).at(-1);
-  const l=document.getElementById("lastSeen");
-  if(l && newest)l.textContent="Last Seen: "+newest.dateTime.toLocaleString("en-IN");
-
-  renderChart(environmentalRows);
-  } catch (e) {
-    console.error("[Honey Bee] refreshSensors failed:", e);
-  }
-}
-function csv(v){return`"${String(v??"").replaceAll('"','""')}"`}
-document.getElementById("exportEnvBtn")?.addEventListener("click",()=>{
-  const s=document.getElementById("exportStart").value,e=document.getElementById("exportEnd").value;
-  const a=s?new Date(s).getTime():-Infinity,b=e?new Date(e).getTime():Infinity;
-  const rows=environmentalRows.filter(r=>r.timestamp>=a&&r.timestamp<=b);
-  if(!rows.length){alert("No environmental data found for the selected date/time range.");return}
-  const lines=[
-    ["Date","Time","Hive Temperature (°C)","Hive Humidity (%)","Outside Temperature (°C)","Outside Humidity (%)"].map(csv).join(","),
-    ...rows.map(r=>[
-      r.dateTime.toLocaleDateString("en-IN"),r.dateTime.toLocaleTimeString("en-IN"),
-      r.hiveTemp??"",r.hiveHum??"",r.outTemp??"",r.outHum??""
-    ].map(csv).join(","))
-  ];
-  downloadBlob(new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"}),`hive_environment_${new Date().toISOString().slice(0,10)}.csv`);
-});
-document.addEventListener("DOMContentLoaded",()=>{
-  for(let i=0;i<5;i++)createBee();
-});
-function createBee(){
-  const bee=document.createElement("div");bee.className="bee";document.body.appendChild(bee);
-  let x=Math.random()*innerWidth,y=Math.random()*innerHeight,a=Math.random()*Math.PI*2,s=.7+Math.random()*.8;
-  function move(){a+=(Math.random()-.5)*.12;x+=Math.cos(a)*s;y+=Math.sin(a)*s;
-    if(x<-20)x=innerWidth+20;if(x>innerWidth+20)x=-20;if(y<-20)y=innerHeight+20;if(y>innerHeight+20)y=-20;
-    bee.style.transform=`translate(${x}px,${y}px) rotate(${a*180/Math.PI+90}deg)`;requestAnimationFrame(move)}
-  move();
-}
-async function startDashboard(){
-  if(!initFirebase()){renderAudio([]);return}
-  await Promise.all([refreshAudio(),refreshSensors(),refreshBeeCount()]);
-  setInterval(refreshAudio,30000);
-  setInterval(refreshSensors,30000);
-  setInterval(refreshBeeCount,5000);
-}
-startDashboard();
 </script>
 </body></html>
