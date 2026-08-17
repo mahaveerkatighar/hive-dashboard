@@ -1,234 +1,237 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
+<html class="light" lang="en">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Smart Honey Bee Hive Monitoring</title>
+<meta name="description" content="Real-time bee hive health monitoring dashboard with temperature, humidity, bee counting, and acoustic analysis."/>
 <!-- Material Symbols -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <!-- Tailwind & Config -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
+<script>
   tailwind.config = {
     darkMode: "class",
     theme: {
       extend: {
-        "colors": {
-                "on-tertiary-fixed-variant": "#50453b",
-                "secondary-fixed-dim": "#ffba20",
-                "primary-fixed": "#ffdbca",
-                "on-secondary-container": "#6b4b00",
-                "background": "#fdf9f0",
-                "surface-variant": "#e6e2d9",
-                "primary-fixed-dim": "#ffb68e",
-                "on-secondary": "#ffffff",
-                "tertiary": "#695c51",
-                "surface-bright": "#fdf9f0",
-                "on-surface-variant": "#574238",
-                "surface-container-lowest": "#ffffff",
-                "on-error": "#ffffff",
-                "on-secondary-fixed-variant": "#5e4200",
-                "secondary": "#7c5800",
-                "secondary-container": "#feb700",
-                "on-error-container": "#93000a",
-                "surface-container-low": "#f7f3ea",
-                "on-primary": "#ffffff",
-                "inverse-primary": "#ffb68e",
-                "on-background": "#1c1c17",
-                "outline": "#8a7266",
-                "primary-container": "#e9762b",
-                "surface": "#fdf9f0",
-                "outline-variant": "#dec1b3",
-                "primary": "#9c4400",
-                "on-primary-container": "#512000",
-                "secondary-fixed": "#ffdea8",
-                "inverse-on-surface": "#f4f0e7",
-                "on-primary-fixed-variant": "#773300",
-                "on-tertiary": "#ffffff",
-                "error-container": "#ffdad6",
-                "surface-tint": "#9c4400",
-                "error": "#ba1a1a",
-                "surface-dim": "#dddad1",
-                "tertiary-fixed-dim": "#d4c4b6",
-                "surface-container-high": "#ece8df",
-                "tertiary-container": "#a29387",
-                "on-primary-fixed": "#331200",
-                "on-secondary-fixed": "#271900",
-                "surface-container-highest": "#e6e2d9",
-                "surface-container": "#f1eee5",
-                "on-tertiary-container": "#362c23",
-                "on-tertiary-fixed": "#231a11",
-                "tertiary-fixed": "#f1dfd1",
-                "inverse-surface": "#31312b",
-                "on-surface": "#1c1c17"
+        colors: {
+          "on-tertiary-fixed-variant": "#50453b",
+          "secondary-fixed-dim": "#ffba20",
+          "primary-fixed": "#ffdbca",
+          "on-secondary-container": "#6b4b00",
+          "background": "#fdf9f0",
+          "surface-variant": "#e6e2d9",
+          "primary-fixed-dim": "#ffb68e",
+          "on-secondary": "#ffffff",
+          "tertiary": "#695c51",
+          "surface-bright": "#fdf9f0",
+          "on-surface-variant": "#574238",
+          "surface-container-lowest": "#ffffff",
+          "on-error": "#ffffff",
+          "on-secondary-fixed-variant": "#5e4200",
+          "secondary": "#7c5800",
+          "secondary-container": "#feb700",
+          "on-error-container": "#93000a",
+          "surface-container-low": "#f7f3ea",
+          "on-primary": "#ffffff",
+          "inverse-primary": "#ffb68e",
+          "on-background": "#1c1c17",
+          "outline": "#8a7266",
+          "primary-container": "#e9762b",
+          "surface": "#fdf9f0",
+          "outline-variant": "#dec1b3",
+          "primary": "#9c4400",
+          "on-primary-container": "#512000",
+          "secondary-fixed": "#ffdea8",
+          "inverse-on-surface": "#f4f0e7",
+          "on-primary-fixed-variant": "#773300",
+          "on-tertiary": "#ffffff",
+          "error-container": "#ffdad6",
+          "surface-tint": "#9c4400",
+          "error": "#ba1a1a",
+          "surface-dim": "#dddad1",
+          "tertiary-fixed-dim": "#d4c4b6",
+          "surface-container-high": "#ece8df",
+          "tertiary-container": "#a29387",
+          "on-primary-fixed": "#331200",
+          "on-secondary-fixed": "#271900",
+          "surface-container-highest": "#e6e2d9",
+          "surface-container": "#f1eee5",
+          "on-tertiary-container": "#362c23",
+          "on-tertiary-fixed": "#231a11",
+          "tertiary-fixed": "#f1dfd1",
+          "inverse-surface": "#31312b",
+          "on-surface": "#1c1c17"
         },
-        "borderRadius": {
-                "DEFAULT": "0.25rem",
-                "lg": "0.5rem",
-                "xl": "0.75rem",
-                "full": "9999px"
+        borderRadius: {
+          DEFAULT: "0.25rem",
+          lg: "0.5rem",
+          xl: "0.75rem",
+          full: "9999px"
         },
-        "spacing": {
-                "container-padding": "32px",
-                "gutter": "24px",
-                "unit": "8px",
-                "stack-md": "12px",
-                "card-gap": "16px",
-                "stack-sm": "4px"
+        spacing: {
+          "container-padding": "32px",
+          gutter: "24px",
+          unit: "8px",
+          "stack-md": "12px",
+          "card-gap": "16px",
+          "stack-sm": "4px"
         },
-        "fontFamily": {
-                "label-sm": [
-                        "JetBrains Mono"
-                ],
-                "headline-lg-mobile": [
-                        "\"Source Serif 4\""
-                ],
-                "headline-lg": [
-                        "\"Source Serif 4\""
-                ],
-                "display-lg": [
-                        "\"Source Serif 4\""
-                ],
-                "data-lg": [
-                        "JetBrains Mono"
-                ],
-                "body-md": [
-                        "IBM Plex Sans"
-                ]
+        fontFamily: {
+          "label-sm": ["JetBrains Mono"],
+          "headline-lg-mobile": ['"Source Serif 4"'],
+          "headline-lg": ['"Source Serif 4"'],
+          "display-lg": ['"Source Serif 4"'],
+          "data-lg": ["JetBrains Mono"],
+          "body-md": ["IBM Plex Sans"]
         },
-        "fontSize": {
-                "label-sm": [
-                        "12px",
-                        {
-                                "lineHeight": "16px",
-                                "fontWeight": "500"
-                        }
-                ],
-                "headline-lg-mobile": [
-                        "24px",
-                        {
-                                "lineHeight": "32px",
-                                "fontWeight": "600"
-                        }
-                ],
-                "headline-lg": [
-                        "32px",
-                        {
-                                "lineHeight": "40px",
-                                "fontWeight": "600"
-                        }
-                ],
-                "display-lg": [
-                        "48px",
-                        {
-                                "lineHeight": "56px",
-                                "letterSpacing": "-0.02em",
-                                "fontWeight": "700"
-                        }
-                ],
-                "data-lg": [
-                        "36px",
-                        {
-                                "lineHeight": "44px",
-                                "letterSpacing": "-0.04em",
-                                "fontWeight": "500"
-                        }
-                ],
-                "body-md": [
-                        "16px",
-                        {
-                                "lineHeight": "24px",
-                                "fontWeight": "400"
-                        }
-                ]
+        fontSize: {
+          "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+          "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+          "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "600" }],
+          "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }],
+          "data-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.04em", fontWeight: "500" }],
+          "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
         }
-},
-    },
-  }
+      }
+    }
+  };
 </script>
 <style>
-      @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@500&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap');
-      
-      body {
-        background-color: #fdf9f0;
-        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAk7XwO23HCUl9E320SWnigQoWnWPMqevXTXyafG5GIG3cQpSJlhILr0DBtJdGzX8HOM5s9x3eiJOBJiPSW80_G7K5HKVw4pkaPgkZyyT6qKZaACL3zkZun4972PeRhaCLEhuSgdaHJZhojxoO_77RhAhfSjK6x80zLOYS4ZY0eFTz86lUvZOQnbtIVzqN6HbEcyquTO4OMTUtnFkVTQ5RuoA0YdklUEKBW_jaFf6jlyz35KX3GSkBgdygJ9zBgirw3ONA');
-        background-size: 192px;
-        background-repeat: repeat;
-        background-attachment: fixed;
-        /* Simulated 5% opacity by blending with a solid color */
-        box-shadow: inset 0 0 0 100vw rgba(253, 249, 240, 0.95);
-      }
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@500&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap');
 
-      .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(156, 68, 0, 0.1);
-        transition: all 0.3s ease;
-      }
-      
-      .glass-card:hover {
-        background: rgba(255, 255, 255, 0.9);
-        box-shadow: 0px 12px 32px rgba(74, 63, 53, 0.08);
-      }
-      
-      .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      }
-      .icon-filled {
-        font-variation-settings: 'FILL' 1;
-      }
+  body {
+    background-color: #fdf9f0;
+    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAk7XwO23HCUl9E320SWnigQoWnWPMqevXTXyafG5GIG3cQpSJlhILr0DBtJdGzX8HOM5s9x3eiJOBJiPSW80_G7K5HKVw4pkaPgkZyyT6qKZaACL3zkZun4972PeRhaCLEhuSgdaHJZhojxoO_77RhAhfSjK6x80zLOYS4ZY0eFTz86lUvZOQnbtIVzqN6HbEcyquTO4OMTUtnFkVTQ5RuoA0YdklUEKBW_jaFf6jlyz35KX3GSkBgdygJ9zBgirw3ONA');
+    background-size: 192px;
+    background-repeat: repeat;
+    background-attachment: fixed;
+    box-shadow: inset 0 0 0 100vw rgba(253, 249, 240, 0.95);
+  }
 
-      /* Animated Bees Background */
-      .bee {
-        position: fixed;
-        width: 12px;
-        height: 12px;
-        background-color: #e9762b;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: -1;
-        opacity: 0.6;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      }
-      .bee::after {
-        content: '';
-        position: absolute;
-        top: 2px;
-        left: -4px;
-        width: 8px;
-        height: 6px;
-        background: rgba(255,255,255,0.8);
-        border-radius: 50%;
-        transform: rotate(-30deg);
-        animation: flap 0.1s infinite alternate;
-      }
-      .bee::before {
-        content: '';
-        position: absolute;
-        top: 2px;
-        right: -4px;
-        width: 8px;
-        height: 6px;
-        background: rgba(255,255,255,0.8);
-        border-radius: 50%;
-        transform: rotate(30deg);
-        animation: flap 0.1s infinite alternate-reverse;
-      }
-      
-      @keyframes flap {
-        0% { transform: scaleY(1) rotate(-30deg); }
-        100% { transform: scaleY(0.2) rotate(-30deg); }
-      }
-      
-      .page-section {
-          display: none;
-      }
-      .page-section.active {
-          display: block;
-      }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(156, 68, 0, 0.1);
+    transition: all 0.3s ease;
+  }
 
-    </style>
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0px 12px 32px rgba(74, 63, 53, 0.08);
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .icon-filled {
+    font-variation-settings: 'FILL' 1;
+  }
+
+  /* Animated Bees Background */
+  .bee {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    background-color: #e9762b;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .bee::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: -4px;
+    width: 8px;
+    height: 6px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    transform: rotate(-30deg);
+    animation: flap 0.1s infinite alternate;
+  }
+  .bee::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: -4px;
+    width: 8px;
+    height: 6px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    transform: rotate(30deg);
+    animation: flap 0.1s infinite alternate-reverse;
+  }
+
+  @keyframes flap {
+    0% { transform: scaleY(1) rotate(-30deg); }
+    100% { transform: scaleY(0.2) rotate(-30deg); }
+  }
+
+  .page-section {
+    display: none;
+  }
+  .page-section.active {
+    display: block;
+  }
+
+  /* Pulse animation for recording indicator */
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .pulse-animate {
+    animation: pulse-dot 1.5s ease-in-out infinite;
+  }
+
+  /* Smooth card entrance */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .glass-card {
+    animation: fadeSlideUp 0.4s ease-out both;
+  }
+  .glass-card:nth-child(2) { animation-delay: 0.05s; }
+  .glass-card:nth-child(3) { animation-delay: 0.1s; }
+  .glass-card:nth-child(4) { animation-delay: 0.15s; }
+
+  /* Mobile bottom nav */
+  .mobile-nav-item.active-tab .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    color: #9c4400;
+  }
+  .mobile-nav-item.active-tab span:last-child {
+    color: #9c4400;
+    font-weight: 600;
+  }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #31312b;
+    color: #f4f0e7;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
 <!-- Libraries -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -238,793 +241,1178 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body class="text-on-background font-body-md antialiased min-h-screen relative pb-24 md:pb-0 md:pt-20">
+
+<!-- Toast container -->
+<div class="toast" id="toast"></div>
+
 <!-- TopNavBar (Desktop) -->
-<nav class="hidden md:flex fixed top-0 left-0 w-full z-50 justify-between items-center px-container-padding h-20 bg-surface/70 dark:bg-surface/70 backdrop-blur-xl border-b border-primary/10 dark:border-outline-variant/20 shadow-sm transition-colors hover:bg-primary-container/10">
-<div class="font-headline-lg text-headline-lg font-bold tracking-tight text-primary dark:text-primary-fixed-dim cursor-pointer" onclick="switchPage('dashboard')">
-            SMART HONEY BEE HIVE
-        </div>
-<div class="flex items-center gap-gutter" id="navLinks">
-<a class="nav-link text-primary font-semibold border-b-2 border-primary h-20 flex items-center px-2 font-label-sm text-label-sm cursor-pointer" data-target="dashboard" onclick="switchPage('dashboard')">Dashboard</a>
-<a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="analytics" onclick="switchPage('analytics')">Hive Analytics</a>
-<a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="acoustic" onclick="switchPage('acoustic')">Acoustic Data</a>
-<a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="settings" onclick="switchPage('settings')">Settings</a>
-<div class="flex items-center gap-unit ml-4">
-<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:bg-primary-container/10 transition-colors p-2 rounded-full cursor-pointer" data-icon="sensors">sensors</span>
-<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:bg-primary-container/10 transition-colors p-2 rounded-full cursor-pointer" data-icon="mic">mic</span>
-<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:bg-primary-container/10 transition-colors p-2 rounded-full cursor-pointer" data-icon="sync">sync</span>
-</div>
-</div>
+<nav class="hidden md:flex fixed top-0 left-0 w-full z-50 justify-between items-center px-container-padding h-20 bg-surface/70 backdrop-blur-xl border-b border-primary/10 shadow-sm transition-colors">
+  <div class="font-headline-lg text-headline-lg font-bold tracking-tight text-primary cursor-pointer" onclick="switchPage('dashboard')">
+    SMART HONEY BEE HIVE
+  </div>
+  <div class="flex items-center gap-gutter" id="navLinks">
+    <a class="nav-link text-primary font-semibold border-b-2 border-primary h-20 flex items-center px-2 font-label-sm text-label-sm cursor-pointer" data-target="dashboard" onclick="switchPage('dashboard')">Dashboard</a>
+    <a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="analytics" onclick="switchPage('analytics')">Hive Analytics</a>
+    <a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="acoustic" onclick="switchPage('acoustic')">Acoustic Data</a>
+    <a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="settings" onclick="switchPage('settings')">Settings</a>
+    <div class="flex items-center gap-unit ml-4">
+      <span class="material-symbols-outlined text-primary hover:bg-primary-container/10 transition-colors p-2 rounded-full cursor-pointer" title="Sensor Status" id="navSensorIcon">sensors</span>
+      <span class="material-symbols-outlined text-primary hover:bg-primary-container/10 transition-colors p-2 rounded-full cursor-pointer" title="Mic Status" id="navMicIcon">mic</span>
+    </div>
+  </div>
 </nav>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 bg-surface/90 backdrop-blur-xl border-t border-primary/10 shadow-lg">
+  <button class="mobile-nav-item active-tab flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-colors" data-target="dashboard" onclick="switchPage('dashboard')">
+    <span class="material-symbols-outlined text-[22px]">dashboard</span>
+    <span class="text-[10px] font-label-sm">Dashboard</span>
+  </button>
+  <button class="mobile-nav-item flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-colors text-on-surface-variant" data-target="analytics" onclick="switchPage('analytics')">
+    <span class="material-symbols-outlined text-[22px]">analytics</span>
+    <span class="text-[10px] font-label-sm">Analytics</span>
+  </button>
+  <button class="mobile-nav-item flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-colors text-on-surface-variant" data-target="acoustic" onclick="switchPage('acoustic')">
+    <span class="material-symbols-outlined text-[22px]">graphic_eq</span>
+    <span class="text-[10px] font-label-sm">Acoustic</span>
+  </button>
+  <button class="mobile-nav-item flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-colors text-on-surface-variant" data-target="settings" onclick="switchPage('settings')">
+    <span class="material-symbols-outlined text-[22px]">settings</span>
+    <span class="text-[10px] font-label-sm">Settings</span>
+  </button>
+</nav>
+
 <main class="max-w-[1440px] mx-auto px-container-padding py-gutter">
+
 <!-- Header Section (Always Visible) -->
 <header class="mb-8 md:mt-8 pt-8 md:pt-0">
-<h1 class="font-headline-lg-mobile md:font-display-lg text-headline-lg-mobile md:text-display-lg text-primary mb-2">SMART HONEY BEE HIVE</h1>
-<p class="font-body-md text-on-surface-variant mb-6 max-w-2xl">Real-Time Hive Health Monitoring and Prediction System</p>
-<div class="flex flex-wrap gap-4 font-label-sm text-label-sm">
-<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-primary/10">
-<span class="w-2 h-2 rounded-full bg-secondary" id="deviceStatusIcon"></span>
-<span class="text-on-surface" id="deviceStatusText">Connecting...</span>
-</div>
-<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-primary/10">
-<span class="material-symbols-outlined text-primary cursor-pointer" data-icon="mic_off" id="micToggle">mic_off</span>
-<span class="text-on-surface" id="micStatusText">Mic Offline</span>
-</div>
-<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-primary/10">
-<span class="material-symbols-outlined text-tertiary text-[16px]" data-icon="schedule">schedule</span>
-<span class="text-on-surface" id="lastSeen">Last Seen: --</span>
-</div>
-<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-primary/10">
-<span class="material-symbols-outlined text-tertiary text-[16px]" data-icon="watch_later">watch_later</span>
-<span class="text-on-surface" id="currentTimeDisplay">--:--:--</span>
-</div>
-</div>
+  <h1 class="font-headline-lg-mobile md:font-display-lg text-headline-lg-mobile md:text-display-lg text-primary mb-2">SMART HONEY BEE HIVE</h1>
+  <p class="font-body-md text-on-surface-variant mb-6 max-w-2xl">Real-Time Hive Health Monitoring and Prediction System</p>
+  <div class="flex flex-wrap gap-4 font-label-sm text-label-sm">
+    <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-primary/10">
+      <span class="w-2 h-2 rounded-full bg-secondary" id="deviceStatusIcon"></span>
+      <span class="text-on-surface" id="deviceStatusText">Connecting...</span>
+    </div>
+    <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-primary/10 cursor-pointer" id="micToggleArea">
+      <span class="material-symbols-outlined text-primary cursor-pointer" id="micToggle">mic_off</span>
+      <span class="text-on-surface" id="micStatusText">Mic Offline</span>
+    </div>
+    <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-primary/10">
+      <span class="material-symbols-outlined text-tertiary text-[16px]">schedule</span>
+      <span class="text-on-surface" id="lastSeen">Last Seen: --</span>
+    </div>
+    <div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-primary/10">
+      <span class="material-symbols-outlined text-tertiary text-[16px]">watch_later</span>
+      <span class="text-on-surface" id="currentTimeDisplay">--:--:--</span>
+    </div>
+  </div>
 </header>
+
 <!-- PAGE: DASHBOARD -->
 <div class="page-section active" id="page-dashboard">
-<!-- Hero Stats (Bento Grid) -->
-<section class="grid grid-cols-1 md:grid-cols-12 gap-card-gap mb-gutter">
-<!-- Hive Temperature -->
-<div class="glass-card rounded-xl p-[24px] md:col-span-3 flex flex-col justify-between h-48">
-<div class="flex justify-between items-start">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Hive Temp</span>
-<span class="material-symbols-outlined text-primary" data-icon="thermostat">thermostat</span>
+  <!-- Hero Stats (Bento Grid) -->
+  <section class="grid grid-cols-2 md:grid-cols-12 gap-card-gap mb-gutter">
+    <!-- Hive Temperature -->
+    <div class="glass-card rounded-xl p-[24px] md:col-span-3 flex flex-col justify-between h-48" id="card-hive-temp">
+      <div class="flex justify-between items-start">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Hive Temp</span>
+        <span class="material-symbols-outlined text-primary">thermostat</span>
+      </div>
+      <div>
+        <div class="flex items-baseline gap-2">
+          <span class="font-data-lg text-data-lg text-on-surface" id="tempValue">--</span>
+          <span class="font-body-md text-on-surface-variant">°C</span>
+        </div>
+        <div class="flex items-center gap-2 mt-2 font-label-sm text-label-sm text-on-surface-variant">
+          <span class="material-symbols-outlined text-[14px]">history</span>
+          <span id="tempTime">--:--</span>
+        </div>
+      </div>
+    </div>
+    <!-- Hive Humidity -->
+    <div class="glass-card rounded-xl p-[24px] md:col-span-3 flex flex-col justify-between h-48" id="card-hive-hum">
+      <div class="flex justify-between items-start">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Hive Humidity</span>
+        <span class="material-symbols-outlined text-primary">humidity_percentage</span>
+      </div>
+      <div>
+        <div class="flex items-baseline gap-2">
+          <span class="font-data-lg text-data-lg text-on-surface" id="humValue">--</span>
+          <span class="font-body-md text-on-surface-variant">%</span>
+        </div>
+        <div class="flex items-center gap-2 mt-2 font-label-sm text-label-sm text-on-surface-variant">
+          <span class="material-symbols-outlined text-[14px]">history</span>
+          <span id="humTime">--:--</span>
+        </div>
+      </div>
+    </div>
+    <!-- Outside Temperature -->
+    <div class="glass-card rounded-xl p-[24px] md:col-span-3 flex flex-col justify-between h-48" id="card-out-temp">
+      <div class="flex justify-between items-start">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Outside Temp</span>
+        <span class="material-symbols-outlined text-primary">thermostat</span>
+      </div>
+      <div>
+        <div class="flex items-baseline gap-2">
+          <span class="font-data-lg text-data-lg text-on-surface" id="outTempValue">--</span>
+          <span class="font-body-md text-on-surface-variant">°C</span>
+        </div>
+        <div class="flex items-center gap-2 mt-2 font-label-sm text-label-sm text-on-surface-variant">
+          <span class="material-symbols-outlined text-[14px]">history</span>
+          <span id="outTempTime">--:--</span>
+        </div>
+      </div>
+    </div>
+    <!-- Outside Humidity -->
+    <div class="glass-card rounded-xl p-[24px] md:col-span-3 flex flex-col justify-between h-48" id="card-out-hum">
+      <div class="flex justify-between items-start">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Outside Humidity</span>
+        <span class="material-symbols-outlined text-primary">humidity_percentage</span>
+      </div>
+      <div>
+        <div class="flex items-baseline gap-2">
+          <span class="font-data-lg text-data-lg text-on-surface" id="outHumValue">--</span>
+          <span class="font-body-md text-on-surface-variant">%</span>
+        </div>
+        <div class="flex items-center gap-2 mt-2 font-label-sm text-label-sm text-on-surface-variant">
+          <span class="material-symbols-outlined text-[14px]">history</span>
+          <span id="outHumTime">--:--</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bee Activity & Audio Stats -->
+  <section class="grid grid-cols-1 md:grid-cols-12 gap-card-gap mb-gutter">
+    <!-- Bees Inside -->
+    <div class="glass-card rounded-xl p-[24px] md:col-span-8 flex flex-col justify-between h-48 relative overflow-hidden">
+      <div class="flex justify-between items-start z-10 relative">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Net Bees Inside</span>
+        <button class="text-primary hover:bg-primary/10 p-1 rounded transition-colors" id="resetCountBtn" title="Reset Count">
+          <span class="material-symbols-outlined">restart_alt</span>
+        </button>
+      </div>
+      <div class="z-10 relative mt-4">
+        <div class="flex items-baseline gap-2 mb-4">
+          <span class="font-data-lg text-data-lg text-on-surface" id="netValue">--</span>
+          <span class="font-body-md text-on-surface-variant">Bees</span>
+        </div>
+        <div class="flex gap-6 mt-2 font-label-sm text-label-sm">
+          <div class="flex items-center gap-2 text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10">
+            <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+            IN: <span class="font-bold text-[14px]" id="inValue">--</span>
+          </div>
+          <div class="flex items-center gap-2 text-secondary bg-secondary/5 px-3 py-1 rounded-full border border-secondary/10">
+            <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+            OUT: <span class="font-bold text-[14px]" id="outValue">--</span>
+          </div>
+        </div>
+      </div>
+      <span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-primary/5 select-none">hive</span>
+    </div>
+    <!-- Audio Clips -->
+    <div class="glass-card rounded-xl p-[24px] md:col-span-4 flex flex-col justify-between h-48 bg-primary-container text-on-primary-container border-none shadow-md cursor-pointer hover:bg-primary-container/90 transition-colors" onclick="switchPage('acoustic')">
+      <div class="flex justify-between items-start">
+        <span class="font-label-sm text-label-sm text-on-primary-container/80 uppercase tracking-wider">Latest Audio</span>
+        <span class="material-symbols-outlined icon-filled">graphic_eq</span>
+      </div>
+      <div>
+        <div class="flex items-baseline gap-2">
+          <span class="font-data-lg text-data-lg" id="dashboardAudioCount">--</span>
+        </div>
+        <div class="mt-2 font-label-sm text-label-sm text-on-primary-container/80">
+          View Acoustic Data →
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
-<div>
-<div class="flex items-baseline gap-2">
-<span class="font-data-lg text-data-lg text-on-surface" id="tempValue">--</span>
-<span class="font-body-md text-on-surface-variant">°C</span>
-</div>
-<div class="flex items-center gap-2 mt-2 font-label-sm text-label-sm text-on-surface-variant">
-<span class="material-symbols-outlined text-[14px]" data-icon="history">history</span>
-<span id="tempTime">--:--</span>
-</div>
-</div>
-</div>
-<!-- Hive Humidity -->
-<div class="glass-card rounded-xl p-[24px] md:col-span-3 flex flex-col justify-between h-48">
-<div class="flex justify-between items-start">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Hive Humidity</span>
-<span class="material-symbols-outlined text-primary" data-icon="humidity_percentage">humidity_percentage</span>
-</div>
-<div>
-<div class="flex items-baseline gap-2">
-<span class="font-data-lg text-data-lg text-on-surface" id="humValue">--</span>
-<span class="font-body-md text-on-surface-variant">%</span>
-</div>
-<div class="flex items-center gap-2 mt-2 font-label-sm text-label-sm text-on-surface-variant">
-<span class="material-symbols-outlined text-[14px]" data-icon="history">history</span>
-<span id="humTime">--:--</span>
-</div>
-</div>
-</div>
-<!-- Outside Temperature -->
-<div class="glass-card rounded-xl p-[24px] md:col-span-3 flex flex-col justify-between h-48">
-<div class="flex justify-between items-start">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Outside Temp</span>
-<span class="material-symbols-outlined text-primary" data-icon="thermostat">thermostat</span>
-</div>
-<div>
-<div class="flex items-baseline gap-2">
-<span class="font-data-lg text-data-lg text-on-surface" id="outTempValue">--</span>
-<span class="font-body-md text-on-surface-variant">°C</span>
-</div>
-<div class="flex items-center gap-2 mt-2 font-label-sm text-label-sm text-on-surface-variant">
-<span class="material-symbols-outlined text-[14px]" data-icon="history">history</span>
-<span id="outTempTime">--:--</span>
-</div>
-</div>
-</div>
-<!-- Outside Humidity -->
-<div class="glass-card rounded-xl p-[24px] md:col-span-3 flex flex-col justify-between h-48">
-<div class="flex justify-between items-start">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Outside Humidity</span>
-<span class="material-symbols-outlined text-primary" data-icon="humidity_percentage">humidity_percentage</span>
-</div>
-<div>
-<div class="flex items-baseline gap-2">
-<span class="font-data-lg text-data-lg text-on-surface" id="outHumValue">--</span>
-<span class="font-body-md text-on-surface-variant">%</span>
-</div>
-<div class="flex items-center gap-2 mt-2 font-label-sm text-label-sm text-on-surface-variant">
-<span class="material-symbols-outlined text-[14px]" data-icon="history">history</span>
-<span id="outHumTime">--:--</span>
-</div>
-</div>
-</div>
-</section>
-<!-- Bee Activity & Audio Stats -->
-<section class="grid grid-cols-1 md:grid-cols-12 gap-card-gap mb-gutter">
-<!-- Bees Inside -->
-<div class="glass-card rounded-xl p-[24px] md:col-span-8 flex flex-col justify-between h-48 relative overflow-hidden">
-<div class="flex justify-between items-start z-10 relative">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Net Bees Inside</span>
-<button class="text-primary hover:bg-primary/10 p-1 rounded transition-colors" id="resetCountBtn" title="Reset Count">
-<span class="material-symbols-outlined" data-icon="restart_alt">restart_alt</span>
-</button>
-</div>
-<div class="z-10 relative mt-4">
-<div class="flex items-baseline gap-2 mb-4">
-<span class="font-data-lg text-data-lg text-on-surface" id="netValue">--</span>
-<span class="font-body-md text-on-surface-variant">Bees</span>
-</div>
-<div class="flex gap-6 mt-2 font-label-sm text-label-sm">
-<div class="flex items-center gap-2 text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10">
-<span class="material-symbols-outlined text-[16px]" data-icon="arrow_downward">arrow_downward</span>
-                            IN: <span class="font-bold text-[14px]" id="inValue">--</span>
-</div>
-<div class="flex items-center gap-2 text-secondary bg-secondary/5 px-3 py-1 rounded-full border border-secondary/10">
-<span class="material-symbols-outlined text-[16px]" data-icon="arrow_upward">arrow_upward</span>
-                            OUT: <span class="font-bold text-[14px]" id="outValue">--</span>
-</div>
-</div>
-</div>
-<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-primary/5 select-none" data-icon="hive">hive</span>
-</div>
-<!-- Audio Clips -->
-<div class="glass-card rounded-xl p-[24px] md:col-span-4 flex flex-col justify-between h-48 bg-primary-container text-on-primary-container border-none shadow-md cursor-pointer hover:bg-primary-container/90 transition-colors" onclick="switchPage('acoustic')">
-<div class="flex justify-between items-start">
-<span class="font-label-sm text-label-sm text-on-primary-container/80 uppercase tracking-wider">Latest Audio</span>
-<span class="material-symbols-outlined icon-filled" data-icon="graphic_eq">graphic_eq</span>
-</div>
-<div>
-<div class="flex items-baseline gap-2">
-<span class="font-data-lg text-data-lg" id="dashboardAudioCount">--</span>
-</div>
-<div class="mt-2 font-label-sm text-label-sm text-on-primary-container/80">
-                        View Acoustic Data
-                    </div>
-</div>
-</div>
-</section>
-</div>
+
 <!-- PAGE: HIVE ANALYTICS -->
 <div class="page-section" id="page-analytics">
-<!-- Environmental Section -->
-<section class="mb-gutter glass-card rounded-xl p-[24px]">
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Historical Trend</h2>
-<div class="flex flex-wrap items-center gap-3">
-<div class="flex items-center bg-surface-container-low border border-outline-variant rounded focus-within:border-secondary transition-colors">
-<input class="bg-transparent border-none text-on-surface font-label-sm text-label-sm focus:ring-0 p-2" id="exportStart" type="datetime-local"/>
+  <section class="mb-gutter glass-card rounded-xl p-[24px]">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Historical Trend</h2>
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center bg-surface-container-low border border-outline-variant rounded focus-within:border-secondary transition-colors">
+          <input class="bg-transparent border-none text-on-surface font-label-sm text-label-sm focus:ring-0 p-2" id="exportStart" type="datetime-local"/>
+        </div>
+        <span class="text-on-surface-variant font-label-sm">to</span>
+        <div class="flex items-center bg-surface-container-low border border-outline-variant rounded focus-within:border-secondary transition-colors">
+          <input class="bg-transparent border-none text-on-surface font-label-sm text-label-sm focus:ring-0 p-2" id="exportEnd" type="datetime-local"/>
+        </div>
+        <button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-2 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-2" id="exportEnvBtn">
+          <span class="material-symbols-outlined text-[18px]">download</span>
+          Export Excel
+        </button>
+      </div>
+    </div>
+    <div class="w-full h-80 relative mb-8">
+      <canvas id="trendChart"></canvas>
+    </div>
+    <!-- Data Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-left font-label-sm text-label-sm text-on-surface">
+        <thead>
+          <tr class="border-b border-outline-variant text-on-surface-variant uppercase tracking-wider">
+            <th class="py-3 px-4 font-semibold">Date</th>
+            <th class="py-3 px-4 font-semibold">Time</th>
+            <th class="py-3 px-4 font-semibold">Hive Temp (°C)</th>
+            <th class="py-3 px-4 font-semibold">Hive Hum (%)</th>
+            <th class="py-3 px-4 font-semibold">Outside Temp (°C)</th>
+            <th class="py-3 px-4 font-semibold">Outside Hum (%)</th>
+          </tr>
+        </thead>
+        <tbody id="analyticsTableBody">
+          <tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="6">Loading historical data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>
-<span class="text-on-surface-variant font-label-sm">to</span>
-<div class="flex items-center bg-surface-container-low border border-outline-variant rounded focus-within:border-secondary transition-colors">
-<input class="bg-transparent border-none text-on-surface font-label-sm text-label-sm focus:ring-0 p-2" id="exportEnd" type="datetime-local"/>
-</div>
-<button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-2 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-2" id="exportEnvBtn">
-<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
-                        Export Excel
-                    </button>
-</div>
-</div>
-<div class="w-full h-80 relative mb-8">
-<canvas id="trendChart"></canvas>
-</div>
-<!-- Data Table -->
-<div class="overflow-x-auto">
-<table class="w-full text-left font-label-sm text-label-sm text-on-surface">
-<thead>
-<tr class="border-b border-outline-variant text-on-surface-variant uppercase tracking-wider">
-<th class="py-3 px-4 font-semibold">Date</th>
-<th class="py-3 px-4 font-semibold">Time</th>
-<th class="py-3 px-4 font-semibold">Hive Temp (°C)</th>
-<th class="py-3 px-4 font-semibold">Hive Hum (%)</th>
-<th class="py-3 px-4 font-semibold">Outside Temp (°C)</th>
-<th class="py-3 px-4 font-semibold">Outside Hum (%)</th>
-</tr>
-</thead>
-<tbody id="analyticsTableBody">
-<!-- Populated by JS -->
-<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="6">Loading historical data...</td></tr>
-</tbody>
-</table>
-</div>
-</section>
-</div>
+
 <!-- PAGE: ACOUSTIC DATA -->
 <div class="page-section" id="page-acoustic">
-<section class="glass-card rounded-xl p-[24px] flex flex-col">
-<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-6">Hive Acoustic Search</h2>
-<!-- Search Bar -->
-<div class="flex flex-wrap gap-3 mb-6 p-4 bg-surface-container-low rounded-lg border border-primary/10 justify-between items-center">
-<div class="flex flex-wrap gap-3">
-<input class="bg-surface border border-outline-variant rounded text-on-surface font-label-sm text-label-sm focus:ring-1 focus:ring-secondary focus:border-secondary p-2" id="searchDate" type="date"/>
-<input class="bg-surface border border-outline-variant rounded text-on-surface font-label-sm text-label-sm focus:ring-1 focus:ring-secondary focus:border-secondary p-2" id="searchTime" type="time"/>
-<button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors flex items-center gap-2" id="searchBtn">
-<span class="material-symbols-outlined text-[18px]" data-icon="search">search</span>
-                                Search
-                            </button>
-<button class="text-on-surface-variant font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-container-high transition-colors" id="clearSearchBtn">
-                                Clear
-                            </button>
+  <section class="glass-card rounded-xl p-[24px] flex flex-col">
+    <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-6">Hive Acoustic Search</h2>
+    <!-- Search Bar -->
+    <div class="flex flex-wrap gap-3 mb-6 p-4 bg-surface-container-low rounded-lg border border-primary/10 justify-between items-center">
+      <div class="flex flex-wrap gap-3">
+        <input class="bg-surface border border-outline-variant rounded text-on-surface font-label-sm text-label-sm focus:ring-1 focus:ring-secondary focus:border-secondary p-2" id="searchDate" type="date"/>
+        <input class="bg-surface border border-outline-variant rounded text-on-surface font-label-sm text-label-sm focus:ring-1 focus:ring-secondary focus:border-secondary p-2" id="searchTime" type="time"/>
+        <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors flex items-center gap-2" id="searchBtn">
+          <span class="material-symbols-outlined text-[18px]">search</span>
+          Search
+        </button>
+        <button class="text-on-surface-variant font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-container-high transition-colors" id="clearSearchBtn">
+          Clear
+        </button>
+      </div>
+      <button class="hidden bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-2 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-2" id="downloadMatchesBtn">
+        <span class="material-symbols-outlined text-[18px]">download</span>
+        Download Selected
+      </button>
+    </div>
+    <!-- Clips Container -->
+    <div class="flex flex-col gap-3 overflow-y-auto max-h-[600px] pr-2" id="clipsContainer">
+      <div class="text-on-surface-variant font-body-md italic p-4 text-center">Loading recordings...</div>
+    </div>
+  </section>
 </div>
-<button class="hidden bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-2 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-2" id="downloadMatchesBtn">
-<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
-        Download Matches
-    </button>
-</div>
-<!-- Clips Container -->
-<div class="flex flex-col gap-3 overflow-y-auto max-h-[600px] pr-2" id="clipsContainer">
-<!-- Populated by JS -->
-<div class="text-on-surface-variant font-body-md italic p-4 text-center">Loading recordings...</div>
-</div>
-</section>
-</div>
+
 <!-- PAGE: SETTINGS -->
 <div class="page-section" id="page-settings">
-<section class="glass-card rounded-xl p-[24px] flex flex-col max-w-2xl">
-<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-6">System Settings</h2>
-<div class="flex flex-col gap-6">
-<div class="flex flex-col gap-2">
-<h3 class="font-headline-lg-mobile text-lg text-primary">Bee Sensor Tuning</h3>
-<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mt-2" for="sensorTiming">Sensor Timing Window (ms)</label>
-<input class="bg-surface-container-low border border-outline-variant rounded text-on-surface font-data-lg text-lg focus:ring-1 focus:ring-secondary focus:border-secondary p-3 w-full" id="sensorTiming" placeholder="e.g. 50" type="number"/>
-<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">
-                        Adjusting this window affects the sensitivity of the IR break-beam sensors used for IN/OUT counting.
-                    </p>
-<div class="flex gap-2 mt-4">
-<button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-6 py-3 rounded shadow-sm hover:bg-primary/90 transition-colors" id="saveSettingsBtn">
-                            Save Tuning
-                        </button>
-<button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase tracking-wider px-6 py-3 rounded shadow-sm hover:bg-surface-variant transition-colors" id="resetSettingsBtn">
-                            Reset
-                        </button>
-</div>
-</div>
-<hr class="border-outline-variant/30"/>
-<div class="flex flex-col gap-2">
-<h3 class="font-headline-lg-mobile text-lg text-primary">Device Details</h3>
-<div class="grid grid-cols-2 gap-4 mt-2 font-label-sm text-label-sm">
-<div>
-<span class="text-on-surface-variant uppercase tracking-wider">Device ID:</span>
-<div class="font-data-lg text-on-surface text-base">HIVE-MON-001</div>
-</div>
-<div>
-<span class="text-on-surface-variant uppercase tracking-wider">Firmware Version:</span>
-<div class="font-data-lg text-on-surface text-base">v1.2.4</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-</div>
-</main>
-<!-- Footer -->
-<footer class="fixed bottom-0 left-0 w-full z-40 flex flex-col md:flex-row justify-between items-center px-container-padding py-2 bg-surface-container-lowest/50 dark:bg-surface-dim/20 backdrop-blur-md border-t border-outline-variant/30 text-tertiary dark:text-tertiary-fixed-dim font-label-sm text-label-sm">
-<div class="font-black uppercase text-primary mb-1 md:mb-0" id="footerYearText">
-            © SMART HIVE MONITORING SYSTEM
+  <section class="glass-card rounded-xl p-[24px] flex flex-col max-w-2xl">
+    <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-6">System Settings</h2>
+    <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-2">
+        <h3 class="font-headline-lg-mobile text-lg text-primary">Bee Sensor Tuning</h3>
+        <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mt-2" for="sensorTiming">Sensor Timing Window (ms)</label>
+        <input class="bg-surface-container-low border border-outline-variant rounded text-on-surface font-data-lg text-lg focus:ring-1 focus:ring-secondary focus:border-secondary p-3 w-full" id="sensorTiming" placeholder="e.g. 1500" type="number" min="100" max="10000"/>
+        <p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">
+          Adjusting this window affects the sensitivity of the IR break-beam sensors used for IN/OUT counting. Default: 1500ms.
+        </p>
+        <div class="flex gap-2 mt-4">
+          <button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-6 py-3 rounded shadow-sm hover:bg-primary/90 transition-colors" id="saveSettingsBtn">
+            Save Tuning
+          </button>
+          <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase tracking-wider px-6 py-3 rounded shadow-sm hover:bg-surface-variant transition-colors" id="resetSettingsBtn">
+            Reset to Default
+          </button>
         </div>
-<div class="flex gap-4">
-<a class="text-on-tertiary-fixed-variant hover:text-primary transition-colors" href="#">System Health: Optimal</a>
-<a class="text-on-tertiary-fixed-variant hover:text-primary transition-colors" href="#">Auto-refresh: 30s</a>
-<a class="text-on-tertiary-fixed-variant hover:text-primary transition-colors" href="#">API Status</a>
+      </div>
+      <hr class="border-outline-variant/30"/>
+      <div class="flex flex-col gap-2">
+        <h3 class="font-headline-lg-mobile text-lg text-primary">Data Collection</h3>
+        <div class="grid grid-cols-2 gap-4 mt-2 font-label-sm text-label-sm">
+          <div>
+            <span class="text-on-surface-variant uppercase tracking-wider">Sensor Interval:</span>
+            <div class="font-data-lg text-on-surface text-base">Every 5 min</div>
+          </div>
+          <div>
+            <span class="text-on-surface-variant uppercase tracking-wider">Audio Chunk:</span>
+            <div class="font-data-lg text-on-surface text-base">2.5 min</div>
+          </div>
+        </div>
+      </div>
+      <hr class="border-outline-variant/30"/>
+      <div class="flex flex-col gap-2">
+        <h3 class="font-headline-lg-mobile text-lg text-primary">Device Details</h3>
+        <div class="grid grid-cols-2 gap-4 mt-2 font-label-sm text-label-sm">
+          <div>
+            <span class="text-on-surface-variant uppercase tracking-wider">Device ID:</span>
+            <div class="font-data-lg text-on-surface text-base">HIVE-MON-001</div>
+          </div>
+          <div>
+            <span class="text-on-surface-variant uppercase tracking-wider">Firmware Version:</span>
+            <div class="font-data-lg text-on-surface text-base">v1.2.4</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
+
+</main>
+
+<!-- Footer (visible on desktop, hidden behind mobile nav on mobile) -->
+<footer class="hidden md:flex fixed bottom-0 left-0 w-full z-40 flex-col md:flex-row justify-between items-center px-container-padding py-2 bg-surface-container-lowest/50 backdrop-blur-md border-t border-outline-variant/30 text-tertiary font-label-sm text-label-sm">
+  <div class="font-black uppercase text-primary" id="footerYearText">
+    © SMART HIVE MONITORING SYSTEM
+  </div>
+  <div class="flex gap-4">
+    <span class="text-on-tertiary-fixed-variant" id="footerHealth">System Health: Checking...</span>
+    <span class="text-on-tertiary-fixed-variant">Data: Every 5 min</span>
+    <span class="text-on-tertiary-fixed-variant" id="footerFirebaseStatus">Firebase: Connecting</span>
+  </div>
 </footer>
+
 <script>
-        // --- Navigation Logic ---
-        function switchPage(pageId) {
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.dataset.target === pageId) {
-                    link.classList.add('text-primary', 'font-semibold', 'border-b-2', 'border-primary');
-                    link.classList.remove('text-on-surface-variant', 'font-medium', 'hover:bg-primary-container/10');
-                } else {
-                    link.classList.remove('text-primary', 'font-semibold', 'border-b-2', 'border-primary');
-                    link.classList.add('text-on-surface-variant', 'font-medium', 'hover:bg-primary-container/10');
-                }
-            });
+// =============================================
+// UTILITY FUNCTIONS
+// =============================================
 
-            document.querySelectorAll('.page-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(`page-${pageId}`).classList.add('active');
-            
-            if(pageId === 'analytics' && window.trendChartInstance) {
-                window.trendChartInstance.resize();
-            }
+function showToast(message, duration) {
+  duration = duration || 3000;
+  var toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, duration);
+}
+
+// Parse Firebase timestamp string (IST: "YYYY-MM-DD HH:MM:SS") into JS Date
+function parseFirebaseTimestampToDate(tsString) {
+  if (tsString === null || tsString === undefined || tsString === '') return null;
+  if (tsString instanceof Date) return isNaN(tsString.getTime()) ? null : tsString;
+  if (typeof tsString === 'number') {
+    var d = new Date(tsString);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  if (typeof tsString !== 'string') return null;
+
+  // FIXED: Use \d (not \\d) — the original dashboard had double-escaped backslashes
+  // which made the regex never match any timestamp string.
+  var match = tsString.trim().match(
+    /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/
+  );
+  if (!match) return null;
+
+  var year   = Number(match[1]);
+  var month  = Number(match[2]);
+  var day    = Number(match[3]);
+  var hour   = Number(match[4]);
+  var minute = Number(match[5]);
+  var second = Number(match[6] || 0);
+
+  if (year < 2020 || year > new Date().getFullYear() + 1 ||
+      month < 1 || month > 12 || day < 1 || day > 31 ||
+      hour < 0 || hour > 23 || minute < 0 || minute > 59 ||
+      second < 0 || second > 59) return null;
+
+  // Interpret as Asia/Kolkata (IST = UTC+5:30), convert to UTC millis
+  var utcMillis = Date.UTC(year, month - 1, day, hour, minute, second) - (5.5 * 60 * 60 * 1000);
+  var d = new Date(utcMillis);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatFirebaseTimestamp(tsString) {
+  var dt = parseFirebaseTimestampToDate(tsString);
+  if (!dt) return '--';
+  return new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: true
+  }).format(dt);
+}
+
+function formatTimeOnly(tsString) {
+  var dt = parseFirebaseTimestampToDate(tsString);
+  if (!dt) return '--:--';
+  return new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit', minute: '2-digit',
+    hour12: true
+  }).format(dt);
+}
+
+function formatDateIST(dt) {
+  return new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit', month: 'short', year: 'numeric'
+  }).format(dt);
+}
+
+function formatTimeIST(dt) {
+  return new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: true
+  }).format(dt);
+}
+
+// Get IST date string for chart labels (compact)
+function formatChartLabel(tsString) {
+  var dt = parseFirebaseTimestampToDate(tsString);
+  if (!dt) return '';
+  return new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit', month: 'short',
+    hour: '2-digit', minute: '2-digit',
+    hour12: false
+  }).format(dt);
+}
+
+// =============================================
+// NAVIGATION
+// =============================================
+
+function switchPage(pageId) {
+  // Desktop nav links
+  document.querySelectorAll('.nav-link').forEach(function(link) {
+    if (link.dataset.target === pageId) {
+      link.classList.add('text-primary', 'font-semibold', 'border-b-2', 'border-primary');
+      link.classList.remove('text-on-surface-variant', 'font-medium', 'hover:bg-primary-container/10');
+    } else {
+      link.classList.remove('text-primary', 'font-semibold', 'border-b-2', 'border-primary');
+      link.classList.add('text-on-surface-variant', 'font-medium', 'hover:bg-primary-container/10');
+    }
+  });
+
+  // Mobile nav items
+  document.querySelectorAll('.mobile-nav-item').forEach(function(item) {
+    if (item.dataset.target === pageId) {
+      item.classList.add('active-tab');
+      item.classList.remove('text-on-surface-variant');
+    } else {
+      item.classList.remove('active-tab');
+      item.classList.add('text-on-surface-variant');
+    }
+  });
+
+  // Page sections
+  document.querySelectorAll('.page-section').forEach(function(section) {
+    section.classList.remove('active');
+  });
+  var target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+
+  // Resize chart if switching to analytics
+  if (pageId === 'analytics' && window.trendChartInstance) {
+    setTimeout(function() { window.trendChartInstance.resize(); }, 50);
+  }
+}
+
+// =============================================
+// ANIMATED BEES
+// =============================================
+
+function createBee() {
+  var bee = document.createElement('div');
+  bee.className = 'bee';
+  document.body.appendChild(bee);
+
+  var x = Math.random() * window.innerWidth;
+  var y = Math.random() * window.innerHeight;
+  var angle = Math.random() * Math.PI * 2;
+  var speed = 0.8 + Math.random() * 1.2;
+
+  function animateBee() {
+    angle += (Math.random() - 0.5) * 0.15;
+    x += Math.cos(angle) * speed;
+    y += Math.sin(angle) * speed;
+
+    if (x < -20) x = window.innerWidth + 20;
+    if (x > window.innerWidth + 20) x = -20;
+    if (y < -20) y = window.innerHeight + 20;
+    if (y > window.innerHeight + 20) y = -20;
+
+    var rotation = angle * (180 / Math.PI) + 90;
+    bee.style.transform = 'translate(' + x + 'px, ' + y + 'px) rotate(' + rotation + 'deg)';
+    requestAnimationFrame(animateBee);
+  }
+  animateBee();
+}
+
+// =============================================
+// LIVE CLOCK
+// =============================================
+
+function startClock() {
+  var clockEl = document.getElementById('currentTimeDisplay');
+  function update() {
+    if (!clockEl) return;
+    clockEl.textContent = new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: true
+    }).format(new Date());
+  }
+  update();
+  setInterval(update, 1000);
+}
+
+// =============================================
+// STATUS MANAGEMENT
+// =============================================
+
+var isConnected = false;
+var lastSeenDate = null;
+
+function checkSensorStatus() {
+  if (!isConnected) {
+    updateStatus('error');
+    return;
+  }
+  if (lastSeenDate) {
+    var now = new Date();
+    var diffSec = (now - lastSeenDate) / 1000;
+    if (diffSec > 120) {
+      updateStatus('offline');
+    } else {
+      updateStatus('online');
+    }
+  }
+}
+
+function updateStatus(state) {
+  var icon = document.getElementById('deviceStatusIcon');
+  var text = document.getElementById('deviceStatusText');
+  var footer = document.getElementById('footerFirebaseStatus');
+
+  if (state === 'online') {
+    icon.className = 'w-2 h-2 rounded-full bg-green-500 pulse-animate';
+    text.textContent = 'Sensor Online';
+    if (footer) footer.textContent = 'Firebase: Connected';
+    document.getElementById('footerHealth').textContent = 'System Health: Optimal';
+  } else if (state === 'offline') {
+    icon.className = 'w-2 h-2 rounded-full bg-yellow-500';
+    text.textContent = 'Sensor Offline (>2 min)';
+    if (footer) footer.textContent = 'Firebase: Connected';
+    document.getElementById('footerHealth').textContent = 'System Health: Sensor Timeout';
+  } else {
+    icon.className = 'w-2 h-2 rounded-full bg-red-500';
+    text.textContent = 'Firebase Disconnected';
+    if (footer) footer.textContent = 'Firebase: Disconnected';
+    document.getElementById('footerHealth').textContent = 'System Health: Error';
+  }
+}
+
+// =============================================
+// CHART
+// =============================================
+
+function initChart() {
+  var ctx = document.getElementById('trendChart');
+  if (!ctx) return;
+
+  window.trendChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: 'Hive Temp (°C)',
+          data: [],
+          borderColor: '#9c4400',
+          backgroundColor: 'rgba(156, 68, 0, 0.1)',
+          tension: 0.4,
+          fill: false,
+          pointRadius: 3,
+          pointHoverRadius: 6,
+          borderWidth: 2
+        },
+        {
+          label: 'Hive Humidity (%)',
+          data: [],
+          borderColor: '#feb700',
+          backgroundColor: 'rgba(254, 183, 0, 0.1)',
+          tension: 0.4,
+          fill: false,
+          pointRadius: 3,
+          pointHoverRadius: 6,
+          borderWidth: 2
+        },
+        {
+          label: 'Outside Temp (°C)',
+          data: [],
+          borderColor: '#e9762b',
+          backgroundColor: 'rgba(233, 118, 43, 0.1)',
+          borderDash: [5, 5],
+          tension: 0.4,
+          fill: false,
+          pointRadius: 2,
+          pointHoverRadius: 5,
+          borderWidth: 1.5
+        },
+        {
+          label: 'Outside Humidity (%)',
+          data: [],
+          borderColor: '#7c5800',
+          backgroundColor: 'rgba(124, 88, 0, 0.1)',
+          borderDash: [5, 5],
+          tension: 0.4,
+          fill: false,
+          pointRadius: 2,
+          pointHoverRadius: 5,
+          borderWidth: 1.5
         }
-
-        // --- Date & Time Utils ---
-        function parseFirebaseTimestampToDate(tsString) {
-            if (tsString === null || tsString === undefined || tsString === '') return null;
-
-            if (tsString instanceof Date) {
-                return Number.isNaN(tsString.getTime()) ? null : tsString;
-            }
-
-            if (typeof tsString === 'number') {
-                const d = new Date(tsString);
-                return Number.isNaN(d.getTime()) ? null : d;
-            }
-
-            if (typeof tsString !== 'string') return null;
-
-            // Firebase stores timestamps as India local time:
-            // YYYY-MM-DD HH:MM:SS
-            const match = tsString.trim().match(
-                /^(\\d{4})-(\\d{2})-(\\d{2})[ T](\\d{2}):(\\d{2})(?::(\\d{2}))?$/
-            );
-
-            if (!match) return null;
-
-            const year = Number(match[1]);
-            const month = Number(match[2]);
-            const day = Number(match[3]);
-            const hour = Number(match[4]);
-            const minute = Number(match[5]);
-            const second = Number(match[6] || 0);
-
-            if (
-                year < 2020 ||
-                year > new Date().getFullYear() + 1 ||
-                month < 1 || month > 12 ||
-                day < 1 || day > 31 ||
-                hour < 0 || hour > 23 ||
-                minute < 0 || minute > 59 ||
-                second < 0 || second > 59
-            ) return null;
-
-            // Interpret the Firebase timestamp as Asia/Kolkata,
-            // independent of the computer's local timezone.
-            const utcMillis =
-                Date.UTC(year, month - 1, day, hour, minute, second) -
-                (5.5 * 60 * 60 * 1000);
-
-            const d = new Date(utcMillis);
-            return Number.isNaN(d.getTime()) ? null : d;
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: {
+          labels: {
+            font: { family: "'JetBrains Mono', monospace", size: 11 },
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(49, 49, 43, 0.95)',
+          titleFont: { family: "'IBM Plex Sans', sans-serif", size: 13 },
+          bodyFont: { family: "'JetBrains Mono', monospace", size: 12 },
+          padding: 12,
+          cornerRadius: 8
         }
-
-        function formatFirebaseTimestamp(tsString) {
-            const dt = parseFirebaseTimestampToDate(tsString);
-            if (!dt) return '--';
-
-            return new Intl.DateTimeFormat('en-IN', {
-                timeZone: 'Asia/Kolkata',
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true
-            }).format(dt);
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(156, 68, 0, 0.05)' },
+          ticks: {
+            font: { family: "'JetBrains Mono', monospace", size: 10 },
+            maxRotation: 45,
+            maxTicksLimit: 20
+          }
+        },
+        y: {
+          grid: { color: 'rgba(156, 68, 0, 0.05)' },
+          ticks: {
+            font: { family: "'JetBrains Mono', monospace", size: 11 }
+          }
         }
+      }
+    }
+  });
+}
 
-        // --- Animated Bees & Main Logic ---
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById('footerYearText').textContent = `© ${new Date().getFullYear()} SMART HIVE MONITORING SYSTEM`;
-            
-            const numBees = 8;
-            for (let i = 0; i < numBees; i++) {
-                createBee();
-            }
-            startClock();
-            initFirebase();
-            
-            setInterval(() => {
-                 checkSensorStatus();
-            }, 5000);
+function updateChart(dataArray) {
+  if (!window.trendChartInstance) return;
+
+  var labels = [];
+  var tIn = [], hIn = [], tOut = [], hOut = [];
+
+  dataArray.forEach(function(row) {
+    labels.push(formatChartLabel(row.timestamp));
+    tIn.push(row.temp_C !== undefined ? row.temp_C : null);
+    hIn.push(row.humidity_pct !== undefined ? row.humidity_pct : null);
+    tOut.push(row.temp_outside_C !== undefined ? row.temp_outside_C : null);
+    hOut.push(row.humidity_outside_pct !== undefined ? row.humidity_outside_pct : null);
+  });
+
+  window.trendChartInstance.data.labels = labels;
+  window.trendChartInstance.data.datasets[0].data = tIn;
+  window.trendChartInstance.data.datasets[1].data = hIn;
+  window.trendChartInstance.data.datasets[2].data = tOut;
+  window.trendChartInstance.data.datasets[3].data = hOut;
+  window.trendChartInstance.update();
+}
+
+// =============================================
+// ANALYTICS TABLE
+// =============================================
+
+function updateAnalyticsTable(dataArray) {
+  var tbody = document.getElementById('analyticsTableBody');
+  var html = '';
+
+  var reversed = dataArray.slice().reverse();
+  reversed.forEach(function(row) {
+    var parsed = parseFirebaseTimestampToDate(row.timestamp);
+    var dateText = parsed ? formatDateIST(parsed) : '--';
+    var timeText = parsed ? formatTimeIST(parsed) : '--';
+
+    html += '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">' +
+      '<td class="py-3 px-4">' + dateText + '</td>' +
+      '<td class="py-3 px-4">' + timeText + '</td>' +
+      '<td class="py-3 px-4">' + (row.temp_C !== undefined ? parseFloat(row.temp_C).toFixed(1) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (row.humidity_pct !== undefined ? parseFloat(row.humidity_pct).toFixed(1) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (row.temp_outside_C !== undefined ? parseFloat(row.temp_outside_C).toFixed(1) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (row.humidity_outside_pct !== undefined ? parseFloat(row.humidity_outside_pct).toFixed(1) : '--') + '</td>' +
+      '</tr>';
+  });
+
+  tbody.innerHTML = html || '<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="6">No data available</td></tr>';
+}
+
+// =============================================
+// EXCEL EXPORT
+// =============================================
+
+// Store the latest data for export
+var latestHiveLogData = [];
+
+function exportToExcel() {
+  if (latestHiveLogData.length === 0) {
+    showToast('No data available to export');
+    return;
+  }
+
+  var startInput = document.getElementById('exportStart').value;
+  var endInput = document.getElementById('exportEnd').value;
+
+  var filtered = latestHiveLogData;
+
+  if (startInput || endInput) {
+    filtered = latestHiveLogData.filter(function(row) {
+      var dt = parseFirebaseTimestampToDate(row.timestamp);
+      if (!dt) return false;
+
+      if (startInput) {
+        var startDate = new Date(startInput);
+        if (dt < startDate) return false;
+      }
+      if (endInput) {
+        var endDate = new Date(endInput);
+        if (dt > endDate) return false;
+      }
+      return true;
+    });
+  }
+
+  if (filtered.length === 0) {
+    showToast('No data in the selected date range');
+    return;
+  }
+
+  var sheetData = [['Date', 'Time', 'Hive Temp (°C)', 'Hive Humidity (%)', 'Outside Temp (°C)', 'Outside Humidity (%)']];
+
+  filtered.forEach(function(row) {
+    var dt = parseFirebaseTimestampToDate(row.timestamp);
+    sheetData.push([
+      dt ? formatDateIST(dt) : '--',
+      dt ? formatTimeIST(dt) : '--',
+      row.temp_C !== undefined ? parseFloat(row.temp_C).toFixed(2) : '',
+      row.humidity_pct !== undefined ? parseFloat(row.humidity_pct).toFixed(2) : '',
+      row.temp_outside_C !== undefined ? parseFloat(row.temp_outside_C).toFixed(2) : '',
+      row.humidity_outside_pct !== undefined ? parseFloat(row.humidity_outside_pct).toFixed(2) : ''
+    ]);
+  });
+
+  var ws = XLSX.utils.aoa_to_sheet(sheetData);
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Hive Data');
+
+  var now = new Date();
+  var filename = 'hive_data_' + now.getFullYear() +
+    ('0' + (now.getMonth() + 1)).slice(-2) +
+    ('0' + now.getDate()).slice(-2) + '.xlsx';
+
+  XLSX.writeFile(wb, filename);
+  showToast('Exported ' + filtered.length + ' records to ' + filename);
+}
+
+// =============================================
+// AUDIO MANAGEMENT
+// =============================================
+
+var allAudioClips = {};
+var allAudioKeys = [];
+
+function renderAudioClips(filterDate, filterTime) {
+  var container = document.getElementById('clipsContainer');
+  var downloadBtn = document.getElementById('downloadMatchesBtn');
+
+  if (allAudioKeys.length === 0) {
+    container.innerHTML = '<div class="text-on-surface-variant font-body-md italic p-4 text-center">No recordings found</div>';
+    downloadBtn.classList.add('hidden');
+    return;
+  }
+
+  var filteredKeys = allAudioKeys;
+
+  if (filterDate) {
+    filteredKeys = filteredKeys.filter(function(key) {
+      var clip = allAudioClips[key];
+      var dt = parseFirebaseTimestampToDate(clip.timestamp);
+      if (!dt) return false;
+
+      var clipDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(dt); // YYYY-MM-DD
+      if (clipDate !== filterDate) return false;
+
+      if (filterTime) {
+        var clipTime = new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'Asia/Kolkata',
+          hour: '2-digit', minute: '2-digit',
+          hour12: false
+        }).format(dt);
+        // Match within same hour
+        if (clipTime.substring(0, 2) !== filterTime.substring(0, 2)) return false;
+      }
+      return true;
+    });
+  }
+
+  if (filteredKeys.length === 0) {
+    container.innerHTML = '<div class="text-on-surface-variant font-body-md italic p-4 text-center">No recordings match your search</div>';
+    downloadBtn.classList.add('hidden');
+    return;
+  }
+
+  var html = '';
+  filteredKeys.slice(0, 50).forEach(function(key) {
+    var clip = allAudioClips[key];
+    var audioUrl = clip.url || clip.record_url || '#';
+    var displayTime = formatFirebaseTimestamp(clip.timestamp) || key;
+    var fileName = clip.filename || 'Unknown File';
+
+    html += '<div class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-primary/30 transition-colors">' +
+      '<div class="flex items-center gap-4">' +
+        '<input type="checkbox" class="audio-checkbox rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" data-url="' + audioUrl + '" data-filename="' + fileName + '">' +
+        '<span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full">audio_file</span>' +
+        '<div>' +
+          '<div class="font-label-sm text-on-surface font-semibold">' + displayTime + '</div>' +
+          '<div class="text-xs text-on-surface-variant font-body-md">' + fileName + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="flex items-center gap-2 w-full md:w-auto">' +
+        '<audio controls class="h-8 max-w-[200px]" src="' + audioUrl + '" preload="none"></audio>' +
+        '<a href="' + audioUrl + '" target="_blank" download class="text-primary hover:bg-primary/10 p-2 rounded transition-colors" title="Download WAV">' +
+          '<span class="material-symbols-outlined text-[20px]">download</span>' +
+        '</a>' +
+      '</div>' +
+    '</div>';
+  });
+
+  container.innerHTML = html;
+
+  // Show/hide download button based on checkbox changes
+  container.querySelectorAll('.audio-checkbox').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      var checked = container.querySelectorAll('.audio-checkbox:checked');
+      if (checked.length > 0) {
+        downloadBtn.classList.remove('hidden');
+        downloadBtn.classList.add('flex');
+      } else {
+        downloadBtn.classList.add('hidden');
+        downloadBtn.classList.remove('flex');
+      }
+    });
+  });
+}
+
+// Bulk download selected audio as ZIP
+function downloadSelectedAudio() {
+  var checked = document.querySelectorAll('.audio-checkbox:checked');
+  if (checked.length === 0) {
+    showToast('No audio clips selected');
+    return;
+  }
+
+  showToast('Downloading ' + checked.length + ' clips... please wait', 5000);
+
+  var zip = new JSZip();
+  var promises = [];
+
+  checked.forEach(function(cb) {
+    var url = cb.dataset.url;
+    var filename = cb.dataset.filename || 'audio.wav';
+
+    var p = fetch(url)
+      .then(function(resp) {
+        if (!resp.ok) throw new Error('Failed to fetch ' + filename);
+        return resp.blob();
+      })
+      .then(function(blob) {
+        zip.file(filename, blob);
+      })
+      .catch(function(err) {
+        console.warn('Could not download:', filename, err);
+      });
+    promises.push(p);
+  });
+
+  Promise.all(promises).then(function() {
+    return zip.generateAsync({ type: 'blob' });
+  }).then(function(content) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = 'hive_audio_' + new Date().toISOString().slice(0, 10) + '.zip';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('ZIP download complete!');
+  }).catch(function(err) {
+    console.error('ZIP error:', err);
+    showToast('Error creating ZIP file');
+  });
+}
+
+// =============================================
+// FIREBASE INITIALIZATION
+// =============================================
+
+function initFirebase() {
+  var firebaseConfig = {
+    apiKey: "AIzaSyCwJM0pmtuGZIU2ThHzyasd0c8AL9HTRno",
+    databaseURL: "https://hbdc-saola-default-rtdb.firebaseio.com",
+    storageBucket: "hbdc-saola.firebasestorage.app"
+  };
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  var database = firebase.database();
+
+  // ---- Connection status ----
+  database.ref('.info/connected').on('value', function(snap) {
+    isConnected = snap.val() === true;
+    checkSensorStatus();
+  });
+
+  // ---- Last seen ----
+  database.ref('hive_status/last_seen').on('value', function(snap) {
+    if (snap.exists()) {
+      var ts = snap.val();
+      lastSeenDate = parseFirebaseTimestampToDate(ts);
+      document.getElementById('lastSeen').textContent = 'Last Seen: ' + formatFirebaseTimestamp(ts);
+      checkSensorStatus();
+    }
+  });
+
+  // ---- Hive sensor log (last 200 entries for 5-min intervals) ----
+  database.ref('hive_log').orderByChild('timestamp').limitToLast(200).on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var dataArray = [];
+      snapshot.forEach(function(child) {
+        var val = child.val();
+        if (val.timestamp) {
+          dataArray.push(val);
+        }
+      });
+
+      if (dataArray.length > 0) {
+        dataArray.sort(function(a, b) {
+          var da = parseFirebaseTimestampToDate(a.timestamp);
+          var db = parseFirebaseTimestampToDate(b.timestamp);
+          return (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
         });
-        
-        function startClock() {
-            const clockElement = document.getElementById('currentTimeDisplay');
 
-            function updateClock() {
-                if (!clockElement) return;
+        // Store for export
+        latestHiveLogData = dataArray;
 
-                clockElement.textContent = new Intl.DateTimeFormat('en-IN', {
-                    timeZone: 'Asia/Kolkata',
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: true
-                }).format(new Date());
+        // Update dashboard cards with latest values
+        var latest = dataArray[dataArray.length - 1];
+
+        document.getElementById('tempValue').textContent =
+          latest.temp_C !== undefined ? parseFloat(latest.temp_C).toFixed(1) : '--';
+        document.getElementById('humValue').textContent =
+          latest.humidity_pct !== undefined ? parseFloat(latest.humidity_pct).toFixed(0) : '--';
+
+        // Find latest entry that has outside data
+        var latestOut = latest;
+        if (latest.temp_outside_C === undefined || latest.humidity_outside_pct === undefined) {
+          for (var i = dataArray.length - 2; i >= 0; i--) {
+            if (dataArray[i].temp_outside_C !== undefined && dataArray[i].humidity_outside_pct !== undefined) {
+              latestOut = dataArray[i];
+              break;
             }
-
-            updateClock();
-            setInterval(updateClock, 1000);
+          }
         }
 
-        function createBee() {
-            const bee = document.createElement('div');
-            bee.className = 'bee';
-            document.body.appendChild(bee);
+        document.getElementById('outTempValue').textContent =
+          latestOut.temp_outside_C !== undefined ? parseFloat(latestOut.temp_outside_C).toFixed(1) : '--';
+        document.getElementById('outHumValue').textContent =
+          latestOut.humidity_outside_pct !== undefined ? parseFloat(latestOut.humidity_outside_pct).toFixed(0) : '--';
 
-            let x = Math.random() * window.innerWidth;
-            let y = Math.random() * window.innerHeight;
-            let angle = Math.random() * Math.PI * 2;
-            let speed = 1 + Math.random();
+        // Update time stamps on cards
+        document.getElementById('tempTime').textContent = formatTimeOnly(latest.timestamp);
+        document.getElementById('humTime').textContent = formatTimeOnly(latest.timestamp);
+        document.getElementById('outTempTime').textContent = formatTimeOnly(latestOut.timestamp);
+        document.getElementById('outHumTime').textContent = formatTimeOnly(latestOut.timestamp);
 
-            function animateBee() {
-                angle += (Math.random() - 0.5) * 0.2;
-                x += Math.cos(angle) * speed;
-                y += Math.sin(angle) * speed;
+        // Update analytics page
+        updateAnalyticsTable(dataArray);
+        updateChart(dataArray);
+      }
+    }
+  });
 
-                if (x < -20) x = window.innerWidth + 20;
-                if (x > window.innerWidth + 20) x = -20;
-                if (y < -20) y = window.innerHeight + 20;
-                if (y > window.innerHeight + 20) y = -20;
+  // ---- Bee count ----
+  database.ref('hive_bee_count').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      var data = snapshot.val();
+      var inCount = data.count_in || 0;
+      var outCount = data.count_out || 0;
+      var net = data.net !== undefined ? data.net : (inCount - outCount);
 
-                const rotation = angle * (180 / Math.PI) + 90;
-                bee.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
+      document.getElementById('netValue').textContent = net >= 0 ? net : 0;
+      document.getElementById('inValue').textContent = inCount;
+      document.getElementById('outValue').textContent = outCount;
+    }
+  });
 
-                requestAnimationFrame(animateBee);
-            }
-            animateBee();
-        }
+  // Reset count button - FIXED: set hive_control/reset_count = true
+  // (ESP32 polls this and resets its own counters)
+  document.getElementById('resetCountBtn').addEventListener('click', function() {
+    if (confirm('Reset bee counts to zero?')) {
+      database.ref('hive_control/reset_count').set(true);
+      showToast('Reset command sent to device');
+    }
+  });
 
-        let isConnected = false;
-        let lastSeenDate = null;
-        
-        function checkSensorStatus() {
-            if (!isConnected) {
-                updateStatus('error');
-                return;
-            }
-            if (lastSeenDate) {
-                 const now = new Date();
-                 const diff = (now - lastSeenDate) / 1000;
-                 if (diff > 120) {
-                     updateStatus('offline');
-                 } else {
-                     updateStatus('online');
-                 }
-            }
-        }
+  // ---- Audio recordings ----
+  database.ref('hive_audio').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      allAudioClips = snapshot.val();
+      allAudioKeys = Object.keys(allAudioClips).sort(function(a, b) {
+        var dateA = parseFirebaseTimestampToDate(allAudioClips[a].timestamp || a) || new Date(0);
+        var dateB = parseFirebaseTimestampToDate(allAudioClips[b].timestamp || b) || new Date(0);
+        return dateB - dateA; // newest first
+      });
 
-        function initFirebase() {
-            const firebaseConfig = {
-                apiKey: "AIzaSyCwJM0pmtuGZIU2ThHzyasd0c8AL9HTRno",
-                databaseURL: "https://hbdc-saola-default-rtdb.firebaseio.com",
-            };
-            
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            
-            const database = firebase.database();
+      document.getElementById('dashboardAudioCount').textContent = allAudioKeys.length;
+      renderAudioClips(null, null);
+    } else {
+      allAudioClips = {};
+      allAudioKeys = [];
+      document.getElementById('dashboardAudioCount').textContent = '0';
+      document.getElementById('clipsContainer').innerHTML =
+        '<div class="text-on-surface-variant font-body-md italic p-4 text-center">No recordings found</div>';
+    }
+  });
 
-            // Status and Connectivity
-            database.ref('.info/connected').on('value', function(snap) {
-                isConnected = snap.val() === true;
-                checkSensorStatus();
-            });
+  // ---- Audio search ----
+  document.getElementById('searchBtn').addEventListener('click', function() {
+    var date = document.getElementById('searchDate').value; // YYYY-MM-DD
+    var time = document.getElementById('searchTime').value; // HH:MM
+    renderAudioClips(date || null, time || null);
+  });
 
-            database.ref('hive_status/last_seen').on('value', function(snap) {
-                if (snap.exists()) {
-                    const ts = snap.val();
-                    lastSeenDate = parseFirebaseTimestampToDate(ts);
-                    document.getElementById('lastSeen').textContent = `Last Seen: ${formatFirebaseTimestamp(ts)}`;
-                    checkSensorStatus();
-                }
-            });
+  document.getElementById('clearSearchBtn').addEventListener('click', function() {
+    document.getElementById('searchDate').value = '';
+    document.getElementById('searchTime').value = '';
+    renderAudioClips(null, null);
+  });
 
-            // Hive Log
-            database.ref('hive_log').orderByChild('timestamp').limitToLast(100).on('value', (snapshot) => {
-                if(snapshot.exists()) {
-                    let dataArray = [];
-                    snapshot.forEach(child => {
-                        let val = child.val();
-                        if(val.timestamp) {
-                            dataArray.push(val);
-                        }
-                    });
-                    
-                    if(dataArray.length > 0) {
-                        dataArray.sort((a, b) => {
-                            const da = parseFirebaseTimestampToDate(a.timestamp);
-                            const db = parseFirebaseTimestampToDate(b.timestamp);
-                            return (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
-                        });
+  // ---- Download selected audio ----
+  document.getElementById('downloadMatchesBtn').addEventListener('click', downloadSelectedAudio);
 
-                        let latest = dataArray[dataArray.length - 1];
-                        
-                        document.getElementById('tempValue').textContent = latest.temp_C !== undefined ? parseFloat(latest.temp_C).toFixed(1) : '--';
-                        document.getElementById('humValue').textContent = latest.humidity_pct !== undefined ? parseFloat(latest.humidity_pct).toFixed(0) : '--';
-                        
-                        let latestOut = latest;
-                        if (latest.temp_outside_C === undefined || latest.humidity_outside_pct === undefined) {
-                            for (let i = dataArray.length - 2; i >= 0; i--) {
-                                if (dataArray[i].temp_outside_C !== undefined && dataArray[i].humidity_outside_pct !== undefined) {
-                                    latestOut = dataArray[i];
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        document.getElementById('outTempValue').textContent = latestOut.temp_outside_C !== undefined ? parseFloat(latestOut.temp_outside_C).toFixed(1) : '--';
-                        document.getElementById('outHumValue').textContent = latestOut.humidity_outside_pct !== undefined ? parseFloat(latestOut.humidity_outside_pct).toFixed(0) : '--';
-                        
-                        let formattedTime = formatFirebaseTimestamp(latest.timestamp);
-                        let formattedOutTime = formatFirebaseTimestamp(latestOut.timestamp);
-                        
-                        document.getElementById('tempTime').textContent = formattedTime;
-                        document.getElementById('humTime').textContent = formattedTime;
-                        document.getElementById('outTempTime').textContent = formattedOutTime;
-                        document.getElementById('outHumTime').textContent = formattedOutTime;
-                        
-                        updateAnalyticsTable(dataArray);
-                        updateChart(dataArray);
-                    }
-                }
-            });
-            
-            // Bee Count
-            database.ref('hive_bee_count').on('value', (snapshot) => {
-                if(snapshot.exists()) {
-                    let data = snapshot.val();
-                    let inCount = data.count_in || data.in || 0;
-                    let outCount = data.count_out || data.out || 0;
-                    let net = data.net !== undefined ? data.net : (inCount - outCount);
-                    
-                    document.getElementById('netValue').textContent = net >= 0 ? net : 0;
-                    document.getElementById('inValue').textContent = inCount;
-                    document.getElementById('outValue').textContent = outCount;
-                }
-            });
-            
-            document.getElementById('resetCountBtn').addEventListener('click', () => {
-                database.ref('hive_bee_count').set({in: 0, out: 0, count_in: 0, count_out: 0, net: 0});
-            });
+  // ---- Settings: IR window ----
+  // FIXED: Use hive_control/ir_window_ms (matching ESP32 path)
+  database.ref('hive_control/ir_window_ms').on('value', function(snapshot) {
+    if (snapshot.exists()) {
+      document.getElementById('sensorTiming').value = snapshot.val();
+    } else {
+      document.getElementById('sensorTiming').value = 1500;
+    }
+  });
 
-            // Audio
-            database.ref('hive_audio').on('value', (snapshot) => {
-                if(snapshot.exists()) {
-                    const clipsObj = snapshot.val();
-                    const clipKeys = Object.keys(clipsObj).sort((a, b) => {
-                        const dateA = parseFirebaseTimestampToDate(clipsObj[a].timestamp || a) || new Date(0);
-                        const dateB = parseFirebaseTimestampToDate(clipsObj[b].timestamp || b) || new Date(0);
-                        return dateB - dateA;
-                    });
-                    
-                    document.getElementById('dashboardAudioCount').textContent = clipKeys.length;
-                    
-                    let clipsHtml = '';
-                    clipKeys.slice(0, 50).forEach(key => {
-                        const clip = clipsObj[key];
-                        const audioUrl = clip.url || clip.record_url || '#';
-                        clipsHtml += `
-                            <div class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-primary/30 transition-colors">
-                                <div class="flex items-center gap-4">
-                                    <input type="checkbox" class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" value="${audioUrl}">
-                                    <span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full" data-icon="audio_file">audio_file</span>
-                                    <div>
-                                        <div class="font-label-sm text-on-surface font-semibold">${formatFirebaseTimestamp(clip.timestamp) || key}</div>
-                                        <div class="text-xs text-on-surface-variant font-body-md">${clip.filename || 'Unknown File'}</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2 w-full md:w-auto">
-                                    <audio controls class="h-8 max-w-[200px]" src="${audioUrl}" onerror="this.parentElement.innerHTML='<span class=\\'text-error text-xs\\'>Audio Unavailable</span>'"></audio>
-                                    <a href="${audioUrl}" target="_blank" download class="text-primary hover:bg-primary/10 p-2 rounded transition-colors" title="Download WAV">
-                                        <span class="material-symbols-outlined text-[20px]" data-icon="download">download</span>
-                                    </a>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    document.getElementById('clipsContainer').innerHTML = clipsHtml;
-                } else {
-                    document.getElementById('dashboardAudioCount').textContent = '0';
-                    document.getElementById('clipsContainer').innerHTML = '<div class="text-on-surface-variant font-body-md italic p-4 text-center">No recordings found</div>';
-                }
-            });
+  document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+    var val = parseInt(document.getElementById('sensorTiming').value);
+    if (val && val >= 100 && val <= 10000) {
+      database.ref('hive_control/ir_window_ms').set(val);
+      showToast('Sensor timing saved: ' + val + 'ms');
+    } else {
+      showToast('Please enter a value between 100 and 10000 ms');
+    }
+  });
 
-            // Settings
-            database.ref('settings/ir_window_ms').on('value', (snapshot) => {
-                if(snapshot.exists()) {
-                    document.getElementById('sensorTiming').value = snapshot.val();
-                }
-            });
-            
-            document.getElementById('saveSettingsBtn').addEventListener('click', () => {
-                const val = document.getElementById('sensorTiming').value;
-                if(val) database.ref('settings/ir_window_ms').set(parseInt(val));
-            });
+  // FIXED: Reset settings button now works
+  document.getElementById('resetSettingsBtn').addEventListener('click', function() {
+    database.ref('hive_control/ir_window_ms').set(1500);
+    document.getElementById('sensorTiming').value = 1500;
+    showToast('Sensor timing reset to default: 1500ms');
+  });
 
-            // Mic Toggle & Status
-            let micEnabled = false;
-            let micRecording = false;
+  // ---- Mic toggle ----
+  var micEnabled = false;
+  var micRecording = false;
 
-            database.ref('hive_control/mic_enabled').on('value', (snap) => {
-                micEnabled = !!snap.val();
-                updateMicUI();
-            });
+  database.ref('hive_control/mic_enabled').on('value', function(snap) {
+    micEnabled = !!snap.val();
+    updateMicUI();
+  });
 
-            database.ref('hive_status/recording').on('value', (snap) => {
-                micRecording = !!snap.val();
-                updateMicUI();
-            });
+  database.ref('hive_status/recording').on('value', function(snap) {
+    micRecording = !!snap.val();
+    updateMicUI();
+  });
 
-            document.getElementById('micToggle').addEventListener('click', () => {
-                micEnabled = !micEnabled;
-                database.ref('hive_control/mic_enabled').set(micEnabled);
-            });
+  function toggleMic() {
+    micEnabled = !micEnabled;
+    database.ref('hive_control/mic_enabled').set(micEnabled);
+    showToast(micEnabled ? 'Microphone enabled' : 'Microphone disabled');
+  }
 
-            function updateMicUI() {
-                const icon = document.getElementById('micToggle');
-                const text = document.getElementById('micStatusText');
-                if (micRecording) {
-                    icon.textContent = 'mic';
-                    icon.classList.add('text-error');
-                    text.textContent = 'Recording...';
-                } else if(micEnabled) {
-                    icon.textContent = 'mic';
-                    icon.classList.remove('text-error');
-                    text.textContent = 'Mic Online';
-                } else {
-                    icon.textContent = 'mic_off';
-                    icon.classList.remove('text-error');
-                    text.textContent = 'Mic Offline';
-                }
-            }
+  document.getElementById('micToggle').addEventListener('click', toggleMic);
+  document.getElementById('micToggleArea').addEventListener('click', function(e) {
+    if (e.target.id !== 'micToggle') toggleMic();
+  });
 
-            initChart();
-        }
-        
-        function updateStatus(state) {
-            const icon = document.getElementById('deviceStatusIcon');
-            const text = document.getElementById('deviceStatusText');
-            
-            if (state === 'online') {
-                icon.className = 'w-2 h-2 rounded-full bg-green-500';
-                text.textContent = 'Sensor Online';
-            } else if (state === 'offline') {
-                icon.className = 'w-2 h-2 rounded-full bg-error';
-                text.textContent = 'Sensor Offline';
-            } else if (state === 'error') {
-                icon.className = 'w-2 h-2 rounded-full bg-error';
-                text.textContent = 'Firebase Connection Error';
-            }
-        }
-        
-        function updateAnalyticsTable(dataArray) {
-            const tbody = document.getElementById('analyticsTableBody');
-            let html = '';
-            
-            [...dataArray].reverse().forEach(row => {
-                const parsed = parseFirebaseTimestampToDate(row.timestamp);
-                const dateText = parsed ? new Intl.DateTimeFormat('en-IN', {
-                    timeZone: 'Asia/Kolkata',
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                }).format(parsed) : '--';
+  function updateMicUI() {
+    var icon = document.getElementById('micToggle');
+    var text = document.getElementById('micStatusText');
+    var navIcon = document.getElementById('navMicIcon');
 
-                const timeText = parsed ? new Intl.DateTimeFormat('en-IN', {
-                    timeZone: 'Asia/Kolkata',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: true
-                }).format(parsed) : '--';
+    if (micRecording) {
+      icon.textContent = 'mic';
+      icon.classList.add('text-red-500');
+      icon.classList.remove('text-primary');
+      text.textContent = 'Recording...';
+      if (navIcon) { navIcon.textContent = 'mic'; navIcon.classList.add('text-red-500'); }
+    } else if (micEnabled) {
+      icon.textContent = 'mic';
+      icon.classList.remove('text-red-500');
+      icon.classList.add('text-primary');
+      text.textContent = 'Mic Online';
+      if (navIcon) { navIcon.textContent = 'mic'; navIcon.classList.remove('text-red-500'); }
+    } else {
+      icon.textContent = 'mic_off';
+      icon.classList.remove('text-red-500');
+      icon.classList.add('text-primary');
+      text.textContent = 'Mic Offline';
+      if (navIcon) { navIcon.textContent = 'mic_off'; navIcon.classList.remove('text-red-500'); }
+    }
+  }
 
-                html += `
-                    <tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">
-                        <td class="py-3 px-4">${dateText}</td>
-                        <td class="py-3 px-4">${timeText}</td>
-                        <td class="py-3 px-4">${row.temp_C !== undefined ? parseFloat(row.temp_C).toFixed(1) : '--'}</td>
-                        <td class="py-3 px-4">${row.humidity_pct !== undefined ? parseFloat(row.humidity_pct).toFixed(1) : '--'}</td>
-                        <td class="py-3 px-4">${row.temp_outside_C !== undefined ? parseFloat(row.temp_outside_C).toFixed(1) : '--'}</td>
-                        <td class="py-3 px-4">${row.humidity_outside_pct !== undefined ? parseFloat(row.humidity_outside_pct).toFixed(1) : '--'}</td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = html || '<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="6">No data available</td></tr>';
-        }
+  // ---- Export Excel button ----
+  document.getElementById('exportEnvBtn').addEventListener('click', exportToExcel);
 
-        function updateChart(dataArray) {
-            if(!window.trendChartInstance) return;
-            
-            const labels = [];
-            const tIn = [];
-            const hIn = [];
-            const tOut = [];
-            const hOut = [];
-            
-            dataArray.forEach(row => {
-                labels.push(formatFirebaseTimestamp(row.timestamp));
-                tIn.push(row.temp_C);
-                hIn.push(row.humidity_pct);
-                tOut.push(row.temp_outside_C);
-                hOut.push(row.humidity_outside_pct);
-            });
-            
-            window.trendChartInstance.data.labels = labels;
-            window.trendChartInstance.data.datasets[0].data = tIn;
-            window.trendChartInstance.data.datasets[1].data = hIn;
-            window.trendChartInstance.data.datasets[2].data = tOut;
-            window.trendChartInstance.data.datasets[3].data = hOut;
-            window.trendChartInstance.update();
-        }
+  // Init chart
+  initChart();
+}
 
-        function initChart() {
-            const ctx = document.getElementById('trendChart');
-            if(ctx) {
-                window.trendChartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: [],
-                        datasets: [{
-                            label: 'Hive Temp (°C)',
-                            data: [],
-                            borderColor: '#9c4400',
-                            backgroundColor: 'rgba(156, 68, 0, 0.1)',
-                            tension: 0.4,
-                            fill: false
-                        },
-                        {
-                            label: 'Hive Humidity (%)',
-                            data: [],
-                            borderColor: '#feb700',
-                            backgroundColor: 'rgba(254, 183, 0, 0.1)',
-                            tension: 0.4,
-                            fill: false
-                        },
-                        {
-                            label: 'Outside Temp (°C)',
-                            data: [],
-                            borderColor: '#e9762b',
-                            backgroundColor: 'rgba(233, 118, 43, 0.1)',
-                            borderDash: [5, 5],
-                            tension: 0.4,
-                            fill: false
-                        },
-                        {
-                            label: 'Outside Humidity (%)',
-                            data: [],
-                            borderColor: '#7c5800',
-                            backgroundColor: 'rgba(124, 88, 0, 0.1)',
-                            borderDash: [5, 5],
-                            tension: 0.4,
-                            fill: false
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    font: {
-                                        family: "'JetBrains Mono', monospace",
-                                        size: 12
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                grid: { color: 'rgba(156, 68, 0, 0.05)' }
-                            },
-                            y: {
-                                grid: { color: 'rgba(156, 68, 0, 0.05)' }
-                            }
-                        }
-                    }
-                });
-            }
-        }
-    </script>
-</body></html>
+// =============================================
+// DOM READY
+// =============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Footer year
+  document.getElementById('footerYearText').textContent =
+    '\u00A9 ' + new Date().getFullYear() + ' SMART HIVE MONITORING SYSTEM';
+
+  // Create animated bees
+  for (var i = 0; i < 8; i++) {
+    createBee();
+  }
+
+  // Start clock
+  startClock();
+
+  // Init Firebase and all listeners
+  initFirebase();
+
+  // Periodic status check
+  setInterval(checkSensorStatus, 5000);
+});
+</script>
+</body>
+</html>
