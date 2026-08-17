@@ -716,35 +716,6 @@ async function refreshBeeCount(){
     if(status && v.last_updated) status.textContent="Last Seen: "+v.last_updated;
   }catch(e){console.error("Bee count read failed",e)}
 }
-function sensorValue(o,keys){
-  for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&o[k]!=="")return Number(o[k]);
-  return null;
-}
-function normalizeSensor(v,key){
-  const o=v&&typeof v==="object"?v:{};
-  const raw=o.timestamp||o.time||o.datetime||o.dateTime||key;
-  const dt=new Date(typeof raw==="number"?(raw<1e11?raw*1000:raw):raw);
-  if(isNaN(dt.getTime()))return null;
-  return{
-    timestamp:dt.getTime(),dateTime:dt,
-    hiveTemp:sensorValue(o,["temperature","temp","hiveTemp","insideTemperature"]),
-    hiveHum:sensorValue(o,["humidity","hum","hiveHumidity","insideHumidity"]),
-    outTemp:sensorValue(o,["outsideTemperature","outsideTemp","outTemp","ambientTemperature"]),
-    outHum:sensorValue(o,["outsideHumidity","outsideHum","outHum","ambientHumidity"])
-  };
-}
-async function loadSensors(){
-  if(!db)return[];
-  const paths=["sensorData","sensors","hive","environment","environmentalData"],map=new Map();
-  for(const path of paths){
-    try{
-      const v=(await db.ref(path).once("value")).val();if(!v||typeof v!=="object")continue;
-      const entries=Array.isArray(v)?v.map((x,i)=>[String(i),x]):Object.entries(v);
-      entries.forEach(([k,x])=>{const r=normalizeSensor(x,k);if(r)map.set(r.timestamp,r)});
-    }catch(e){}
-  }
-  return[...map.values()].sort((a,b)=>a.timestamp-b.timestamp);
-}
 function renderChart(rows){
   const c=document.getElementById("trendChart");if(!c)return;
   const r=rows.slice(-40);
@@ -762,6 +733,12 @@ function renderChart(rows){
 }
 async function refreshSensors(){
   if(!db)return;
+  try {
+    environmentalRows=await loadSensors();
+    console.log("[Honey Bee] environmental rows:", environmentalRows.length, environmentalRows.at(-1));
+    if(!environmentalRows.length)return;
+
+  if(!db)return;
   environmentalRows=await loadSensors();if(!environmentalRows.length)return;
   const r=environmentalRows.at(-1),t=r.dateTime.toLocaleTimeString("en-IN");
   const set=(id,v)=>{const e=document.getElementById(id);if(e&&v!==null)e.textContent=Number(v).toFixed(1)};
@@ -769,6 +746,9 @@ async function refreshSensors(){
   ["tempTime","humTime","outTempTime","outHumTime"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t});
   const l=document.getElementById("lastSeen");if(l)l.textContent="Last Seen: "+r.dateTime.toLocaleString("en-IN");
   renderChart(environmentalRows);
+  } catch (e) {
+    console.error("[Honey Bee] refreshSensors failed:", e);
+  }
 }
 function csv(v){return`"${String(v??"").replaceAll('"','""')}"`}
 document.getElementById("exportEnvBtn")?.addEventListener("click",()=>{
