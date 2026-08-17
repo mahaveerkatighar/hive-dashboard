@@ -518,6 +518,40 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <!-- Scripts -->
 <script>
+/*
+  SMART HONEY BEE HIVE DASHBOARD
+  Compatible with the CURRENT ESP32-S3 code supplied by the user.
+
+  Firebase paths written by the ESP32-S3:
+    hive_log/<timestamp-key>
+      timestamp
+      temp_C
+      humidity_pct
+      temp_outside_C       <-- outside data is HERE
+      humidity_outside_pct <-- outside data is HERE
+
+    hive_audio/<timestamp-key>
+      timestamp
+      filename
+      url
+
+    hive_bee_count
+      count_in
+      count_out
+      net
+      last_updated
+
+    hive_status
+      recording
+      mic_enabled
+      last_seen
+
+    hive_control
+      mic_enabled
+      ir_window_ms
+      reset_count
+*/
+
 const firebaseConfig = {
     apiKey: "AIzaSyCwJM0pmtuGZIU2ThHzyasd0c8AL9HTRno",
     authDomain: "hbdc-saola.firebaseapp.com",
@@ -533,31 +567,131 @@ let db = null;
 let chart = null;
 let currentAudioMatches = [];
 
+/* ---------- Basic helpers ---------- */
+
+function esc(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function numberOrNull(value) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+}
+
+/*
+  The ESP32-S3 uses:
+  YYYY-MM-DD HH:MM:SS
+
+  We intentionally reject year 2000/default DateTime(0) records so
+  old bad records cannot appear as current readings.
+*/
+function validTimestamp(value) {
+    if (typeof value !== "string") return false;
+
+    const m = value.match(
+        /^(20\d{2})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/
+    );
+
+    if (!m) return false;
+
+    const y = Number(m[1]);
+    const mo = Number(m[2]);
+    const d = Number(m[3]);
+    const h = Number(m[4]);
+    const mi = Number(m[5]);
+    const s = Number(m[6]);
+
+    if (y < 2024 || y > 2099) return false;
+    if (mo < 1 || mo > 12 || d < 1 || d > 31) return false;
+    if (h > 23 || mi > 59 || s > 59) return false;
+
+    const dt = new Date(y, mo - 1, d, h, mi, s);
+
+    return dt.getFullYear() === y &&
+        dt.getMonth() === mo - 1 &&
+        dt.getDate() === d &&
+        dt.getHours() === h &&
+        dt.getMinutes() === mi &&
+        dt.getSeconds() === s;
+}
+
+function toDate(value) {
+    if (!validTimestamp(value)) return null;
+    return new Date(value.replace(" ", "T"));
+}
+
+function formatDate(value) {
+    const dt = toDate(value);
+    return dt ? dt.toLocaleDateString("en-IN") : "--";
+}
+
+function formatTime(value) {
+    const dt = toDate(value);
+    return dt
+        ? dt.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        })
+        : "--:--";
+}
+
+function formatDateTime(value) {
+    const dt = toDate(value);
+    return dt
+        ? dt.toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        })
+        : "--";
+}
+
+/* ---------- Firebase ---------- */
+
 function initFirebase() {
     try {
-        if (!window.firebase) throw new Error("Firebase SDK did not load.");
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        if (!window.firebase) {
+            throw new Error("Firebase SDK is not loaded.");
+        }
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
         db = firebase.database();
 
-        setStatus(true);
-        subscribeHive();
-        subscribeOutside();
-        subscribeBeeCount();
-        subscribeDeviceStatus();
-        subscribeSettings();
-        loadAudioCount();
-        loadRecentAudio();
+        setConnectionStatus(true);
 
-        console.log("Smart Honey Bee Hive connected to Firebase.");
+        subscribeEnvironment();
+        subscribeBeeCount();
+        subscribeStatus();
+        subscribeControls();
+
+        loadRecentAudio();
+        loadAudioCount();
+
+        console.log("Smart Honey Bee Hive dashboard connected.");
     } catch (error) {
         console.error("Firebase initialization error:", error);
-        setStatus(false);
+        setConnectionStatus(false);
     }
 }
 
-function setStatus(connected) {
+function setConnectionStatus(connected) {
     const dot = document.getElementById("deviceStatusIcon");
     const label = document.getElementById("deviceStatusText");
+
     if (!dot || !label) return;
 
     dot.className = connected
@@ -569,252 +703,289 @@ function setStatus(connected) {
         : "Firebase connection error";
 }
 
+/* ---------- Navigation ---------- */
+
 function switchPage(pageId) {
     document.querySelectorAll(".nav-link").forEach(link => {
         const active = link.dataset.target === pageId;
+
         link.classList.toggle("text-primary", active);
         link.classList.toggle("font-semibold", active);
         link.classList.toggle("border-b-2", active);
         link.classList.toggle("border-primary", active);
+
         link.classList.toggle("text-on-surface-variant", !active);
         link.classList.toggle("font-medium", !active);
     });
 
-    document.querySelectorAll(".page-section").forEach(section =>
-        section.classList.remove("active")
-    );
+    document.querySelectorAll(".page-section").forEach(section => {
+        section.classList.remove("active");
+    });
 
-    document.getElementById("page-" + pageId)?.classList.add("active");
+    const page = document.getElementById("page-" + pageId);
+    if (page) page.classList.add("active");
 
     if (pageId === "analytics") loadAnalytics();
     if (pageId === "acoustic") loadRecentAudio();
 }
 
-function validTimestamp(value) {
-    if (typeof value !== "string") return false;
+/* ---------- ENVIRONMENT ---------- */
 
-    const m = value.match(
-        /^(20\d{2})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/
-    );
-    if (!m) return false;
+/*
+  IMPORTANT:
+  Current ESP32-S3 code writes BOTH inside and outside values to hive_log.
 
-    const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
-    const h = Number(m[4]), mi = Number(m[5]), s = Number(m[6]);
-
-    // Prevent corrupt/default timestamps such as 2000 and 2106.
-    if (y < 2024 || y > 2099) return false;
-    if (mo < 1 || mo > 12 || d < 1 || d > 31) return false;
-    if (h > 23 || mi > 59 || s > 59) return false;
-
-    const dt = new Date(y, mo - 1, d, h, mi, s);
-    return dt.getFullYear() === y &&
-           dt.getMonth() === mo - 1 &&
-           dt.getDate() === d &&
-           dt.getHours() === h &&
-           dt.getMinutes() === mi &&
-           dt.getSeconds() === s;
-}
-
-function toDate(value) {
-    return validTimestamp(value)
-        ? new Date(value.replace(" ", "T"))
-        : null;
-}
-
-function formatDateTime(value) {
-    const dt = toDate(value);
-    return dt ? dt.toLocaleString("en-IN", {
-        day: "2-digit", month: "2-digit", year: "numeric",
-        hour: "2-digit", minute: "2-digit", second: "2-digit",
-        hour12: true
-    }) : "--";
-}
-
-function formatDate(value) {
-    const dt = toDate(value);
-    return dt ? dt.toLocaleDateString("en-IN") : "--";
-}
-
-function formatTime(value) {
-    const dt = toDate(value);
-    return dt ? dt.toLocaleTimeString("en-IN", {
-        hour: "2-digit", minute: "2-digit", second: "2-digit",
-        hour12: true
-    }) : "--:--";
-}
-
-function numberOrNull(value) {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : null;
-}
-
-function safe(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-/* -------------------- HIVE -------------------- */
-function subscribeHive() {
+  Therefore the dashboard MUST NOT read hive_log_outside.
+*/
+function subscribeEnvironment() {
     db.ref("hive_log")
-      .orderByChild("timestamp")
-      .limitToLast(1)
-      .on("value", snapshot => {
-        if (!snapshot.exists()) return;
+        .orderByChild("timestamp")
+        .limitToLast(1)
+        .on("value", snapshot => {
+            if (!snapshot.exists()) return;
 
-        const entries = Object.values(snapshot.val() || {})
-            .filter(x => validTimestamp(x?.timestamp))
-            .sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)));
+            const rows = Object.values(snapshot.val() || {})
+                .filter(row => validTimestamp(row?.timestamp))
+                .sort((a, b) =>
+                    String(a.timestamp).localeCompare(String(b.timestamp))
+                );
 
-        if (!entries.length) return;
+            if (!rows.length) return;
 
-        const data = entries[entries.length - 1];
-        const temp = numberOrNull(data.temp_C);
-        const hum = numberOrNull(data.humidity_pct);
+            const data = rows[rows.length - 1];
 
-        document.getElementById("tempValue").textContent =
-            temp === null ? "--" : temp.toFixed(1);
+            const insideTemp = numberOrNull(data.temp_C);
+            const insideHum = numberOrNull(data.humidity_pct);
+            const outsideTemp = numberOrNull(data.temp_outside_C);
+            const outsideHum = numberOrNull(data.humidity_outside_pct);
 
-        document.getElementById("humValue").textContent =
-            hum === null ? "--" : hum.toFixed(1);
+            const set = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            };
 
-        document.getElementById("tempTime").textContent = formatTime(data.timestamp);
-        document.getElementById("humTime").textContent = formatTime(data.timestamp);
-    }, console.error);
+            set(
+                "tempValue",
+                insideTemp === null ? "--" : insideTemp.toFixed(1)
+            );
+
+            set(
+                "humValue",
+                insideHum === null ? "--" : insideHum.toFixed(1)
+            );
+
+            set(
+                "outTempValue",
+                outsideTemp === null ? "--" : outsideTemp.toFixed(1)
+            );
+
+            set(
+                "outHumValue",
+                outsideHum === null ? "--" : outsideHum.toFixed(1)
+            );
+
+            set("tempTime", formatTime(data.timestamp));
+            set("humTime", formatTime(data.timestamp));
+            set("outTempTime", formatTime(data.timestamp));
+            set("outHumTime", formatTime(data.timestamp));
+        }, error => {
+            console.error("hive_log listener error:", error);
+            setConnectionStatus(false);
+        });
 }
 
-/* -------------------- OUTSIDE -------------------- */
-function subscribeOutside() {
-    db.ref("hive_log_outside")
-      .orderByChild("timestamp")
-      .limitToLast(1)
-      .on("value", snapshot => {
-        if (!snapshot.exists()) return;
+/* ---------- BEE COUNT ---------- */
 
-        const entries = Object.values(snapshot.val() || {})
-            .filter(x => validTimestamp(x?.timestamp))
-            .sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)));
-
-        if (!entries.length) return;
-
-        const data = entries[entries.length - 1];
-        const temp = numberOrNull(data.temp_outside_C);
-        const hum = numberOrNull(data.humidity_outside_pct);
-
-        document.getElementById("outTempValue").textContent =
-            temp === null ? "--" : temp.toFixed(1);
-
-        document.getElementById("outHumValue").textContent =
-            hum === null ? "--" : hum.toFixed(1);
-
-        document.getElementById("outTempTime").textContent = formatTime(data.timestamp);
-        document.getElementById("outHumTime").textContent = formatTime(data.timestamp);
-    }, console.error);
-}
-
-/* -------------------- STATUS -------------------- */
-function subscribeDeviceStatus() {
-    db.ref("hive_status").on("value", snapshot => {
-        if (!snapshot.exists()) return;
-
-        const data = snapshot.val();
-
-        if (validTimestamp(data.last_seen)) {
-            document.getElementById("lastSeen").textContent =
-                "Last Seen: " + formatDateTime(data.last_seen);
-        }
-
-        const enabled = data.mic_enabled === true || data.mic_enabled === "true";
-        const recording = data.recording === true || data.recording === "true";
-
-        document.getElementById("micToggle").textContent =
-            enabled ? "mic" : "mic_off";
-
-        document.getElementById("micStatusText").textContent =
-            recording ? "Mic Recording" :
-            enabled ? "Mic Enabled" :
-            "Mic Offline";
-    }, console.error);
-}
-
-/* -------------------- BEE COUNT -------------------- */
 function subscribeBeeCount() {
     db.ref("hive_bee_count").on("value", snapshot => {
         if (!snapshot.exists()) return;
 
         const data = snapshot.val();
 
-        const incoming = numberOrNull(
-            data.in ?? data.count_in ?? data.countIn ?? 0
-        ) ?? 0;
+        // CURRENT ESP32-S3 field names:
+        // count_in / count_out / net
+        const countIn =
+            numberOrNull(data.count_in ?? data.in ?? 0) ?? 0;
 
-        const outgoing = numberOrNull(
-            data.out ?? data.count_out ?? data.countOut ?? 0
-        ) ?? 0;
+        const countOut =
+            numberOrNull(data.count_out ?? data.out ?? 0) ?? 0;
 
         const storedNet = numberOrNull(data.net);
-        const net = storedNet === null ? incoming - outgoing : storedNet;
+        const net = storedNet === null
+            ? countIn - countOut
+            : storedNet;
 
-        document.getElementById("netValue").textContent = net;
-        document.getElementById("inValue").textContent = incoming;
-        document.getElementById("outValue").textContent = outgoing;
-    });
+        const set = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        };
+
+        set("inValue", countIn);
+        set("outValue", countOut);
+        set("netValue", net);
+    }, console.error);
 }
 
 function initBeeReset() {
-    document.getElementById("resetCountBtn")?.addEventListener("click", async () => {
-        if (!confirm("Reset bee IN, OUT and NET count to zero?")) return;
+    document.getElementById("resetCountBtn")
+        ?.addEventListener("click", async () => {
+            if (!confirm("Reset bee IN, OUT and NET count to zero?")) {
+                return;
+            }
 
-        try {
-            await db.ref("hive_bee_count").update({
-                in: 0, out: 0, net: 0
-            });
-            alert("Bee count reset successfully.");
-        } catch (error) {
-            console.error(error);
-            alert("Unable to reset bee count.");
-        }
-    });
+            try {
+                /*
+                  ESP32 checks this exact Firebase path:
+                  hive_control/reset_count
+                */
+                await db.ref("hive_control/reset_count").set(true);
+            } catch (error) {
+                console.error("Reset error:", error);
+                alert("Unable to send reset command.");
+            }
+        });
 }
 
-/* -------------------- AUDIO -------------------- */
+/* ---------- DEVICE / MIC STATUS ---------- */
+
+function subscribeStatus() {
+    db.ref("hive_status").on("value", snapshot => {
+        if (!snapshot.exists()) return;
+
+        const data = snapshot.val();
+
+        const lastSeen = document.getElementById("lastSeen");
+
+        if (lastSeen && validTimestamp(data.last_seen)) {
+            lastSeen.textContent =
+                "Last Seen: " + formatDateTime(data.last_seen);
+        }
+
+        const enabled =
+            data.mic_enabled === true ||
+            data.mic_enabled === "true";
+
+        const recording =
+            data.recording === true ||
+            data.recording === "true";
+
+        const micIcon = document.getElementById("micToggle");
+        const micText = document.getElementById("micStatusText");
+
+        if (micIcon) {
+            micIcon.textContent = enabled ? "mic" : "mic_off";
+        }
+
+        if (micText) {
+            micText.textContent =
+                recording
+                    ? "Mic Recording"
+                    : enabled
+                        ? "Mic Enabled"
+                        : "Mic Offline";
+        }
+    }, console.error);
+}
+
+/* ---------- CONTROLS ---------- */
+
+function subscribeControls() {
+    db.ref("hive_control/ir_window_ms").on("value", snapshot => {
+        const input = document.getElementById("sensorTiming");
+
+        if (input && snapshot.exists()) {
+            input.value = snapshot.val();
+        }
+    });
+
+    document.getElementById("saveSettingsBtn")
+        ?.addEventListener("click", async () => {
+            const input = document.getElementById("sensorTiming");
+            const value = Number(input?.value);
+
+            if (!Number.isFinite(value) || value <= 0) {
+                alert("Enter a valid positive timing value.");
+                return;
+            }
+
+            try {
+                await db.ref("hive_control/ir_window_ms").set(value);
+                alert("Sensor timing saved.");
+            } catch (error) {
+                console.error(error);
+                alert("Unable to save sensor timing.");
+            }
+        });
+
+    document.getElementById("resetSettingsBtn")
+        ?.addEventListener("click", async () => {
+            try {
+                const snapshot =
+                    await db.ref("hive_control/ir_window_ms").once("value");
+
+                const input = document.getElementById("sensorTiming");
+
+                if (input) {
+                    input.value = snapshot.exists()
+                        ? snapshot.val()
+                        : 1500;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        });
+}
+
+/* ---------- AUDIO ---------- */
+
 function makeAudioCard(item) {
     const clip = item.clip || {};
-    if (!clip.url || !validTimestamp(clip.timestamp)) return "";
 
-    const filename = clip.filename || `audio_${item.key}.wav`;
+    if (!clip.url || !validTimestamp(clip.timestamp)) {
+        return "";
+    }
+
+    const filename =
+        clip.filename || `audio_${item.key}.wav`;
 
     return `
-        <div class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/30">
+        <div class="bg-surface-container-low p-4 rounded-lg
+                    border border-outline-variant/30">
             <div class="flex flex-col xl:flex-row xl:items-center
                         xl:justify-between gap-4">
+
                 <div class="flex items-center gap-3 min-w-0">
-                    <span class="material-symbols-outlined text-primary p-2
-                                 bg-primary/10 rounded-full">audio_file</span>
+                    <span class="material-symbols-outlined
+                                 text-primary p-2 bg-primary/10 rounded-full">
+                        audio_file
+                    </span>
+
                     <div class="min-w-0">
                         <div class="font-label-sm text-on-surface font-semibold">
-                            ${safe(formatDateTime(clip.timestamp))}
+                            ${esc(formatDateTime(clip.timestamp))}
                         </div>
+
                         <div class="text-xs text-on-surface-variant truncate">
-                            ${safe(filename)}
+                            ${esc(filename)}
                         </div>
                     </div>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
-                    <audio controls preload="none"
-                           class="h-9 w-[320px] max-w-full"
-                           src="${safe(clip.url)}"></audio>
+                    <audio
+                        controls
+                        preload="none"
+                        class="h-9 w-[320px] max-w-full"
+                        src="${esc(clip.url)}">
+                    </audio>
 
-                    <a href="${safe(clip.url)}"
-                       download="${safe(filename)}"
-                       target="_blank"
-                       rel="noopener"
-                       class="bg-primary text-on-primary px-4 py-2 rounded
-                              font-label-sm flex items-center gap-2">
+                    <a
+                        href="${esc(clip.url)}"
+                        download="${esc(filename)}"
+                        target="_blank"
+                        rel="noopener"
+                        class="bg-primary text-on-primary px-4 py-2
+                               rounded font-label-sm flex items-center gap-2">
                         <span class="material-symbols-outlined text-[18px]">
                             download
                         </span>
@@ -830,29 +1001,42 @@ function renderAudio(items) {
     const container = document.getElementById("clipsContainer");
     if (!container) return;
 
-    const valid = items.filter(x =>
-        x.clip?.url && validTimestamp(x.clip.timestamp)
+    const valid = items.filter(item =>
+        item.clip?.url &&
+        validTimestamp(item.clip.timestamp)
     );
 
-    container.innerHTML = valid.length
-        ? valid.map(makeAudioCard).join("")
-        : `<div class="text-on-surface-variant italic p-6 text-center">
-             No valid audio recordings found.
-           </div>`;
+    if (!valid.length) {
+        container.innerHTML = `
+            <div class="text-on-surface-variant italic p-6 text-center">
+                No audio recordings found.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = valid.map(makeAudioCard).join("");
 }
 
+/*
+  The ESP32 writes audio metadata into:
+  hive_audio/YYYYMMDD_HHMMSS
+*/
 async function readAllAudio() {
-    const snapshot = await db.ref("hive_audio")
-        .orderByChild("timestamp")
-        .once("value");
+    const snapshot =
+        await db.ref("hive_audio").orderByChild("timestamp").once("value");
 
     if (!snapshot.exists()) return [];
 
     return Object.entries(snapshot.val())
         .map(([key, clip]) => ({ key, clip }))
-        .filter(x => x.clip?.url && validTimestamp(x.clip.timestamp))
+        .filter(item =>
+            item.clip?.url &&
+            validTimestamp(item.clip.timestamp)
+        )
         .sort((a, b) =>
-            String(b.clip.timestamp).localeCompare(String(a.clip.timestamp))
+            String(b.clip.timestamp)
+                .localeCompare(String(a.clip.timestamp))
         );
 }
 
@@ -860,16 +1044,22 @@ async function loadRecentAudio() {
     const container = document.getElementById("clipsContainer");
     if (!container) return;
 
-    container.innerHTML =
-        `<div class="text-on-surface-variant italic p-6 text-center">
-           Loading latest 5 recordings...
-         </div>`;
+    container.innerHTML = `
+        <div class="text-on-surface-variant italic p-6 text-center">
+            Loading latest 5 recordings...
+        </div>
+    `;
 
     try {
-        const snapshot = await db.ref("hive_audio")
-            .orderByChild("timestamp")
-            .limitToLast(5)
-            .once("value");
+        /*
+          Dashboard only displays the most recent 5.
+          Old recordings remain in Firebase and can be searched.
+        */
+        const snapshot =
+            await db.ref("hive_audio")
+                .orderByChild("timestamp")
+                .limitToLast(5)
+                .once("value");
 
         if (!snapshot.exists()) {
             currentAudioMatches = [];
@@ -879,108 +1069,154 @@ async function loadRecentAudio() {
 
         currentAudioMatches = Object.entries(snapshot.val())
             .map(([key, clip]) => ({ key, clip }))
-            .filter(x => x.clip?.url && validTimestamp(x.clip.timestamp))
+            .filter(item =>
+                item.clip?.url &&
+                validTimestamp(item.clip.timestamp)
+            )
             .sort((a, b) =>
-                String(b.clip.timestamp).localeCompare(String(a.clip.timestamp))
+                String(b.clip.timestamp)
+                    .localeCompare(String(a.clip.timestamp))
             );
 
         renderAudio(currentAudioMatches);
     } catch (error) {
-        console.error("Audio error:", error);
-        container.innerHTML =
-            `<div class="text-error p-6 text-center">
-               Unable to load audio. Check Firebase Storage access.
-             </div>`;
+        console.error("Audio load error:", error);
+
+        container.innerHTML = `
+            <div class="text-error p-6 text-center">
+                Unable to load audio recordings.
+                Check Firebase Storage URL and Storage rules.
+            </div>
+        `;
     }
 }
 
 async function loadAudioCount() {
     try {
-        const snapshot = await db.ref("hive_audio").once("value");
-        document.getElementById("dashboardAudioCount").textContent =
-            (snapshot.exists() ? snapshot.numChildren() : 0).toLocaleString("en-IN");
+        const snapshot =
+            await db.ref("hive_audio").once("value");
+
+        const count =
+            snapshot.exists() ? snapshot.numChildren() : 0;
+
+        const el = document.getElementById("dashboardAudioCount");
+
+        if (el) {
+            el.textContent =
+                count.toLocaleString("en-IN");
+        }
     } catch (error) {
-        console.error(error);
-        document.getElementById("dashboardAudioCount").textContent = "--";
+        console.error("Audio count error:", error);
     }
 }
 
+/* ---------- AUDIO SEARCH ---------- */
+
 async function searchAudio() {
-    const date = document.getElementById("searchDate").value;
-    const time = document.getElementById("searchTime").value;
+    const date = document.getElementById("searchDate")?.value || "";
+    const time = document.getElementById("searchTime")?.value || "";
+
     const container = document.getElementById("clipsContainer");
-    const downloadButton = document.getElementById("downloadMatchesBtn");
+    const downloadButton =
+        document.getElementById("downloadMatchesBtn");
 
     if (!date && !time) {
-        downloadButton.classList.add("hidden");
-        downloadButton.classList.remove("flex");
-        return loadRecentAudio();
+        downloadButton?.classList.add("hidden");
+        loadRecentAudio();
+        return;
     }
 
-    container.innerHTML =
-        `<div class="text-on-surface-variant italic p-6 text-center">
-           Searching audio records...
-         </div>`;
+    container.innerHTML = `
+        <div class="text-on-surface-variant italic p-6 text-center">
+            Searching all Firebase recordings...
+        </div>
+    `;
 
     try {
         const all = await readAllAudio();
 
         currentAudioMatches = all.filter(item => {
-            const ts = item.clip.timestamp;
-            const itemDate = ts.substring(0, 10);
-            const itemTime = ts.substring(11, 16);
+            const timestamp = item.clip.timestamp;
 
-            return (!date || itemDate === date) &&
-                   (!time || itemTime === time);
+            const itemDate = timestamp.substring(0, 10);
+            const itemTime = timestamp.substring(11, 16);
+
+            const dateMatches =
+                !date || itemDate === date;
+
+            const timeMatches =
+                !time || itemTime === time;
+
+            return dateMatches && timeMatches;
         });
 
         renderAudio(currentAudioMatches);
 
-        if (currentAudioMatches.length) {
-            downloadButton.classList.remove("hidden");
-            downloadButton.classList.add("flex");
-            downloadButton.innerHTML = `
-                <span class="material-symbols-outlined text-[18px]">download</span>
-                Download ${currentAudioMatches.length}
-                Match${currentAudioMatches.length === 1 ? "" : "es"}
-            `;
-        } else {
-            downloadButton.classList.add("hidden");
-            downloadButton.classList.remove("flex");
+        if (downloadButton) {
+            if (currentAudioMatches.length) {
+                downloadButton.classList.remove("hidden");
+                downloadButton.classList.add("flex");
+
+                downloadButton.innerHTML = `
+                    <span class="material-symbols-outlined text-[18px]">
+                        download
+                    </span>
+                    Download ${currentAudioMatches.length}
+                    Match${currentAudioMatches.length === 1 ? "" : "es"}
+                `;
+            } else {
+                downloadButton.classList.add("hidden");
+                downloadButton.classList.remove("flex");
+            }
         }
     } catch (error) {
         console.error("Audio search error:", error);
-        container.innerHTML =
-            `<div class="text-error p-6 text-center">Audio search failed.</div>`;
+
+        container.innerHTML = `
+            <div class="text-error p-6 text-center">
+                Audio search failed.
+            </div>
+        `;
     }
 }
 
 function clearAudioSearch() {
-    document.getElementById("searchDate").value = "";
-    document.getElementById("searchTime").value = "";
+    const date = document.getElementById("searchDate");
+    const time = document.getElementById("searchTime");
+
+    if (date) date.value = "";
+    if (time) time.value = "";
+
     currentAudioMatches = [];
 
-    const button = document.getElementById("downloadMatchesBtn");
-    button.classList.add("hidden");
-    button.classList.remove("flex");
+    const button =
+        document.getElementById("downloadMatchesBtn");
+
+    button?.classList.add("hidden");
+    button?.classList.remove("flex");
 
     loadRecentAudio();
 }
 
 function downloadMatches() {
+    if (!currentAudioMatches.length) return;
+
     currentAudioMatches.forEach((item, index) => {
         const url = item.clip?.url;
         if (!url) return;
 
         const filename =
-            item.clip.filename || `audio_${item.key}.wav`;
+            item.clip.filename ||
+            `audio_${item.key}.wav`;
 
         setTimeout(() => {
             const a = document.createElement("a");
+
             a.href = url;
             a.download = filename;
             a.target = "_blank";
             a.rel = "noopener";
+
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -988,54 +1224,45 @@ function downloadMatches() {
     });
 }
 
-/* -------------------- ENVIRONMENT HISTORY -------------------- */
+/* ---------- ANALYTICS ---------- */
+
+/*
+  Current ESP32 stores outside data in the SAME hive_log record.
+  Therefore analytics reads only hive_log.
+*/
 async function getHistory() {
-    const [hiveSnapshot, outsideSnapshot] = await Promise.all([
-        db.ref("hive_log").once("value"),
-        db.ref("hive_log_outside").once("value")
-    ]);
+    const snapshot =
+        await db.ref("hive_log").once("value");
 
-    const map = new Map();
+    if (!snapshot.exists()) return [];
 
-    if (hiveSnapshot.exists()) {
-        Object.values(hiveSnapshot.val()).forEach(data => {
-            if (!validTimestamp(data?.timestamp)) return;
-
-            map.set(data.timestamp, {
-                ...(map.get(data.timestamp) || {}),
-                timestamp: data.timestamp,
-                hiveTemp: numberOrNull(data.temp_C),
-                hiveHum: numberOrNull(data.humidity_pct)
-            });
-        });
-    }
-
-    if (outsideSnapshot.exists()) {
-        Object.values(outsideSnapshot.val()).forEach(data => {
-            if (!validTimestamp(data?.timestamp)) return;
-
-            map.set(data.timestamp, {
-                ...(map.get(data.timestamp) || {}),
-                timestamp: data.timestamp,
-                outsideTemp: numberOrNull(data.temp_outside_C),
-                outsideHum: numberOrNull(data.humidity_outside_pct)
-            });
-        });
-    }
-
-    return Array.from(map.values()).sort((a, b) =>
-        String(a.timestamp).localeCompare(String(b.timestamp))
-    );
+    return Object.values(snapshot.val() || {})
+        .filter(data => validTimestamp(data?.timestamp))
+        .map(data => ({
+            timestamp: data.timestamp,
+            hiveTemp: numberOrNull(data.temp_C),
+            hiveHum: numberOrNull(data.humidity_pct),
+            outsideTemp: numberOrNull(data.temp_outside_C),
+            outsideHum: numberOrNull(data.humidity_outside_pct)
+        }))
+        .sort((a, b) =>
+            String(a.timestamp)
+                .localeCompare(String(b.timestamp))
+        );
 }
 
 function filterHistory(rows) {
-    const startValue = document.getElementById("exportStart").value;
-    const endValue = document.getElementById("exportEnd").value;
+    const startValue =
+        document.getElementById("exportStart")?.value || "";
+
+    const endValue =
+        document.getElementById("exportEnd")?.value || "";
 
     let result = rows;
 
     if (startValue) {
         const start = new Date(startValue);
+
         result = result.filter(row => {
             const dt = toDate(row.timestamp);
             return dt && dt >= start;
@@ -1044,6 +1271,7 @@ function filterHistory(rows) {
 
     if (endValue) {
         const end = new Date(endValue);
+
         result = result.filter(row => {
             const dt = toDate(row.timestamp);
             return dt && dt <= end;
@@ -1054,76 +1282,121 @@ function filterHistory(rows) {
 }
 
 function renderAnalyticsTable(rows) {
-    const body = document.getElementById("analyticsTableBody");
+    const body =
+        document.getElementById("analyticsTableBody");
+
     if (!body) return;
 
     if (!rows.length) {
-        body.innerHTML =
-            `<tr><td colspan="6" class="py-6 px-4 text-center italic
-             text-on-surface-variant">No environmental records found.</td></tr>`;
+        body.innerHTML = `
+            <tr>
+                <td colspan="6"
+                    class="py-6 px-4 text-center italic
+                           text-on-surface-variant">
+                    No environmental records found.
+                </td>
+            </tr>
+        `;
         return;
     }
 
     body.innerHTML = rows.slice().reverse().map(row => `
-        <tr class="border-b border-outline-variant/30 hover:bg-primary/5">
-            <td class="py-3 px-4">${safe(formatDate(row.timestamp))}</td>
-            <td class="py-3 px-4">${safe(formatTime(row.timestamp))}</td>
+        <tr class="border-b border-outline-variant/30
+                   hover:bg-primary/5">
+
             <td class="py-3 px-4">
-                ${row.hiveTemp == null ? "--" : row.hiveTemp.toFixed(1)}
+                ${esc(formatDate(row.timestamp))}
             </td>
+
             <td class="py-3 px-4">
-                ${row.hiveHum == null ? "--" : row.hiveHum.toFixed(1)}
+                ${esc(formatTime(row.timestamp))}
             </td>
+
             <td class="py-3 px-4">
-                ${row.outsideTemp == null ? "--" : row.outsideTemp.toFixed(1)}
+                ${row.hiveTemp == null
+                    ? "--"
+                    : row.hiveTemp.toFixed(1)}
             </td>
+
             <td class="py-3 px-4">
-                ${row.outsideHum == null ? "--" : row.outsideHum.toFixed(1)}
+                ${row.hiveHum == null
+                    ? "--"
+                    : row.hiveHum.toFixed(1)}
+            </td>
+
+            <td class="py-3 px-4">
+                ${row.outsideTemp == null
+                    ? "--"
+                    : row.outsideTemp.toFixed(1)}
+            </td>
+
+            <td class="py-3 px-4">
+                ${row.outsideHum == null
+                    ? "--"
+                    : row.outsideHum.toFixed(1)}
             </td>
         </tr>
     `).join("");
 }
 
 function renderChart(rows) {
-    const canvas = document.getElementById("trendChart");
+    const canvas =
+        document.getElementById("trendChart");
+
     if (!canvas || !window.Chart) return;
 
-    if (chart) chart.destroy();
+    if (chart) {
+        chart.destroy();
+        chart = null;
+    }
 
-    const chartRows = rows.length > 500 ? rows.slice(-500) : rows;
+    const graphRows =
+        rows.length > 500
+            ? rows.slice(-500)
+            : rows;
 
     chart = new Chart(canvas, {
         type: "line",
+
         data: {
-            labels: chartRows.map(row => formatTime(row.timestamp)),
+            labels:
+                graphRows.map(row =>
+                    formatTime(row.timestamp)
+                ),
+
             datasets: [
                 {
                     label: "Hive Temperature (°C)",
-                    data: chartRows.map(row => row.hiveTemp),
+                    data:
+                        graphRows.map(row => row.hiveTemp),
                     borderColor: "#9c4400",
-                    backgroundColor: "rgba(156,68,0,0.08)",
                     tension: 0.25,
                     spanGaps: true
                 },
+
                 {
                     label: "Hive Humidity (%)",
-                    data: chartRows.map(row => row.hiveHum),
+                    data:
+                        graphRows.map(row => row.hiveHum),
                     borderColor: "#feb700",
-                    backgroundColor: "rgba(254,183,0,0.06)",
                     tension: 0.25,
                     spanGaps: true
                 },
+
                 {
                     label: "Outside Temperature (°C)",
-                    data: chartRows.map(row => row.outsideTemp),
+                    data:
+                        graphRows.map(row => row.outsideTemp),
                     borderColor: "#e9762b",
                     borderDash: [6, 4],
                     tension: 0.25,
                     spanGaps: true
                 },
+
                 {
                     label: "Outside Humidity (%)",
-                    data: chartRows.map(row => row.outsideHum),
+                    data:
+                        graphRows.map(row => row.outsideHum),
                     borderColor: "#7c5800",
                     borderDash: [6, 4],
                     tension: 0.25,
@@ -1131,77 +1404,122 @@ function renderChart(rows) {
                 }
             ]
         },
+
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: { mode: "index", intersect: false },
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
             scales: {
-                x: { ticks: { maxTicksLimit: 12 } }
+                x: {
+                    ticks: {
+                        maxTicksLimit: 12
+                    }
+                }
             }
         }
     });
 }
 
 async function loadAnalytics() {
-    const body = document.getElementById("analyticsTableBody");
+    const body =
+        document.getElementById("analyticsTableBody");
 
     if (body) {
-        body.innerHTML =
-            `<tr><td colspan="6" class="py-6 px-4 text-center italic
-             text-on-surface-variant">Loading Firebase historical data...</td></tr>`;
+        body.innerHTML = `
+            <tr>
+                <td colspan="6"
+                    class="py-6 px-4 text-center italic
+                           text-on-surface-variant">
+                    Loading Firebase data...
+                </td>
+            </tr>
+        `;
     }
 
     try {
-        const rows = filterHistory(await getHistory());
+        const rows =
+            filterHistory(await getHistory());
+
         renderAnalyticsTable(rows);
         renderChart(rows);
     } catch (error) {
         console.error("Analytics error:", error);
 
         if (body) {
-            body.innerHTML =
-                `<tr><td colspan="6" class="py-6 px-4 text-center text-error">
-                 Unable to load environmental history.</td></tr>`;
+            body.innerHTML = `
+                <tr>
+                    <td colspan="6"
+                        class="py-6 px-4 text-center text-error">
+                        Unable to load Firebase environmental data.
+                    </td>
+                </tr>
+            `;
         }
     }
 }
 
-/* -------------------- REAL XLSX EXPORT -------------------- */
+/* ---------- EXCEL EXPORT ---------- */
+
 async function exportEnvironmentExcel() {
     try {
         if (!window.XLSX) {
-            alert("Excel library is not loaded. Check your internet connection.");
+            alert("Excel library is not loaded.");
             return;
         }
 
-        const rows = filterHistory(await getHistory());
+        const rows =
+            filterHistory(await getHistory());
 
         if (!rows.length) {
-            alert("No environmental data found for the selected date/time range.");
+            alert("No data found for the selected range.");
             return;
         }
 
-        const data = rows.map(row => ({
-            "Date": formatDate(row.timestamp),
-            "Time": formatTime(row.timestamp),
-            "Hive Temperature (°C)": row.hiveTemp ?? "",
-            "Hive Humidity (%)": row.hiveHum ?? "",
-            "Outside Temperature (°C)": row.outsideTemp ?? "",
-            "Outside Humidity (%)": row.outsideHum ?? ""
+        const excelRows = rows.map(row => ({
+            Date: formatDate(row.timestamp),
+            Time: formatTime(row.timestamp),
+            "Hive Temperature (°C)":
+                row.hiveTemp ?? "",
+            "Hive Humidity (%)":
+                row.hiveHum ?? "",
+            "Outside Temperature (°C)":
+                row.outsideTemp ?? "",
+            "Outside Humidity (%)":
+                row.outsideHum ?? ""
         }));
 
-        const ws = XLSX.utils.json_to_sheet(data);
+        const ws =
+            XLSX.utils.json_to_sheet(excelRows);
+
         ws["!cols"] = [
-            { wch: 14 }, { wch: 14 }, { wch: 24 },
-            { wch: 20 }, { wch: 27 }, { wch: 25 }
+            { wch: 14 },
+            { wch: 14 },
+            { wch: 24 },
+            { wch: 20 },
+            { wch: 27 },
+            { wch: 25 }
         ];
 
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Hive Environment");
+        const wb =
+            XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+            wb,
+            ws,
+            "Hive Environment"
+        );
+
+        const date =
+            new Date().toISOString().slice(0, 10);
 
         XLSX.writeFile(
             wb,
-            `Smart_Honey_Bee_Environment_${new Date().toISOString().slice(0, 10)}.xlsx`
+            `Smart_Honey_Bee_Environment_${date}.xlsx`
         );
     } catch (error) {
         console.error("Excel export error:", error);
@@ -1209,60 +1527,38 @@ async function exportEnvironmentExcel() {
     }
 }
 
-/* -------------------- SETTINGS -------------------- */
-function subscribeSettings() {
-    db.ref("hive_control/ir_window_ms").on("value", snapshot => {
-        const input = document.getElementById("sensorTiming");
-        if (input && snapshot.exists()) input.value = snapshot.val();
-    });
+/* ---------- BEE ANIMATION ---------- */
 
-    document.getElementById("saveSettingsBtn")?.addEventListener("click", async () => {
-        const value = Number(document.getElementById("sensorTiming")?.value);
-
-        if (!Number.isFinite(value) || value <= 0) {
-            alert("Enter a valid positive sensor timing value.");
-            return;
-        }
-
-        try {
-            await db.ref("hive_control/ir_window_ms").set(value);
-            alert("Sensor timing saved.");
-        } catch (error) {
-            console.error(error);
-            alert("Unable to save settings.");
-        }
-    });
-
-    document.getElementById("resetSettingsBtn")?.addEventListener("click", async () => {
-        const snapshot = await db.ref("hive_control/ir_window_ms").once("value");
-        const input = document.getElementById("sensorTiming");
-        if (input) input.value = snapshot.exists() ? snapshot.val() : "";
-    });
-}
-
-/* -------------------- LIGHT BEE ANIMATION -------------------- */
 function createBee() {
-    const bee = document.createElement("div");
+    const bee =
+        document.createElement("div");
+
     bee.className = "bee";
     document.body.appendChild(bee);
 
-    let x = Math.random() * innerWidth;
-    let y = Math.random() * innerHeight;
+    let x = Math.random() * window.innerWidth;
+    let y = Math.random() * window.innerHeight;
     let angle = Math.random() * Math.PI * 2;
-    const speed = 0.5 + Math.random() * 0.8;
+
+    const speed =
+        0.5 + Math.random() * 0.8;
 
     function move() {
-        angle += (Math.random() - 0.5) * 0.12;
+        angle +=
+            (Math.random() - 0.5) * 0.12;
+
         x += Math.cos(angle) * speed;
         y += Math.sin(angle) * speed;
 
-        if (x < -30) x = innerWidth + 30;
-        if (x > innerWidth + 30) x = -30;
-        if (y < -30) y = innerHeight + 30;
-        if (y > innerHeight + 30) y = -30;
+        if (x < -30) x = window.innerWidth + 30;
+        if (x > window.innerWidth + 30) x = -30;
+
+        if (y < -30) y = window.innerHeight + 30;
+        if (y > window.innerHeight + 30) y = -30;
 
         bee.style.transform =
-            `translate(${x}px,${y}px) rotate(${angle * 180 / Math.PI + 90}deg)`;
+            `translate(${x}px,${y}px)
+             rotate(${angle * 180 / Math.PI + 90}deg)`;
 
         requestAnimationFrame(move);
     }
@@ -1270,9 +1566,12 @@ function createBee() {
     move();
 }
 
-/* -------------------- START -------------------- */
+/* ---------- START ---------- */
+
 document.addEventListener("DOMContentLoaded", () => {
-    for (let i = 0; i < 6; i++) createBee();
+    for (let i = 0; i < 6; i++) {
+        createBee();
+    }
 
     document.getElementById("searchBtn")
         ?.addEventListener("click", searchAudio);
