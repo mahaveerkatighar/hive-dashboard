@@ -685,6 +685,48 @@
 
       <hr class="border-outline-variant/30"/>
 
+      <!-- Audio and storage -->
+      <div class="flex flex-col gap-2">
+        <h3 class="font-headline-lg-mobile text-lg text-primary">Audio &amp; Storage</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2 font-label-sm text-label-sm">
+          <div><span class="text-on-surface-variant uppercase tracking-wider">Recording Now:</span>
+            <div class="font-data-lg text-on-surface text-base" id="settingsRecording">--</div></div>
+          <div><span class="text-on-surface-variant uppercase tracking-wider">Uploads OK:</span>
+            <div class="font-data-lg text-on-surface text-base" id="settingsAudioUploaded">--</div></div>
+          <div><span class="text-on-surface-variant uppercase tracking-wider">Uploads Failed:</span>
+            <div class="font-data-lg text-on-surface text-base" id="settingsAudioFailed">--</div></div>
+          <div><span class="text-on-surface-variant uppercase tracking-wider">Last File:</span>
+            <div class="font-data-lg text-on-surface text-base truncate" id="settingsAudioLast">--</div></div>
+          <div><span class="text-on-surface-variant uppercase tracking-wider">Live Counter (device):</span>
+            <div class="font-data-lg text-on-surface text-base" id="settingsBeesLive">--</div></div>
+        </div>
+
+        <div class="mt-4 p-4 rounded-lg bg-error-container/60 border border-error/30">
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-error flex-shrink-0">warning</span>
+            <div class="font-body-md text-sm text-on-error-container">
+              <b>Continuous recording uses Firebase Storage very quickly.</b>
+              <div class="mt-2 font-label-sm text-label-sm">
+                Each recording is 3.15 MB every 150 s &mdash; about
+                <b>1.9 GB per day</b> and <b>57 GB per 30 days</b> (576 files/day).
+                The Firebase <b>Spark free plan includes 5 GB total</b>, which is roughly
+                <b>2.6 days</b> of continuous recording.
+              </div>
+              <div class="mt-2 font-label-sm text-label-sm">
+                Estimated uploaded this session:
+                <b class="font-data-lg" id="settingsStorageEstimate">--</b>
+              </div>
+              <div class="mt-2 font-label-sm text-label-sm opacity-90">
+                Nothing is ever deleted automatically. When Storage fills, audio uploads
+                start failing while sensors, bee counting and logging keep running normally.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="border-outline-variant/30"/>
+
       <!-- Device -->
       <div class="flex flex-col gap-2">
         <h3 class="font-headline-lg-mobile text-lg text-primary">Device Information</h3>
@@ -695,12 +737,16 @@
             <div class="font-data-lg text-on-surface text-base" id="settingsUptime">--</div></div>
           <div><span class="text-on-surface-variant uppercase tracking-wider">Free PSRAM:</span>
             <div class="font-data-lg text-on-surface text-base" id="settingsFreePsram">--</div></div>
+          <div><span class="text-on-surface-variant uppercase tracking-wider">Free Heap:</span>
+            <div class="font-data-lg text-on-surface text-base" id="settingsFreeHeap">--</div></div>
           <div><span class="text-on-surface-variant uppercase tracking-wider">Board:</span>
             <div class="font-data-lg text-on-surface text-base">ESP32-S3 N16R8</div></div>
           <div><span class="text-on-surface-variant uppercase tracking-wider">Inside Sensor:</span>
             <div class="font-data-lg text-on-surface text-base" id="settingsInsideSensor">--</div></div>
           <div><span class="text-on-surface-variant uppercase tracking-wider">Outside Sensor:</span>
             <div class="font-data-lg text-on-surface text-base" id="settingsOutsideSensor">--</div></div>
+          <div><span class="text-on-surface-variant uppercase tracking-wider">Device Mode:</span>
+            <div class="font-data-lg text-on-surface text-base" id="settingsMode">--</div></div>
         </div>
       </div>
 
@@ -910,7 +956,8 @@ function formatBytes(b) {
   if (!b && b !== 0) return '';
   if (b < 1024) return b + ' B';
   if (b < 1048576) return (b / 1024).toFixed(0) + ' KB';
-  return (b / 1048576).toFixed(2) + ' MB';
+  if (b < 1073741824) return (b / 1048576).toFixed(2) + ' MB';
+  return (b / 1073741824).toFixed(2) + ' GB';
 }
 
 function formatDuration(sec) {
@@ -950,6 +997,35 @@ function keyToDate(key) {
   if (h > 23 || mi > 59 || s > 59) return null;
   var d = new Date(Date.UTC(y, mo - 1, da, h, mi, s) - 19800000);
   return isNaN(d.getTime()) ? null : d;
+}
+
+/* Upper bound for ONE-SHOT range queries only (analytics, audio search).
+
+   NEVER use this on a persistent .on() listener. A Firebase query bound is
+   fixed at registration time, so an endAt() of "now + 5 min" would stop
+   matching new records five minutes later and the live cards would silently
+   freeze. Live listeners therefore use a wide limitToLast() plus client-side
+   rejection instead - see isUsableRow(). */
+function keyUpperBound() {
+  return istKeyNow(5 * 60 * 1000);      // now + 5 min of clock tolerance
+}
+
+/* A record is usable as a CURRENT reading only if its key and its timestamp
+   both parse to a plausible date. This is what keeps a bad-clock record such
+   as "21060206_062816" from being treated as the newest reading, without
+   pinning the query to a fixed upper bound. */
+function isUsableRow(key, v) {
+  if (!v) return false;
+  if (keyToDate(key) === null) return false;
+  return rowDate(v) !== null;
+}
+
+/* Firebase stores 30.00 as the number 30 and 0 is falsy, so truthiness checks
+   silently discard valid readings. Everything numeric goes through this. */
+function num(v) {
+  if (v === null || v === undefined || v === '') return null;
+  var n = Number(v);
+  return Number.isFinite(n) ? n : null;
 }
 
 function istKeyNow(offsetMs) {
@@ -1107,6 +1183,21 @@ function refreshStatus() {
     setText('settingsSensorStatus', 'Online');
   }
   setText('settingsFbStatus', 'Connected');
+}
+
+/* Renders one temperature/humidity pair. Values come straight from the exact
+   Firebase field names - temp_C, humidity_pct, temp_outside_C,
+   humidity_outside_pct - with no aliasing or remapping anywhere. */
+function applyReading(tId, hId, tTimeId, hTimeId, row, tField, hField) {
+  var t = row ? num(row[tField]) : null;
+  var h = row ? num(row[hField]) : null;
+  var d = row ? rowDate(row) : null;
+
+  setText(tId, t !== null ? t.toFixed(1) : '--');
+  setText(hId, h !== null ? h.toFixed(1) : '--');
+  var when = d ? formatTimeOnly(d) : 'No data available';
+  setText(tTimeId, when);
+  setText(hTimeId, when);
 }
 
 // ============================ MIC UI =======================================
@@ -1306,12 +1397,16 @@ function loadAnalytics() {
   }
 
   setText('analyticsRangeInfo', 'Loading...');
+  if (endKey > keyUpperBound()) endKey = keyUpperBound();
   database.ref('hive_log').orderByKey().startAt(startKey).endAt(endKey).once('value')
     .then(function (snap) {
       var rows = [];
       snap.forEach(function (child) {
         var v = child.val();
-        if (v && (v.timestamp || v.ts_ms)) { v.__key = child.key; rows.push(v); }
+        if (!v) return;
+        v.__key = child.key;
+        if (rowDate(v) === null) return;          // never chart an invalid timestamp
+        rows.push(v);
       });
       analyticsRows = rows;               // already key-ordered = chronological
       analyticsPage = 0;
@@ -1673,8 +1768,12 @@ function renderRecentAudio(snapshot) {
   var box = el('recentAudioList');
   if (!box) return;
   var items = [];
-  snapshot.forEach(function (c) { items.push({ key: c.key, val: c.val() }); });
+  snapshot.forEach(function (c) {
+    if (keyToDate(c.key) === null) return;        // skip bad-clock artefacts
+    items.push({ key: c.key, val: c.val() });
+  });
   items.reverse();
+  items = items.slice(0, RECENT_AUDIO_COUNT);     // newest 5 genuine recordings
 
   if (!items.length) {
     box.innerHTML = '<div class="text-on-surface-variant font-body-md italic p-2">No recordings yet</div>';
@@ -1759,7 +1858,23 @@ function initFirebase() {
                                  ? Math.floor(s.uptime_s / 3600) + ' h ' +
                                    Math.floor((s.uptime_s % 3600) / 60) + ' m' : '--');
     setText('settingsFreePsram', s.free_psram !== undefined ? formatBytes(s.free_psram) : '--');
+    setText('settingsFreeHeap',  s.free_heap  !== undefined ? formatBytes(s.free_heap)  : '--');
     setText('settingsQueued',    s.queued_records !== undefined ? s.queued_records : '--');
+    setText('settingsMode',      deviceMode === 'provisioning' ? 'Wi-Fi setup' : 'Normal');
+    setText('settingsRecording', s.recording === undefined ? '--' : (s.recording ? 'Yes' : 'No'));
+    setText('settingsAudioUploaded', s.audio_uploaded !== undefined ? s.audio_uploaded : '--');
+    setText('settingsAudioFailed',   s.audio_failed   !== undefined ? s.audio_failed   : '--');
+    setText('settingsAudioLast',     s.audio_last || '--');
+    setText('settingsBeesLive', (s.bees_in !== undefined && s.bees_out !== undefined)
+            ? ('IN ' + s.bees_in + '  /  OUT ' + s.bees_out) : '--');
+
+    // Storage estimate from the device's own upload counter, using the real
+    // per-file size the firmware reports rather than an assumed constant.
+    if (s.audio_uploaded !== undefined) {
+      var perFile = (s.audio_duration_s || 150) * 11025 * 2 + 44;
+      setText('settingsStorageEstimate',
+              formatBytes(s.audio_uploaded * perFile) + ' in ' + s.audio_uploaded + ' files');
+    }
     setText('settingsEnvInterval', s.env_interval_s ? 'Every ' + s.env_interval_s + ' s' : 'Every 60 s');
     setText('settingsAudioChunk',  s.audio_duration_s ? (s.audio_duration_s / 60).toFixed(1) + ' min'
                                                       : '2.5 min');
@@ -1778,63 +1893,71 @@ function initFirebase() {
     refreshStatus();
   });
 
-  // ---- Latest environmental reading (cards only - tiny query) ------------
-  database.ref('hive_log').orderByKey().limitToLast(12).on('value', function (snap) {
-    var rows = [];
-    snap.forEach(function (c) { var v = c.val(); if (v) { v.__key = c.key; rows.push(v); } });
-    if (!rows.length) {
-      ['tempValue', 'humValue', 'outTempValue', 'outHumValue'].forEach(function (i) { setText(i, '--'); });
-      ['tempTime', 'humTime', 'outTempTime', 'outHumTime'].forEach(function (i) { setText(i, 'No data available'); });
-      return;
+  // ---- Latest environmental reading -------------------------------------
+  // No endAt() here: a fixed bound on a persistent listener would stop matching
+  // new records once wall-clock passed it. 60 records = ~1 hour at 1/min, which
+  // is a few kB and always contains the newest genuine reading even if a
+  // bad-clock record is sitting at the top of the key order.
+  database.ref('hive_log').orderByKey().limitToLast(60)
+    .on('value', function (snap) {
+    var rows = [], rejected = 0;
+    snap.forEach(function (c) {
+      if (!isUsableRow(c.key, c.val())) { rejected++; return; }
+      var v = c.val();
+      v.__key = c.key;
+      rows.push(v);
+    });
+    if (rejected) {
+      console.warn('hive_log: ignored ' + rejected +
+                   ' record(s) with an invalid key or timestamp');
     }
 
+    // Walk newest -> oldest for the most recent record that actually carries
+    // each pair. Inside and outside are tracked separately because one probe
+    // can fail while the other succeeds, and the firmware omits failed fields.
     var latestIn = null, latestOut = null;
     for (var i = rows.length - 1; i >= 0; i--) {
-      if (!latestIn && rows[i].temp_C !== undefined) latestIn = rows[i];
-      if (!latestOut && rows[i].temp_outside_C !== undefined) latestOut = rows[i];
+      if (!latestIn  && num(rows[i].temp_C)         !== null) latestIn  = rows[i];
+      if (!latestOut && num(rows[i].temp_outside_C) !== null) latestOut = rows[i];
       if (latestIn && latestOut) break;
     }
 
-    if (latestIn) {
-      setText('tempValue', (+latestIn.temp_C).toFixed(1));
-      setText('humValue', latestIn.humidity_pct !== undefined
-                          ? (+latestIn.humidity_pct).toFixed(1) : '--');
-      setText('tempTime', formatTimeOnly(rowDate(latestIn)));
-      setText('humTime',  formatTimeOnly(rowDate(latestIn)));
-    } else {
-      setText('tempValue', '--'); setText('humValue', '--');
-      setText('tempTime', 'No data available'); setText('humTime', 'No data available');
-    }
-
-    if (latestOut) {
-      setText('outTempValue', (+latestOut.temp_outside_C).toFixed(1));
-      setText('outHumValue', latestOut.humidity_outside_pct !== undefined
-                             ? (+latestOut.humidity_outside_pct).toFixed(1) : '--');
-      setText('outTempTime', formatTimeOnly(rowDate(latestOut)));
-      setText('outHumTime',  formatTimeOnly(rowDate(latestOut)));
-    } else {
-      setText('outTempValue', '--'); setText('outHumValue', '--');
-      setText('outTempTime', 'No data available'); setText('outHumTime', 'No data available');
-    }
+    applyReading('tempValue', 'humValue', 'tempTime', 'humTime',
+                 latestIn, 'temp_C', 'humidity_pct');
+    applyReading('outTempValue', 'outHumValue', 'outTempTime', 'outHumTime',
+                 latestOut, 'temp_outside_C', 'humidity_outside_pct');
   });
 
   // ---- Bee count --------------------------------------------------------
   database.ref('hive_bee_count').on('value', function (snap) {
     var d = snap.val();
-    if (!d) { setText('netValue', '--'); setText('inValue', '--'); setText('outValue', '--'); return; }
-    var cin  = d.count_in  !== undefined ? d.count_in  : 0;
-    var cout = d.count_out !== undefined ? d.count_out : 0;
-    var net  = d.net !== undefined ? d.net : (cin - cout);
-    setText('netValue', net);
-    setText('inValue', cin);
-    setText('outValue', cout);
+    if (!d) {
+      setText('netValue', '--'); setText('inValue', '--'); setText('outValue', '--');
+      setText('beeUpdated', 'No bee data available');
+      return;
+    }
+    // Only count_in / count_out / net are authoritative. The legacy in / out
+    // keys are from the old two-board firmware and are deliberately ignored.
+    var cin  = d.count_in  !== undefined ? d.count_in  : null;
+    var cout = d.count_out !== undefined ? d.count_out : null;
+    var net  = d.net !== undefined ? d.net
+                                   : ((cin !== null && cout !== null) ? cin - cout : null);
+    setText('netValue', net  !== null ? net  : '--');
+    setText('inValue',  cin  !== null ? cin  : '--');
+    setText('outValue', cout !== null ? cout : '--');
+
     var lu = d.last_updated_ms ? new Date(d.last_updated_ms)
                                : parseFirebaseTimestampToDate(d.last_updated);
-    setText('beeUpdated', lu ? 'Updated ' + formatFull(lu) : '');
+    if (!lu) { setText('beeUpdated', 'Timestamp unavailable'); return; }
+    // The device re-pushes at least once a minute, so anything much older than
+    // that means the count on screen is not live - say so rather than imply it is.
+    var ageMin = (Date.now() - lu.getTime()) / 60000;
+    setText('beeUpdated', 'Updated ' + formatFull(lu) +
+            (ageMin > 3 ? '  -  STALE (' + Math.round(ageMin) + ' min old)' : ''));
   });
 
   // ---- Recent recordings on the home page (5 newest only) ---------------
-  database.ref('hive_audio').orderByKey().limitToLast(RECENT_AUDIO_COUNT)
+  database.ref('hive_audio').orderByKey().limitToLast(RECENT_AUDIO_COUNT + 5)
     .on('value', function (snap) {
       renderRecentAudio(snap);
       // A new recording arrived - refresh the key index so search stays complete.
