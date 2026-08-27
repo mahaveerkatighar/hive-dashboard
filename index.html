@@ -1,33 +1,295 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Smart Honey Bee Hive</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Smart Honey Bee Hive</title>
 <style>
-:root{--b:#a84b00;--o:#f47721;--bg:#fffaf2;--line:#ead9c5;--txt:#30251f}*{box-sizing:border-box}body{margin:0;color:var(--txt);font-family:Arial,sans-serif;background:var(--bg)}header{position:sticky;top:0;z-index:5;background:#fffaf5f2;border-bottom:1px solid var(--line)}nav{max-width:1450px;margin:auto;padding:18px 28px;display:flex;align-items:center;gap:20px}.logo,h1,h2{font-family:Georgia,serif;color:var(--b)}.logo{font-size:27px;font-weight:700;margin-right:auto}nav button{border:0;background:none;padding:12px;font-weight:700;color:#5b4a40;cursor:pointer}nav button.active{color:var(--b);border-bottom:2px solid var(--b)}main{max-width:1450px;margin:auto;padding:38px 28px 90px}h1{font-size:43px;margin:0 0 8px}.sub{color:#67584e;font-size:17px;margin-bottom:24px}.badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}.badge{background:#fff;border:1px solid var(--line);border-radius:25px;padding:10px 15px;font-size:14px}.dot{width:9px;height:9px;border-radius:50%;display:inline-block;background:#1db954;margin-right:7px}.bad{background:#ffe9e5}.bad .dot{background:#d33}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card,.panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:22px;box-shadow:0 3px 14px #6b3a120b}.label{font-size:12px;letter-spacing:1.3px;font-weight:700;color:#6c5a50}.value{font-size:39px;margin:40px 0 8px}.muted{font-size:13px;color:#75665d}.two{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:16px}.orange{background:var(--o)}.panel{margin-top:18px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.field{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700}.field input,.field select,input[type=text]{padding:10px;border:1px solid #d8c3ad;border-radius:8px;background:#fff}.btn{border:1px solid var(--b);background:#fff;color:var(--b);padding:10px 15px;border-radius:8px;font-weight:700;cursor:pointer}.primary{background:var(--b);color:#fff}.btn:disabled{opacity:.45}.status{padding:11px 14px;border-radius:8px;background:#fff3e4;margin:12px 0}.ok{background:#e8f8ee;color:#12652f}.err{background:#ffe7e5;color:#a11f1a}.audio{display:grid;grid-template-columns:25px 1fr auto;gap:12px;align-items:center;padding:12px;margin:9px 0;border:1px solid var(--line);border-radius:11px;background:#fffaf3}.audio audio{width:min(430px,100%)}.audio-title{font-weight:700}.audio small{color:#75665d}.actions{display:flex;gap:8px;align-items:center}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:13px}th{color:var(--b)}.pager{display:flex;justify-content:center;gap:10px;align-items:center;margin-top:15px}footer{position:fixed;bottom:0;left:0;right:0;background:#fffaf5ee;border-top:1px solid var(--line);padding:9px 25px;font-size:12px;display:flex;justify-content:space-between}.hide{display:none!important}@media(max-width:950px){.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}@media(max-width:600px){.grid{grid-template-columns:1fr}main{padding:25px 13px}.logo{font-size:20px}nav{padding:10px;gap:3px}nav button{padding:8px 5px;font-size:12px}h1{font-size:34px}.audio{grid-template-columns:22px 1fr}.actions{grid-column:2;flex-wrap:wrap}}
-</style></head><body>
-<header><nav><div class="logo">SMART HONEY BEE HIVE</div><button class="tab active" data-p="dash">Dashboard</button><button class="tab" data-p="analytics">Hive Analytics</button><button class="tab" data-p="audioPage">Acoustic Data</button><button class="tab" data-p="settings">Settings</button></nav></header>
+:root{--brown:#a94c00;--orange:#f47a20;--cream:#fffaf2;--line:#ead9c6;--ink:#30251f;--muted:#75675f;--green:#16a34a;--red:#dc2626}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+header{position:sticky;top:0;z-index:20;background:#fffaf5f5;border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}
+nav{max-width:1500px;margin:auto;padding:18px 28px;display:flex;align-items:center;gap:20px}.logo{font:700 28px Georgia,serif;color:var(--brown);margin-right:auto}
+nav button{border:0;background:none;color:#5c4b42;font-weight:700;padding:12px 10px;cursor:pointer}nav button.active{color:var(--brown);border-bottom:2px solid var(--brown)}
+main{max-width:1500px;margin:auto;padding:42px 28px 100px}h1,h2{font-family:Georgia,serif;color:var(--brown)}h1{font-size:46px;margin:0 0 8px}h2{font-size:30px;margin:0 0 20px}.sub{font-size:18px;color:#67584e;margin-bottom:25px}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:25px}.badge{background:#fff;border:1px solid var(--line);border-radius:28px;padding:11px 16px;font-size:14px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);margin-right:8px}.offline .dot{background:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.card,.panel{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 18px #6b3a1210}.card{padding:25px}.label{font-size:13px;letter-spacing:1.5px;font-weight:700;color:#6c5a50}.value{font-size:42px;margin:43px 0 9px}.small{font-size:13px;color:var(--muted)}
+.two{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-top:18px}.orange{background:var(--orange);border-color:var(--orange)}.orange .small{color:#4c260f}
+.panel{padding:25px;margin-top:20px}.status{padding:12px 15px;border-radius:9px;background:#fff3e4;color:#7a3b00;margin:10px 0}.status.ok{background:#e8f8ee;color:#126a32}.status.error{background:#ffe7e5;color:#9d211b}
+.controls,.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.btn{border:1px solid var(--brown);background:#fff;color:var(--brown);padding:11px 15px;border-radius:8px;font-weight:700;cursor:pointer}.btn.primary{background:var(--brown);color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}
+.field{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#66564d}.field input,.field select,#audioText{padding:11px;border:1px solid #d9c5ae;border-radius:8px;background:#fff;font:inherit}
+.hidden{display:none!important}.chart-wrap{width:100%;overflow:hidden;margin-top:20px}.chart-wrap svg{width:100%;height:380px;display:block}.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;margin:10px 0}.legend span:before{content:"";display:inline-block;width:25px;height:3px;background:currentColor;vertical-align:middle;margin-right:7px}
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px}th,td{padding:11px 9px;border-bottom:1px solid #eee;text-align:left}th{color:var(--brown)}
+.audio{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:13px;margin:10px 0;background:#fffaf4}.audio-title{font-weight:700}.audio small{display:block;color:var(--muted);margin-top:4px}.audio audio{width:min(390px,32vw)}.audio-actions{display:flex;gap:8px;align-items:center}
+.pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:18px}.adminbox{border-left:4px solid var(--brown)}
+footer{position:fixed;bottom:0;left:0;right:0;z-index:19;background:#fffaf5f2;border-top:1px solid var(--line);padding:9px 28px;display:flex;justify-content:space-between;font-size:13px}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.audio{grid-template-columns:auto 1fr}.audio-actions{grid-column:2}.audio audio{width:100%}}
+@media(max-width:650px){nav{padding:12px 10px;gap:3px;overflow:auto}.logo{font-size:20px;min-width:190px}nav button{padding:10px 7px}main{padding:28px 14px 100px}h1{font-size:34px}.grid{grid-template-columns:1fr}.audio{grid-template-columns:1fr}.audio-actions{grid-column:1}.audio audio{width:100%}footer{font-size:11px;padding:8px 10px}}
+</style>
+</head>
+<body>
+<header><nav>
+<div class="logo">SMART HONEY BEE HIVE</div>
+<button class="tab active" data-page="dashboard">Dashboard</button>
+<button class="tab" data-page="analytics">Hive Analytics</button>
+<button class="tab" data-page="audio">Acoustic Data</button>
+<button class="tab" data-page="settings">Settings</button>
+</nav></header>
+
 <main>
-<section id="dash"><h1>SMART HONEY BEE HIVE</h1><div class="sub">Real-Time Hive Health Monitoring and Prediction System</div><div class="badges"><div class="badge" id="fb"><span class="dot"></span>Firebase connecting...</div><div class="badge" id="sensor">Sensor: --</div><div class="badge" id="mic">🎙 Mic: --</div><div class="badge">🕒 <span id="clock"></span></div></div>
-<div class="grid"><div class="card"><div class="label">HIVE TEMPERATURE</div><div class="value" id="ht">--</div><div class="muted" id="htt">No valid reading</div></div><div class="card"><div class="label">HIVE HUMIDITY</div><div class="value" id="hh">--</div><div class="muted" id="hht">No valid reading</div></div><div class="card"><div class="label">OUTSIDE TEMPERATURE</div><div class="value" id="ot">--</div><div class="muted" id="ott">No valid reading</div></div><div class="card"><div class="label">OUTSIDE HUMIDITY</div><div class="value" id="oh">--</div><div class="muted" id="oht">No valid reading</div></div></div>
-<div class="two"><div class="card"><div class="label">NET BEES INSIDE</div><div class="value" id="net">--</div><div>IN: <b id="bin">--</b> &nbsp; OUT: <b id="bout">--</b></div></div><div class="card orange"><div class="label">TOTAL AUDIO RECORDINGS</div><div class="value" id="total">--</div><div>All valid records in Firebase</div></div></div><div class="panel"><h2>System status</h2><div id="msg" class="status">Starting...</div></div></section>
+<section id="dashboard">
+<h1>SMART HONEY BEE HIVE</h1><div class="sub">Real-Time Hive Health Monitoring and Prediction System</div>
+<div class="badges">
+<div id="fbBadge" class="badge"><span class="dot"></span>Firebase connecting...</div>
+<div id="sensorBadge" class="badge"><span class="dot"></span>Sensor --</div>
+<div id="micBadge" class="badge">🎙 Mic --</div>
+<div class="badge">🕒 <span id="clock">--</span></div>
+</div>
+<div class="grid">
+<div class="card"><div class="label">HIVE TEMPERATURE</div><div class="value" id="hiveTemp">--</div><div class="small" id="hiveTempTime">No valid reading</div></div>
+<div class="card"><div class="label">HIVE HUMIDITY</div><div class="value" id="hiveHum">--</div><div class="small" id="hiveHumTime">No valid reading</div></div>
+<div class="card"><div class="label">OUTSIDE TEMPERATURE</div><div class="value" id="outTemp">--</div><div class="small" id="outTempTime">No valid reading</div></div>
+<div class="card"><div class="label">OUTSIDE HUMIDITY</div><div class="value" id="outHum">--</div><div class="small" id="outHumTime">No valid reading</div></div>
+</div>
+<div class="two">
+<div class="card"><div class="label">NET BEES INSIDE</div><div class="value" id="netBees">--</div><div>IN: <b id="beeIn">--</b> &nbsp;&nbsp; OUT: <b id="beeOut">--</b></div></div>
+<div class="card orange"><div class="label">TOTAL AUDIO RECORDINGS</div><div class="value" id="audioTotal">--</div><div class="small">Valid records found in Firebase</div></div>
+</div>
+<div class="panel"><h2>System Status</h2><div id="systemStatus" class="status">Starting Firebase listeners...</div></div>
+</section>
 
-<section id="analytics" class="hide"><h1>Hive Analytics</h1><div class="sub">Historical readings from Firebase.</div><div class="panel"><div class="row"><div class="field">START DATE<input type="date" id="as"></div><div class="field">END DATE<input type="date" id="ae"></div><button class="btn primary" id="aload">Load</button><button class="btn" id="csv">Export Excel-compatible CSV</button></div><div style="overflow:auto"><table><thead><tr><th>Date</th><th>Time</th><th>Hive °C</th><th>Hive %</th><th>Outside °C</th><th>Outside %</th></tr></thead><tbody id="rows"></tbody></table></div></div></section>
+<section id="analytics" class="hidden">
+<h1>Hive Analytics</h1><div class="sub">Historical readings from <b>hive_log</b> and <b>hive_log_outside</b>.</div>
+<div class="panel">
+<div class="filters">
+<div class="field">START DATE<input type="date" id="aStart"></div>
+<div class="field">END DATE<input type="date" id="aEnd"></div>
+<button class="btn primary" id="aLoad">Update graph</button><button class="btn" id="aExport">Export CSV / Excel</button>
+</div>
+<div class="legend"><span style="color:#a94c00">Hive temperature</span><span style="color:#e29a00">Hive humidity</span><span style="color:#ef6c20">Outside temperature</span><span style="color:#78600c">Outside humidity</span></div>
+<div class="chart-wrap"><svg id="chart" viewBox="0 0 1200 380" preserveAspectRatio="none"></svg></div>
+<div style="overflow:auto"><table><thead><tr><th>Date</th><th>Time</th><th>Hive °C</th><th>Hive %</th><th>Outside °C</th><th>Outside %</th></tr></thead><tbody id="rows"></tbody></table></div>
+</div>
+</section>
 
-<section id="audioPage" class="hide"><h1>Hive Acoustic Search</h1><div class="sub">All valid recordings are searchable. The page is paginated only for browser performance; no records are deleted or limited.</div><div id="ast"></div><div class="panel"><div class="row"><div class="field">START DATE<input type="date" id="sd"></div><div class="field">START TIME<input type="time" id="st"></div><div class="field">END DATE<input type="date" id="ed"></div><div class="field">END TIME<input type="time" id="et"></div><div class="field">FILENAME<input type="text" id="q" placeholder="audio_..."></div><button class="btn primary" id="asearch">Search</button><button class="btn" id="aclear">Clear</button></div><div class="row" style="margin-top:15px"><label><input type="checkbox" id="all"> Select all on page</label><span id="sel">0 selected</span><button class="btn primary admin" id="dlSelected">Download selected WAV</button><button class="btn primary admin" id="zip">Download complete day ZIP</button></div><div id="alist"></div><div class="pager"><button class="btn" id="prev">Previous</button><span id="pi">Page 1</span><button class="btn" id="next">Next</button></div></div></section>
+<section id="audio" class="hidden">
+<h1>Hive Acoustic Search</h1><div class="sub">Search and play all valid recordings. Download controls are visible only to the administrator.</div>
+<div id="audioMsg"></div>
+<div class="panel">
+<div class="filters">
+<div class="field">START DATE<input type="date" id="sDate"></div><div class="field">START TIME<input type="time" id="sTime"></div>
+<div class="field">END DATE<input type="date" id="eDate"></div><div class="field">END TIME<input type="time" id="eTime"></div>
+<input id="audioText" placeholder="Search filename">
+<button class="btn primary" id="aSearch">Search</button><button class="btn" id="aClear">Clear</button>
+</div>
+<div class="controls" style="margin-top:16px">
+<label><input type="checkbox" id="selectPage"> Select this page</label><span id="selected">0 selected</span>
+<button class="btn primary adminOnly" id="downloadSelected">Download selected</button>
+<button class="btn primary adminOnly" id="downloadZip">Download complete selected day ZIP</button>
+</div>
+<div id="audioList"></div><div class="pagination"><button class="btn" id="prev">Previous</button><span id="page">Page --</span><button class="btn" id="next">Next</button></div>
+</div>
+</section>
 
-<section id="settings" class="hide"><h1>Settings</h1><div class="sub">Administrator-only controls.</div><div class="panel"><div id="auth"></div><div id="adminBox" class="hide"><p><b>Administrator:</b> mahaveerkatighar05@gmail.com</p><button class="btn primary" id="micBtn">Toggle microphone</button> <button class="btn" id="reset">Reset bee count</button> <button class="btn" id="signout">Sign out</button><div class="status">ESP32-S3 Wi-Fi credentials should be changed through the ESP32 provisioning portal. This web dashboard does not invent a local ESP32 endpoint.</div></div></div></section>
-</main><footer><span>© 2026 SMART HIVE MONITORING SYSTEM</span><span>Live clock • <span id="state">Connecting</span></span></footer>
+<section id="settings" class="hidden">
+<h1>Settings</h1><div class="sub">Administrator-only controls.</div>
+<div class="panel adminbox">
+<div id="authArea"></div>
+<div id="adminArea" class="hidden">
+<h2>Administrator controls</h2>
+<p>Administrator account: <b>mahaveerkatighar05@gmail.com</b></p>
+<div class="controls"><button class="btn primary" id="micBtn">Toggle microphone</button><button class="btn" id="resetBtn">Reset bee count</button><button class="btn" id="signOut">Sign out</button></div>
+<div class="status">These buttons write to <b>hive_control</b>. The ESP32-S3 firmware must read those values.</div>
+</div>
+</div>
+<div class="panel">
+<h2>Admin login setup</h2>
+<div id="loginHelp" class="status">Google sign-in requires this GitHub Pages domain to be added to Firebase Authentication → Settings → Authorized domains.</div>
+</div>
+</section>
+</main>
+
+<footer><span>© 2026 SMART HIVE MONITORING SYSTEM</span><span>Live clock • Firebase RTDB • <span id="footer">Connecting</span></span></footer>
+
 <script type="module">
-import{initializeApp}from'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';import{getDatabase,ref,onValue,set}from'https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js';import{getStorage,ref as sr,getBlob}from'https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js';import{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js';
-const C={apiKey:'AIzaSyCwJM0pmtuGZIU2ThHzyasd0c8AL9HTRno',authDomain:'hbdc-saola.firebaseapp.com',databaseURL:'https://hbdc-saola-default-rtdb.firebaseio.com',projectId:'hbdc-saola',storageBucket:'hbdc-saola.firebasestorage.app',messagingSenderId:'736079100825',appId:'1:736079100825:web:624ec1814543271d4cf108',measurementId:'G-X1C7ZF09XP'};const ADMIN='mahaveerkatighar05@gmail.com';const app=initializeApp(C),db=getDatabase(app),storage=getStorage(app),auth=getAuth(app),$=x=>document.getElementById(x);let hive=[],out=[],aud=[],bee={},stat={},admin=false,page=1,ps=50,filtered=[];
-function date(v){if(v==null)return null;let s=String(v).trim(),d=null;if(/^\d{4}-\d\d-\d\d[ T]\d\d:\d\d:\d\d/.test(s))d=new Date(s.replace(' ','T'));else if(/^\d{8}_\d{6}$/.test(s))d=new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T${s.slice(9,11)}:${s.slice(11,13)}:${s.slice(13,15)}`);else{d=new Date(s)}return d&&!isNaN(d)&&d.getFullYear()>=2020&&d.getFullYear()<=2099?d:null}function n(v){let x=Number(v);return Number.isFinite(x)?x:null}function fmt(d){return d?d.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}):'No valid reading'}
-function logs(v,outside){let a=[];Object.entries(v||{}).forEach(([k,x])=>{if(!x||typeof x!=='object')return;let d=date(x.timestamp)||date(k);if(!d)return;let t=n(outside?x.temp_outside_C:x.temp_C),h=n(outside?x.humidity_outside_pct:x.humidity_pct);if(t===null&&h===null)return;a.push({d,t,h})});return a.sort((a,b)=>a.d-b.d)}function audios(v){let a=[];Object.entries(v||{}).forEach(([k,x])=>{if(!x||typeof x!=='object'||!x.url)return;let d=date(x.timestamp)||date(k)||date((x.filename||'').match(/\d{8}_\d{6}/)?.[0]);if(d)a.push({k,d,url:x.url,fn:x.filename||k+'.wav'})});return a.sort((a,b)=>b.d-a.d)}function latest(a){return a[a.length-1]}
-function renderDash(){let h=latest(hive),o=latest(out);$('ht').textContent=h?.t!=null?h.t.toFixed(1)+' °C':'--';$('hh').textContent=h?.h!=null?h.h.toFixed(1)+' %':'--';$('ot').textContent=o?.t!=null?o.t.toFixed(1)+' °C':'--';$('oh').textContent=o?.h!=null?o.h.toFixed(1)+' %':'--';$('htt').textContent=fmt(h?.d);$('hht').textContent=fmt(h?.d);$('ott').textContent=fmt(o?.d);$('oht').textContent=fmt(o?.d);let i=n(bee.count_in??bee.in??bee.in_count),o2=n(bee.count_out??bee.out??bee.out_count),net=n(bee.net)??((i??0)-(o2??0));$('bin').textContent=i??'--';$('bout').textContent=o2??'--';$('net').textContent=Number.isFinite(net)?net:'--';$('total').textContent=aud.length.toLocaleString('en-IN');let ls=date(stat.last_seen),online=ls&&(Date.now()-ls.getTime()<180000);$('sensor').innerHTML=(online?'🟢 ':'🔴 ')+'Sensor '+(online?'Online':'Offline');$('mic').textContent=stat.mic_enabled?'🎙 Mic Recording':'🎙 Mic Off'}
-function listen(path,fn){onValue(ref(db,path),s=>{fn(s.val());$('fb').innerHTML='<span class="dot"></span>Firebase connected';$('state').textContent='Live';renderDash()},e=>{$('fb').textContent='Firebase error';$('fb').classList.add('bad');$('msg').className='status err';$('msg').textContent=e.message})}listen('hive_log',v=>hive=logs(v,false));listen('hive_log_outside',v=>out=logs(v,true));listen('hive_audio',v=>{aud=audios(v);if(!filtered.length)filtered=aud;renderAudio()});listen('hive_bee_count',v=>bee=v||{});listen('hive_status',v=>stat=v||{});
-setInterval(()=>{$('clock').textContent=new Date().toLocaleString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'})},1000);
-function escape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function attr(s){return escape(s)}function range(){let s=$('sd').value,t=$('st').value,e=$('ed').value,u=$('et').value;return{a:s?new Date(s+'T'+(t||'00:00')+':00'):null,b:e?new Date(e+'T'+(u||'23:59')+':59.999'):null}}
-function filterAudio(){let r=range(),q=$('q').value.toLowerCase().trim();filtered=aud.filter(x=>(!r.a||x.d>=r.a)&&(!r.b||x.d<=r.b)&&(!q||x.fn.toLowerCase().includes(q)));page=1;renderAudio()}function renderAudio(){if(!aud.length){$('alist').innerHTML='<div class="status">No valid audio records found.</div>';return}if(!filtered.length&&!$('sd').value&&!$('ed').value&&!$('q').value)filtered=aud;let pages=Math.max(1,Math.ceil(filtered.length/ps));page=Math.min(page,pages);let items=filtered.slice((page-1)*ps,page*ps);$('pi').textContent=`Page ${page}/${pages} • ${filtered.length.toLocaleString('en-IN')} recordings`;$('alist').innerHTML=items.map(x=>`<div class="audio"><input class="ck" type="checkbox" data-k="${attr(x.k)}"><div><div class="audio-title">${fmt(x.d)}</div><small>${escape(x.fn)}</small></div><div class="actions"><audio controls preload="metadata" src="${attr(x.url)}"></audio><button class="btn admin one" data-k="${attr(x.k)}">Download</button></div></div>`).join('');document.querySelectorAll('.one').forEach(b=>b.onclick=()=>downloadOne(aud.find(x=>x.k===b.dataset.k)));document.querySelectorAll('.admin').forEach(x=>x.classList.toggle('hide',!admin));document.querySelectorAll('.ck').forEach(x=>x.onchange=selCount);$('all').checked=false;$('sel').textContent='0 selected'}
-function selCount(){$('sel').textContent=`${document.querySelectorAll('.ck:checked').length} selected`}$('all').onchange=()=>{document.querySelectorAll('.ck').forEach(x=>x.checked=$('all').checked);selCount()};$('asearch').onclick=filterAudio;$('aclear').onclick=()=>{$('sd').value=$('st').value=$('ed').value=$('et').value=$('q').value='';filterAudio()};$('prev').onclick=()=>{if(page>1){page--;renderAudio()}};$('next').onclick=()=>{if(page<Math.ceil(filtered.length/ps)){page++;renderAudio()}};
-function storagePath(url){try{return decodeURIComponent(new URL(url).pathname.split('/o/')[1]||'')}catch{return''}}async function blobFor(x){let p=storagePath(x.url);if(!p)throw Error('Invalid Firebase Storage URL');return await getBlob(sr(storage,p))}async function downloadOne(x){if(!admin)return alert('Administrator access required.');try{let b=await blobFor(x),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=x.fn;a.click();setTimeout(()=>URL.revokeObjectURL(u),1500)}catch(e){alert('Download failed: '+e.message+'\nIf playback works but download does not, configure Firebase Storage CORS for this GitHub Pages origin.')}}$('dlSelected').onclick=async()=>{if(!admin)return alert('Administrator access required.');let ks=[...document.querySelectorAll('.ck:checked')].map(x=>x.dataset.k);for(let k of ks)await downloadOne(aud.find(x=>x.k===k))};$('zip').onclick=async()=>{if(!admin)return alert('Administrator access required.');let d=$('sd').value;if(!d)return alert('Select START DATE.');let list=aud.filter(x=>{let y=x.d;return y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0')===d});if(!list.length)return alert('No recordings for '+d);if(!confirm(`Create ZIP containing ${list.length} recordings for ${d}?`))return;try{let JSZip=(await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm')).default,z=new JSZip();for(let i=0;i<list.length;i++){ $('ast').innerHTML=`<div class="status">Preparing ZIP ${i+1}/${list.length}...</div>`;z.file(list[i].fn,await blobFor(list[i]))}let b=await z.generateAsync({type:'blob'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=d+'.zip';a.click();setTimeout(()=>URL.revokeObjectURL(u),2000);$('ast').innerHTML='<div class="status ok">ZIP downloaded.</div>'}catch(e){$('ast').innerHTML='<div class="status err">ZIP failed: '+escape(e.message)+' Check Storage CORS/permissions.</div>'}};
-function data(){let m=new Map();hive.forEach(x=>{let k=x.d.toISOString();m.set(k,{d:x.d,ht:x.t,hh:x.h,ot:null,oh:null})});out.forEach(x=>{let k=x.d.toISOString(),r=m.get(k);if(!r){r={d:x.d,ht:null,hh:null,ot:x.t,oh:x.h};m.set(k,r)}else{r.ot=x.t;r.oh=x.h}});return[...m.values()].sort((a,b)=>a.d-b.d)}function loadTable(){let s=$('as').value,e=$('ae').value,rs=data().filter(x=>(!s||x.d>=new Date(s+'T00:00'))&&(!e||x.d<=new Date(e+'T23:59:59.999')));$('rows').innerHTML=rs.slice().reverse().map(x=>`<tr><td>${x.d.toLocaleDateString('en-IN')}</td><td>${x.d.toLocaleTimeString('en-IN')}</td><td>${x.ht??''}</td><td>${x.hh??''}</td><td>${x.ot??''}</td><td>${x.oh??''}</td></tr>`).join('')||'<tr><td colspan="6">No data</td></tr>'}$('aload').onclick=loadTable;$('csv').onclick=()=>{let csv='Date,Time,Hive Temperature C,Hive Humidity %,Outside Temperature C,Outside Humidity %\n';data().forEach(x=>csv+=`${x.d.toLocaleDateString('en-IN')},${x.d.toLocaleTimeString('en-IN')},${x.ht??''},${x.hh??''},${x.ot??''},${x.oh??''}\n`);let b=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='hive_sensor_data.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
-const provider=new GoogleAuthProvider();onAuthStateChanged(auth,u=>{admin=!!u&&u.email?.toLowerCase()===ADMIN.toLowerCase();$('adminBox').classList.toggle('hide',!admin);$('auth').innerHTML=u?`Signed in: <b>${escape(u.email)}</b> — ${admin?'ADMIN':'VIEWER'} <button class="btn" id="lo">Sign out</button>`:`<button class="btn primary" id="login">Admin Google sign-in</button><p>Viewers can view and play audio. Only the configured administrator can download or change controls.</p>`;if(u)$('lo').onclick=()=>signOut(auth);else $('login').onclick=async()=>{try{await signInWithPopup(auth,provider)}catch(e){alert(e.message)}};document.querySelectorAll('.admin').forEach(x=>x.classList.toggle('hide',!admin));renderAudio()});$('micBtn').onclick=async()=>{if(!admin)return;try{await set(ref(db,'hive_control/mic_enabled'),!stat.mic_enabled);alert('Microphone command sent.')}catch(e){alert(e.message)}};$('reset').onclick=async()=>{if(admin&&confirm('Reset bee count?'))await set(ref(db,'hive_control/reset_count'),true)};$('signout').onclick=()=>signOut(auth);
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');['dash','analytics','audioPage','settings'].forEach(id=>$(id).classList.toggle('hide',id!==b.dataset.p));if(b.dataset.p==='audioPage')renderAudio()});$('msg').className='status ok';$('msg').textContent='Firebase listeners active. Data updates live without page refresh.';filtered=[];renderDash();
-</script></body></html>
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {getDatabase,ref,onValue,set} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyCwJM0pmtuGZIU2ThHzyasd0c8AL9HTRno",
+ authDomain:"hbdc-saola.firebaseapp.com",
+ databaseURL:"https://hbdc-saola-default-rtdb.firebaseio.com",
+ projectId:"hbdc-saola",
+ storageBucket:"hbdc-saola.firebasestorage.app",
+ messagingSenderId:"736079100825",
+ appId:"1:736079100825:web:624ec1814543271d4cf108",
+ measurementId:"G-X1C7ZF09XP"
+};
+const ADMIN="mahaveerkatighar05@gmail.com";
+const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app);
+let hive=[],outside=[],audio=[],count={},status={},admin=false,filtered=[],pageNo=1;
+const $=id=>document.getElementById(id);
+
+function parseDate(v){
+ if(v===undefined||v===null||v==="")return null;
+ let s=String(v).trim(),d=null;
+ if(/^\\d{4}-\\d{2}-\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}/.test(s))d=new Date(s.replace(" ","T"));
+ else if(/^\\d{8}_\\d{6}$/.test(s))d=new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T${s.slice(9,11)}:${s.slice(11,13)}:${s.slice(13,15)}`);
+ else {d=new Date(s);if(isNaN(d))d=null}
+ return d&&d.getFullYear()>=2020&&d.getFullYear()<=2099&&!isNaN(d)?d:null;
+}
+function n(v){let x=Number(v);return Number.isFinite(x)?x:null}
+function fmt(d){return d?d.toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"No valid reading"}
+function cleanSensors(v,out=false){
+ const a=[];if(!v||typeof v!=="object")return a;
+ Object.entries(v).forEach(([key,x])=>{
+  if(!x||typeof x!=="object")return;
+  const d=parseDate(x.timestamp)||parseDate(key);if(!d)return;
+  const t=n(out?x.temp_outside_C:x.temp_C),h=n(out?x.humidity_outside_pct:x.humidity_pct);
+  if(t===null&&h===null)return;a.push({date:d,t,h,key});
+ });return a.sort((a,b)=>a.date-b.date);
+}
+function cleanAudio(v){
+ const a=[];if(!v||typeof v!=="object")return a;
+ Object.entries(v).forEach(([key,x])=>{
+  if(!x||typeof x!=="object"||typeof x.url!=="string"||!x.url)return;
+  const token=(String(x.filename||"").match(/\\d{8}_\\d{6}/)||[])[0];
+  const d=parseDate(x.timestamp)||parseDate(key)||parseDate(token);if(!d)return;
+  a.push({key,date:d,url:x.url,filename:x.filename||key+".wav"});
+ });return a.sort((a,b)=>b.date-a.date);
+}
+function latest(a){return a.length?a[a.length-1]:null}
+function update(){
+ const h=latest(hive),o=latest(outside);
+ $("hiveTemp").textContent=h?.t!=null?h.t.toFixed(1)+" °C":"--";
+ $("hiveHum").textContent=h?.h!=null?h.h.toFixed(1)+" %":"--";
+ $("outTemp").textContent=o?.t!=null?o.t.toFixed(1)+" °C":"--";
+ $("outHum").textContent=o?.h!=null?o.h.toFixed(1)+" %":"--";
+ $("hiveTempTime").textContent=h?fmt(h.date):"No valid reading";$("hiveHumTime").textContent=h?fmt(h.date):"No valid reading";
+ $("outTempTime").textContent=o?fmt(o.date):"No valid reading";$("outHumTime").textContent=o?fmt(o.date):"No valid reading";
+ const ci=n(count.count_in??count.in??count.in_count),co=n(count.count_out??count.out??count.out_count);
+ $("beeIn").textContent=ci??"--";$("beeOut").textContent=co??"--";$("netBees").textContent=n(count.net)??(ci!==null&&co!==null?ci-co:"--");
+ $("audioTotal").textContent=audio.length.toLocaleString("en-IN");
+ const last=parseDate(status.last_seen)||parseDate(status.lastSeen),online=last&&Date.now()-last.getTime()<180000;
+ $("sensorBadge").innerHTML=`<span class="dot"></span>Sensor ${online?"Online":"Offline"}`;$("sensorBadge").classList.toggle("offline",!online);
+ $("micBadge").textContent=status.mic_enabled===true?"🎙 Mic Recording":status.mic_enabled===false?"🎙 Mic Off":"🎙 Mic --";
+}
+function listen(path,fn){
+ onValue(ref(db,path),s=>{fn(s.val());$("fbBadge").innerHTML='<span class="dot"></span>Firebase connected';$("footer").textContent="Live";},e=>{
+  $("fbBadge").innerHTML='<span class="dot"></span>Firebase error';$("fbBadge").classList.add("offline");
+  $("systemStatus").className="status error";$("systemStatus").textContent="Firebase error: "+e.message;
+ });
+}
+listen("hive_log",v=>{hive=cleanSensors(v);update();renderAnalytics()});
+listen("hive_log_outside",v=>{outside=cleanSensors(v,true);update();renderAnalytics()});
+listen("hive_audio",v=>{audio=cleanAudio(v);filtered=audio;update();renderAudio()});
+listen("hive_bee_count",v=>{count=v||{};update()});
+listen("hive_status",v=>{status=v||{};update()});
+$("systemStatus").className="status ok";$("systemStatus").textContent="Firebase listeners active. Data updates automatically without page refresh.";
+
+setInterval(()=>{$("clock").textContent=new Date().toLocaleString("en-IN",{weekday:"short",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});},1000);
+
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+ ["dashboard","analytics","audio","settings"].forEach(id=>$(id).classList.toggle("hidden",id!==b.dataset.page));
+ if(b.dataset.page==="analytics")renderAnalytics();if(b.dataset.page==="audio")renderAudio();
+});
+
+function merged(){
+ const m=new Map();
+ hive.forEach(x=>{const k=x.date.getTime();m.set(k,{date:x.date,ht:x.t,hh:x.h,ot:null,oh:null})});
+ outside.forEach(x=>{let k=x.date.getTime(),r=m.get(k);if(!r){r={date:x.date,ht:null,hh:null,ot:x.t,oh:x.h};m.set(k,r)}else{r.ot=x.t;r.oh=x.h}});
+ return [...m.values()].sort((a,b)=>a.date-b.date);
+}
+function selectedRows(){
+ const sd=$("aStart").value,ed=$("aEnd").value;
+ return merged().filter(r=>(!sd||r.date>=new Date(sd+"T00:00:00"))&&(!ed||r.date<=new Date(ed+"T23:59:59.999")));
+}
+function renderAnalytics(){
+ if(!$("rows"))return;const rows=selectedRows();
+ $("rows").innerHTML=rows.slice(-2000).reverse().map(r=>`<tr><td>${r.date.toLocaleDateString("en-IN")}</td><td>${r.date.toLocaleTimeString("en-IN")}</td><td>${r.ht??"--"}</td><td>${r.hh??"--"}</td><td>${r.ot??"--"}</td><td>${r.oh??"--"}</td></tr>`).join("")||'<tr><td colspan="6">No valid data in the selected range.</td></tr>';
+ draw(rows);
+}
+function draw(rows){
+ const svg=$("chart");if(!svg)return;const W=1200,H=380,L=65,R=25,T=25,B=45,CW=W-L-R,CH=H-T-B;
+ svg.innerHTML="";
+ const vals=rows.flatMap(r=>[r.ht,r.hh,r.ot,r.oh]).filter(v=>v!==null&&v!==undefined&&Number.isFinite(v));
+ if(!vals.length){svg.innerHTML='<text x="65" y="60" font-size="18" fill="#75675f">No valid sensor data available.</text>';return}
+ let min=Math.min(...vals),max=Math.max(...vals);if(min===max){min-=1;max+=1}
+ const ns="http://www.w3.org/2000/svg";
+ for(let i=0;i<=5;i++){let y=T+CH*i/5,val=max-(max-min)*i/5;let line=document.createElementNS(ns,"line");line.setAttribute("x1",L);line.setAttribute("x2",W-R);line.setAttribute("y1",y);line.setAttribute("y2",y);line.setAttribute("stroke","#ddd");svg.appendChild(line);let tx=document.createElementNS(ns,"text");tx.setAttribute("x",8);tx.setAttribute("y",y+4);tx.setAttribute("font-size","12");tx.setAttribute("fill","#75675f");tx.textContent=val.toFixed(0);svg.appendChild(tx)}
+ const colors={ht:"#a94c00",hh:"#e29a00",ot:"#ef6c20",oh:"#78600c"};
+ Object.entries(colors).forEach(([key,color])=>{
+  let pts=[];rows.forEach((r,i)=>{if(r[key]===null||r[key]===undefined)return;let x=L+(rows.length<=1?.5:i/(rows.length-1))*CW,y=T+(max-r[key])/(max-min)*CH;pts.push(`${x},${y}`)});
+  if(pts.length){let p=document.createElementNS(ns,"polyline");p.setAttribute("points",pts.join(" "));p.setAttribute("fill","none");p.setAttribute("stroke",color);p.setAttribute("stroke-width","3");svg.appendChild(p)}
+ });
+}
+$("aLoad").onclick=renderAnalytics;
+$("aExport").onclick=()=>{
+ if(!admin){alert("Admin access required.");return}
+ const rows=selectedRows();let csv="Date,Time,Hive Temperature C,Hive Humidity %,Outside Temperature C,Outside Humidity %\n";
+ rows.forEach(r=>csv+=`${r.date.toLocaleDateString("en-IN")},${r.date.toLocaleTimeString("en-IN")},${r.ht??""},${r.hh??""},${r.ot??""},${r.oh??""}\n`);
+ const a=document.createElement("a"),u=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.href=u;a.download="smart_hive_sensor_data.csv";a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+};
+
+function range(){
+ const s=$("sDate").value?new Date(`${$("sDate").value}T${$("sTime").value||"00:00"}:00`):null;
+ const e=$("eDate").value?new Date(`${$("eDate").value}T${$("eTime").value||"23:59"}:59.999`):null;return{s,e}
+}
+function filterAudio(){const {s,e}=range(),q=$("audioText").value.toLowerCase().trim();filtered=audio.filter(a=>(!s||a.date>=s)&&(!e||a.date<=e)&&(!q||a.filename.toLowerCase().includes(q)));pageNo=1;renderAudio()}
+$("aSearch").onclick=filterAudio;$("aClear").onclick=()=>{$("sDate").value=$("sTime").value=$("eDate").value=$("eTime").value=$("audioText").value="";filtered=audio;pageNo=1;renderAudio()};
+function renderAudio(){
+ const total=Math.max(1,Math.ceil(filtered.length/50));pageNo=Math.min(pageNo,total);const items=filtered.slice((pageNo-1)*50,pageNo*50);
+ $("page").textContent=`Page ${pageNo} / ${total} • ${filtered.length.toLocaleString("en-IN")} recordings`;
+ $("audioList").innerHTML=items.map(a=>`<div class="audio"><input class="audioCheck" type="checkbox" data-key="${esc(a.key)}"><div><div class="audio-title">${fmt(a.date)}</div><small>${esc(a.filename)}</small></div><div class="audio-actions"><audio controls preload="metadata" src="${esc(a.url)}"></audio>${admin?`<button class="btn downloadOne" data-key="${esc(a.key)}">Download</button>`:""}</div></div>`).join("")||'<div class="status">No recordings found.</div>';
+ document.querySelectorAll(".audioCheck").forEach(x=>x.onchange=selectedUpdate);$("selectPage").checked=false;$("selected").textContent="0 selected";
+ document.querySelectorAll(".downloadOne").forEach(b=>b.onclick=()=>downloadDirect(audio.find(a=>a.key===b.dataset.key)));
+}
+function selectedUpdate(){$("selected").textContent=`${document.querySelectorAll(".audioCheck:checked").length} selected`}
+$("selectPage").onchange=()=>{document.querySelectorAll(".audioCheck").forEach(x=>x.checked=$("selectPage").checked);selectedUpdate()};
+$("prev").onclick=()=>{if(pageNo>1){pageNo--;renderAudio()}};$("next").onclick=()=>{if(pageNo<Math.ceil(filtered.length/50)){pageNo++;renderAudio()}};
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+async function downloadDirect(a){
+ if(!admin)return;
+ try{const u=document.createElement("a");u.href=a.url;u.download=a.filename;u.target="_blank";u.rel="noopener";u.click()}
+ catch(e){alert("Download failed: "+e.message)}
+}
+$("downloadSelected").onclick=()=>{if(!admin)return;const keys=[...document.querySelectorAll(".audioCheck:checked")].map(x=>x.dataset.key);if(!keys.length)return alert("Select recordings first.");keys.forEach(k=>downloadDirect(audio.find(a=>a.key===k)))};
+$("downloadZip").onclick=async()=>{
+ if(!admin)return;
+ const date=$("sDate").value;if(!date)return alert("Select START DATE for the day ZIP.");
+ const day=audio.filter(a=>{const d=a.date;return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`===date});
+ if(!day.length)return alert("No recordings for that date.");
+ $("audioMsg").innerHTML=`<div class="status">Preparing ${day.length} files. This may take time for a large day.</div>`;
+ try{
+  const JSZip=(await import("https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm")).default,zip=new JSZip();
+  for(let i=0;i<day.length;i++){const r=day[i];const response=await fetch(r.url);if(!response.ok)throw new Error(`HTTP ${response.status} for ${r.filename}`);zip.file(r.filename,await response.blob());$("audioMsg").innerHTML=`<div class="status">Preparing ZIP: ${i+1}/${day.length}</div>`}
+  const blob=await zip.generateAsync({type:"blob"}),a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=`${date}.zip`;a.click();setTimeout(()=>URL.revokeObjectURL(u),3000);$("audioMsg").innerHTML='<div class="status ok">ZIP download started.</div>';
+ }catch(e){$("audioMsg").innerHTML=`<div class="status error">ZIP download failed: ${e.message}. Firebase Storage CORS must allow this GitHub Pages origin.</div>`}
+};
+
+const provider=new GoogleAuthProvider();
+onAuthStateChanged(auth,user=>{
+ admin=!!user&&String(user.email).toLowerCase()===ADMIN.toLowerCase();
+ if(user){
+  $("authArea").innerHTML=`<div class="status ${admin?"ok":"error"}">Signed in: ${esc(user.email)} — ${admin?"ADMIN":"VIEWER ONLY"}</div><button class="btn" id="outBtn">Sign out</button>`;
+  $("outBtn").onclick=()=>signOut(auth);
+ }else{
+  $("authArea").innerHTML='<button class="btn primary" id="googleBtn">Admin Google Sign-in</button><div id="authError"></div>';
+  $("googleBtn").onclick=async()=>{
+   try{await signInWithPopup(auth,provider)}
+   catch(e){
+    $("authError").innerHTML=`<div class="status error"><b>Google sign-in failed:</b> ${esc(e.code||e.message)}<br><br>If the code is <b>auth/unauthorized-domain</b>, add <b>mahaveerkatighar.github.io</b> under Firebase Console → Authentication → Settings → Authorized domains.</div>`;
+   }
+  };
+ }
+ $("adminArea").classList.toggle("hidden",!admin);
+ renderAudio();
+});
+$("micBtn").onclick=async()=>{if(admin)try{await set(ref(db,"hive_control/mic_enabled"),!(status.mic_enabled===true))}catch(e){alert(e.message)}};
+$("resetBtn").onclick=async()=>{if(admin&&confirm("Reset bee count?"))try{await set(ref(db,"hive_control/reset_count"),true)}catch(e){alert(e.message)}};
+$("signOut").onclick=()=>signOut(auth);
+$("clock").textContent=new Date().toLocaleString("en-IN");
+</script>
+</body>
+</html>
