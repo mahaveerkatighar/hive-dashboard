@@ -129,46 +129,41 @@
     font-variation-settings: 'FILL' 1;
   }
 
-  /* Animated Bees Background */
-  .bee {
+  /* Animated Bees Background (decorative only) */
+  #beeField {
     position: fixed;
-    width: 12px;
-    height: 12px;
-    background-color: #e9762b;
-    border-radius: 50%;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;   /* never blocks clicks / taps */
+    z-index: 1;             /* above cards, below nav (z-50) and modals (z-100) */
+    contain: layout paint;  /* keeps repaints isolated from the dashboard */
+  }
+  #beeField .bee {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
     pointer-events: none;
-    z-index: -1;
-    opacity: 0.6;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    filter: drop-shadow(0 2px 3px rgba(74, 63, 53, 0.18));
   }
-  .bee::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: -4px;
-    width: 8px;
-    height: 6px;
-    background: rgba(255,255,255,0.8);
-    border-radius: 50%;
-    transform: rotate(-30deg);
-    animation: flap 0.1s infinite alternate;
+  #beeField .bee svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
   }
-  .bee::before {
-    content: '';
-    position: absolute;
-    top: 2px;
-    right: -4px;
-    width: 8px;
-    height: 6px;
-    background: rgba(255,255,255,0.8);
-    border-radius: 50%;
-    transform: rotate(30deg);
-    animation: flap 0.1s infinite alternate-reverse;
+  /* Wing flap - transform only, so it stays cheap */
+  #beeField .bee-wings {
+    transform-box: fill-box;
+    transform-origin: 76% 100%;
+    animation: beeWingFlap 0.1s infinite alternate ease-in-out;
   }
-
-  @keyframes flap {
-    0% { transform: scaleY(1) rotate(-30deg); }
-    100% { transform: scaleY(0.2) rotate(-30deg); }
+  @keyframes beeWingFlap {
+    0%   { transform: scaleY(1) rotate(0deg); }
+    100% { transform: scaleY(0.32) rotate(6deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #beeField .bee-wings { animation: none; }
   }
 
   .page-section {
@@ -1083,29 +1078,130 @@ function switchPage(pageId) {
 
 // ============================ ANIMATED BEES ================================
 
-function createBee() {
-  var bee = document.createElement('div');
-  bee.className = 'bee';
-  document.body.appendChild(bee);
+/* Purely decorative. This block only ever touches its own container
+   (#beeField). It never reads or writes Firebase, sensor values, charts,
+   navigation state or any dashboard data, and the whole layer is
+   pointer-events:none so it can never intercept a click or a tap. */
 
-  var x = Math.random() * window.innerWidth;
-  var y = Math.random() * window.innerHeight;
-  var angle = Math.random() * Math.PI * 2;
-  var speed = 0.8 + Math.random() * 1.2;
+var beeLayer  = null;
+var beeSwarm  = [];
+var beeLastTs = 0;
 
-  function animateBee() {
-    angle += (Math.random() - 0.5) * 0.15;
-    x += Math.cos(angle) * speed;
-    y += Math.sin(angle) * speed;
-    if (x < -20) x = window.innerWidth + 20;
-    if (x > window.innerWidth + 20) x = -20;
-    if (y < -20) y = window.innerHeight + 20;
-    if (y > window.innerHeight + 20) y = -20;
-    bee.style.transform = 'translate(' + x + 'px, ' + y + 'px) rotate(' +
-                          (angle * (180 / Math.PI) + 90) + 'deg)';
-    requestAnimationFrame(animateBee);
+/* Top-down honey bee, drawn facing RIGHT inside a 60 x 36 viewBox. */
+function beeSvgMarkup(uid, flapSeconds) {
+  return '' +
+  '<svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
+    '<defs>' +
+      '<linearGradient id="beeBody' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0%" stop-color="#ffd85c"/>' +
+        '<stop offset="55%" stop-color="#f0a81b"/>' +
+        '<stop offset="100%" stop-color="#c47d0b"/>' +
+      '</linearGradient>' +
+      '<clipPath id="beeClip' + uid + '">' +
+        '<ellipse cx="20" cy="20" rx="15" ry="9.5"/>' +
+      '</clipPath>' +
+    '</defs>' +
+    /* legs */
+    '<g stroke="#2b2015" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.8">' +
+      '<path d="M30 26.5 L27 32"/><path d="M36 27 L35.5 33"/><path d="M41 25.5 L43.5 31"/>' +
+    '</g>' +
+    /* translucent wings (behind the body) */
+    '<g class="bee-wings" style="animation-duration:' + flapSeconds + 's">' +
+      '<ellipse cx="30" cy="8" rx="14" ry="6" transform="rotate(-16 30 8)" ' +
+        'fill="rgba(228,241,255,0.62)" stroke="rgba(120,140,165,0.45)" stroke-width="0.8"/>' +
+      '<ellipse cx="26" cy="12.5" rx="10.5" ry="4.4" transform="rotate(-7 26 12.5)" ' +
+        'fill="rgba(228,241,255,0.5)" stroke="rgba(120,140,165,0.32)" stroke-width="0.7"/>' +
+    '</g>' +
+    /* stinger */
+    '<path d="M5.5 17.2 L0.5 20 L5.5 22.8 Z" fill="#2b2015"/>' +
+    /* striped abdomen */
+    '<g clip-path="url(#beeClip' + uid + ')">' +
+      '<ellipse cx="20" cy="20" rx="15" ry="9.5" fill="url(#beeBody' + uid + ')"/>' +
+      '<ellipse cx="11.5" cy="20" rx="2.5" ry="10" fill="#2b2015"/>' +
+      '<ellipse cx="19.5" cy="20" rx="2.6" ry="10" fill="#2b2015"/>' +
+      '<ellipse cx="27.5" cy="20" rx="2.4" ry="10" fill="#2b2015"/>' +
+    '</g>' +
+    '<ellipse cx="20" cy="20" rx="15" ry="9.5" fill="none" stroke="rgba(90,60,10,0.32)" stroke-width="0.7"/>' +
+    /* fuzzy thorax */
+    '<circle cx="38" cy="19" r="8.4" fill="#8a6320"/>' +
+    '<ellipse cx="37" cy="16.4" rx="6.6" ry="4.6" fill="rgba(255,214,110,0.55)"/>' +
+    /* head, eye, antennae */
+    '<circle cx="49" cy="19" r="6.2" fill="#2b2015"/>' +
+    '<ellipse cx="51.4" cy="17.6" rx="1.9" ry="2.5" fill="#0f0b06"/>' +
+    '<circle cx="52.1" cy="16.7" r="0.7" fill="rgba(255,255,255,0.45)"/>' +
+    '<g stroke="#2b2015" stroke-width="1.2" stroke-linecap="round" fill="none">' +
+      '<path d="M52 14 Q56.5 9.5 59 7"/><path d="M49.5 13.2 Q51 8.5 52.8 5.5"/>' +
+    '</g>' +
+  '</svg>';
+}
+
+function createBee(uid, slowMotion) {
+  var node = document.createElement('div');
+  node.className = 'bee';
+
+  var width = 21 + Math.random() * 9;                     // 21 - 30 px wide
+  node.style.width   = width.toFixed(1) + 'px';
+  node.style.height  = (width * 0.6).toFixed(1) + 'px';
+  node.style.opacity = (0.30 + Math.random() * 0.20).toFixed(2);
+  node.innerHTML = beeSvgMarkup(uid, (0.085 + Math.random() * 0.05).toFixed(3));
+  beeLayer.appendChild(node);
+
+  beeSwarm.push({
+    node:     node,
+    x:        Math.random() * window.innerWidth,
+    y:        Math.random() * window.innerHeight,
+    angle:    Math.random() * Math.PI * 2,
+    speed:    (0.4 + Math.random() * 0.8) * (slowMotion ? 0.4 : 1),
+    turn:     (Math.random() - 0.5) * 0.02,
+    bobPhase: Math.random() * Math.PI * 2,
+    bobSpeed: 0.05 + Math.random() * 0.06,
+    bobAmp:   0.10 + Math.random() * 0.22
+  });
+}
+
+function stepBees(ts) {
+  var dt = beeLastTs ? (ts - beeLastTs) / 16.67 : 1;
+  if (dt > 3) dt = 3;                       // tab was backgrounded - do not jump
+  beeLastTs = ts;
+
+  var vw = window.innerWidth;
+  var vh = window.innerHeight;
+  var margin = 70;
+
+  for (var i = 0; i < beeSwarm.length; i++) {
+    var b = beeSwarm[i];
+
+    if (Math.random() < 0.004 * dt) b.turn = (Math.random() - 0.5) * 0.055;  // occasional loop
+    b.angle += (b.turn + (Math.random() - 0.5) * 0.03) * dt;
+
+    b.bobPhase += b.bobSpeed * dt;
+    b.x += Math.cos(b.angle) * b.speed * dt;
+    b.y += Math.sin(b.angle) * b.speed * dt + Math.sin(b.bobPhase) * b.bobAmp * dt;
+
+    if (b.x < -margin)      b.x = vw + margin;            // re-enter from the edges
+    else if (b.x > vw + margin) b.x = -margin;
+    if (b.y < -margin)      b.y = vh + margin;
+    else if (b.y > vh + margin) b.y = -margin;
+
+    b.node.style.transform = 'translate3d(' + b.x.toFixed(1) + 'px,' + b.y.toFixed(1) + 'px,0) ' +
+                             'rotate(' + (b.angle * 180 / Math.PI).toFixed(1) + 'deg)';
   }
-  animateBee();
+  requestAnimationFrame(stepBees);
+}
+
+function startBeeField() {
+  if (beeLayer) return;
+  beeLayer = document.createElement('div');
+  beeLayer.id = 'beeField';
+  beeLayer.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(beeLayer);
+
+  var reduced = window.matchMedia &&
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var count = reduced ? 5 : (window.innerWidth < 640 ? 6 : 8);
+
+  for (var i = 0; i < count; i++) createBee(i, reduced);
+  requestAnimationFrame(stepBees);
 }
 
 // ============================ LIVE CLOCK ===================================
@@ -2047,7 +2143,7 @@ function initFirebase() {
 document.addEventListener('DOMContentLoaded', function () {
   setText('footerYearText', '\u00A9 ' + new Date().getFullYear() + ' SMART HIVE MONITORING SYSTEM');
 
-  for (var i = 0; i < 8; i++) createBee();
+  startBeeField();              // decorative background swarm only
 
   startClock();                 // independent of Firebase, starts immediately
   initFirebase();
