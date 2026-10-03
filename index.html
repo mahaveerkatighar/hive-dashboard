@@ -78,19 +78,19 @@
           "stack-sm": "4px"
         },
         fontFamily: {
-          "label-sm": ["JetBrains Mono"],
-          "headline-lg-mobile": ['"Source Serif 4"'],
-          "headline-lg": ['"Source Serif 4"'],
-          "display-lg": ['"Source Serif 4"'],
-          "data-lg": ["JetBrains Mono"],
-          "body-md": ["IBM Plex Sans"]
+          "label-sm": ["Inter", "sans-serif"],
+          "headline-lg-mobile": ["Inter", "sans-serif"],
+          "headline-lg": ["Inter", "sans-serif"],
+          "display-lg": ["Inter", "sans-serif"],
+          "data-lg": ["Inter", "sans-serif"],
+          "body-md": ["Inter", "sans-serif"]
         },
         fontSize: {
           "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
           "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
           "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "600" }],
-          "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }],
-          "data-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.04em", fontWeight: "500" }],
+          "display-lg": ["44px", { lineHeight: "52px", letterSpacing: "-0.025em", fontWeight: "700" }],
+          "data-lg": ["40px", { lineHeight: "48px", letterSpacing: "-0.03em", fontWeight: "600" }],
           "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
         }
       }
@@ -98,7 +98,7 @@
   };
 </script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@500&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
   body {
     background-color: #fdf9f0;
@@ -227,6 +227,87 @@
     transform: translateX(-50%) translateY(0);
   }
 </style>
+
+<style id="pro-theme">
+  :root { --brand:#9c4400; --brand-2:#e9762b; --amber:#feb700; --ink:#2a1d14; --line:rgba(60,40,20,.09); }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;
+    background-color:#f6f2ea !important; box-shadow:none !important;
+    background-image:
+      radial-gradient(900px 420px at 85% -80px, rgba(254,183,0,.16), transparent 70%),
+      radial-gradient(800px 400px at -10% 10%, rgba(233,118,43,.10), transparent 70%) !important;
+    background-attachment:fixed !important;
+  }
+  ::-webkit-scrollbar{width:10px;height:10px} ::-webkit-scrollbar-thumb{background:#d9c9bb;border-radius:8px;border:2px solid #f6f2ea}
+  .font-data-lg,.font-label-sm{font-variant-numeric:tabular-nums}
+  .font-label-sm.uppercase{letter-spacing:.08em !important;font-weight:600}
+
+  /* Top navigation */
+  nav.fixed.top-0{background:rgba(255,255,255,.85) !important;border-bottom:1px solid var(--line) !important;box-shadow:0 1px 0 rgba(255,255,255,.6),0 6px 20px -12px rgba(60,40,20,.25) !important}
+  .brand{display:flex;align-items:center;gap:12px;font-size:20px !important;letter-spacing:-.01em;color:var(--ink) !important;font-weight:700 !important}
+  .brand-logo{width:38px;height:38px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--brand-2),var(--amber));color:#fff;box-shadow:0 6px 14px -6px rgba(233,118,43,.8)}
+  .brand-logo .material-symbols-outlined{font-size:22px;font-variation-settings:'FILL' 1}
+  .nav-link{letter-spacing:.01em;font-size:13px !important}
+
+  /* Hero header */
+  main > header{
+    position:relative;overflow:hidden;border-radius:24px;
+    padding:36px 40px 32px !important;
+    background:linear-gradient(125deg,#2e1608 0%,#6d2f00 48%,#d96a1f 130%);
+    box-shadow:0 24px 48px -24px rgba(109,47,0,.6);
+  }
+  main > header::before{content:"";position:absolute;right:-60px;top:-60px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(254,183,0,.35),transparent 65%)}
+  main > header::after{content:"";position:absolute;inset:0;opacity:.07;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98' viewBox='0 0 56 98'%3E%3Cpath d='M28 2l26 15v30L28 62 2 47V17z M28 64l26 15v18' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E")}
+  main > header > *{position:relative;z-index:1}
+  main > header h1{color:#fff !important;font-weight:700 !important;letter-spacing:-.025em}
+  main > header p{color:rgba(255,255,255,.78) !important;margin-bottom:22px !important}
+  main > header .rounded-full{background:rgba(255,255,255,.12) !important;border:1px solid rgba(255,255,255,.22) !important;backdrop-filter:blur(10px);padding:8px 14px !important}
+  main > header .text-on-surface{color:#fff !important}
+  main > header .text-tertiary,main > header .text-primary{color:#ffd9b0 !important}
+  main > header .w-2.h-2{width:9px;height:9px;box-shadow:0 0 0 3px rgba(255,255,255,.18)}
+
+  /* Cards */
+  .glass-card{
+    position:relative;background:#fff !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+    border:1px solid var(--line) !important;border-radius:18px !important;
+    box-shadow:0 1px 2px rgba(60,40,20,.05),0 10px 28px -16px rgba(60,40,20,.18) !important;
+    animation-fill-mode:backwards !important;transition:box-shadow .25s ease,transform .25s ease,border-color .25s ease !important;
+  }
+  .glass-card:hover{border-color:rgba(233,118,43,.35) !important;box-shadow:0 2px 4px rgba(60,40,20,.06),0 18px 36px -16px rgba(156,68,0,.28) !important;transform:translateY(-2px)}
+  .glass-card:not(.bg-primary-container)::before{content:"";position:absolute;left:18px;right:18px;top:0;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--brand-2),var(--amber));opacity:.9;pointer-events:none}
+  .glass-card:not(.bg-primary-container) > .justify-between.items-start > span.material-symbols-outlined{
+    width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border-radius:12px;
+    background:rgba(233,118,43,.12);color:var(--brand);font-size:22px}
+  .glass-card.bg-primary-container{background:linear-gradient(135deg,#e9762b,#f6a24a) !important;border:none !important;box-shadow:0 18px 36px -16px rgba(233,118,43,.7) !important}
+  .glass-card .text-data-lg{color:var(--ink)}
+  .glass-card.bg-primary-container .text-data-lg{color:#3b1500}
+
+  /* Buttons & inputs */
+  button.bg-primary{border-radius:10px !important;background-image:linear-gradient(180deg,#b44f08,#9c4400);box-shadow:0 1px 2px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.18) !important;transition:filter .15s,transform .15s}
+  button.bg-primary:hover{filter:brightness(1.1)} button.bg-primary:active{transform:translateY(1px)}
+  button.bg-surface-container-high{border-radius:10px !important;background:#fff !important;border-color:var(--line) !important}
+  button.bg-surface-container-high:hover{background:#f7f3ea !important}
+  input,select{border-radius:10px !important}
+  input:focus,select:focus{outline:none !important;box-shadow:0 0 0 3px rgba(233,118,43,.22) !important;border-color:var(--brand-2) !important}
+
+  /* Tables */
+  table thead th{background:#f7f3ea;position:sticky;top:0}
+  table tbody tr{transition:background .15s}
+  table tbody tr:nth-child(even){background:rgba(247,243,234,.55)}
+  table tbody tr:hover{background:rgba(233,118,43,.07)}
+
+  /* Modals, toast, footer, mobile nav */
+  #pinModal,#wifiModal{backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);background:rgba(30,15,5,.45) !important}
+  .toast{background:#2a1d14 !important;border-radius:14px !important;font-family:'Inter',sans-serif !important}
+  footer.fixed{background:rgba(255,255,255,.88) !important;border-top:1px solid var(--line) !important}
+  nav.fixed.bottom-0{border-radius:20px 20px 0 0;background:rgba(255,255,255,.94) !important;box-shadow:0 -10px 30px -14px rgba(60,40,20,.3) !important}
+  .page-section.active{animation:pageIn .3s ease both}
+  @keyframes pageIn{from{opacity:0}to{opacity:1}}
+  @media (max-width:767px){ main > header{padding:26px 22px 22px !important;border-radius:20px} }
+  @media (prefers-reduced-motion:reduce){ .page-section.active,.glass-card{animation:none !important} }
+</style>
 <!-- Libraries -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -242,8 +323,9 @@
 
 <!-- TopNavBar (Desktop) -->
 <nav class="hidden md:flex fixed top-0 left-0 w-full z-50 justify-between items-center px-container-padding h-20 bg-surface/70 backdrop-blur-xl border-b border-primary/10 shadow-sm transition-colors">
-  <div class="font-headline-lg text-headline-lg font-bold tracking-tight text-primary cursor-pointer" onclick="switchPage('dashboard')">
-    SMART HONEY BEE HIVE
+  <div class="font-headline-lg text-headline-lg font-bold tracking-tight text-primary cursor-pointer brand" onclick="switchPage('dashboard')">
+    <span class="brand-logo"><span class="material-symbols-outlined">hive</span></span>
+    <span>SMART HONEY BEE HIVE</span>
   </div>
   <div class="flex items-center gap-gutter" id="navLinks">
     <a class="nav-link text-primary font-semibold border-b-2 border-primary h-20 flex items-center px-2 font-label-sm text-label-sm cursor-pointer" data-target="dashboard" onclick="switchPage('dashboard')">Dashboard</a>
@@ -462,6 +544,10 @@
         <button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-2 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-2" id="exportEnvBtn">
           <span class="material-symbols-outlined text-[18px]">download</span>
           Export Excel
+        </button>
+        <button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-2 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-2" id="exportBeeBtn">
+          <span class="material-symbols-outlined text-[18px]">hive</span>
+          Export Bee Count
         </button>
       </div>
     </div>
@@ -777,6 +863,25 @@
   </div>
 </div>
 
+<!-- Settings PIN modal -->
+<div class="hidden fixed inset-0 z-[100] items-center justify-center bg-black/50 p-4" id="pinModal">
+  <div class="glass-card rounded-xl p-[24px] max-w-sm w-full bg-surface">
+    <div class="flex justify-between items-start mb-4">
+      <h3 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Enter PIN</h3>
+      <button class="text-on-surface-variant hover:text-primary" id="pinModalClose">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <p class="font-body-md text-on-surface mb-4">Enter the PIN to continue.</p>
+    <input class="bg-surface-container-low border border-outline-variant rounded text-on-surface font-data-lg text-lg focus:ring-1 focus:ring-secondary focus:border-secondary p-3 w-full" id="pinInput" type="password" placeholder="PIN" autocomplete="off"/>
+    <div class="font-label-sm text-label-sm text-error mt-2 hidden" id="pinError">Incorrect PIN</div>
+    <div class="flex gap-2 mt-4">
+      <button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-6 py-3 rounded shadow-sm hover:bg-primary/90 transition-colors" id="pinSubmitBtn">Unlock</button>
+      <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase tracking-wider px-6 py-3 rounded shadow-sm hover:bg-surface-variant transition-colors" id="pinCancelBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <!-- Footer (visible on desktop, hidden behind mobile nav on mobile) -->
@@ -1041,9 +1146,51 @@ function istDatetimeLocalValue(offsetMs) {
          'T' + k.slice(9, 11) + ':' + k.slice(11, 13);
 }
 
+// ============================ SETTINGS PIN =================================
+/* The PIN is NOT in this file. It is checked by database.rules: reading
+   settings_auth/<pin> is only permitted when <pin> matches the rule. */
+
+var pinAction = null;
+
+function openPinModal(action) {
+  pinAction = action || function () { settingsUnlocked = true; switchPage('settings'); };
+  el('pinInput').value = '';
+  el('pinError').classList.add('hidden');
+  el('pinModal').classList.remove('hidden');
+  el('pinModal').classList.add('flex');
+  setTimeout(function () { el('pinInput').focus(); }, 50);
+}
+
+function closePinModal() {
+  pinAction = null;
+  el('pinModal').classList.add('hidden');
+  el('pinModal').classList.remove('flex');
+}
+
+function submitPin() {
+  var pin = el('pinInput').value;
+  var bad = function () {
+    el('pinError').classList.remove('hidden');
+    el('pinInput').value = '';
+    el('pinInput').focus();
+  };
+  // Characters Firebase does not allow in a key can never be a valid PIN.
+  if (!pin || !database || /[.#$\[\]\/]/.test(pin)) { bad(); return; }
+  try {
+    database.ref('settings_auth/' + pin).once('value').then(function () {
+      var act = pinAction;
+      closePinModal();
+      if (act) act();
+    }).catch(bad);
+  } catch (e) { bad(); }
+}
+
 // ============================ NAVIGATION ===================================
 
+var settingsUnlocked = false;
+
 function switchPage(pageId) {
+  if (pageId === 'settings' && !settingsUnlocked) { openPinModal(); return; }
   document.querySelectorAll('.nav-link').forEach(function (link) {
     if (link.dataset.target === pageId) {
       link.classList.add('text-primary', 'font-semibold', 'border-b-2', 'border-primary');
@@ -1377,6 +1524,7 @@ function cloneOpts(title, unit) {
 }
 
 function initCharts() {
+  if (window.Chart) { Chart.defaults.font.family = "'Inter', sans-serif"; Chart.defaults.color = '#574238'; }
   var tc = el('tempChart'), hc = el('humChart');
   if (tc) {
     tempChart = new Chart(tc, {
@@ -1550,6 +1698,52 @@ function exportToExcel() {
   var filename = 'hive_environment_' + istDateInputValue(0) + '.xlsx';
   XLSX.writeFile(wb, filename);
   showToast('Exported ' + analyticsRows.length + ' records to ' + filename, 4000);
+}
+
+// ============================ BEE COUNT EXPORT =============================
+/* Asks for the PIN every time, then exports hive/history for the range chosen
+   in the date pickers above. */
+
+function requestBeeExport() { openPinModal(exportBeeCount); }
+
+function exportBeeCount() {
+  if (!database) { showToast('Not connected to Firebase yet'); return; }
+  var startKey = keyFromDatetimeLocal(el('exportStart').value, false);
+  var endKey   = keyFromDatetimeLocal(el('exportEnd').value, true);
+  if (!startKey || !endKey) { showToast('Please choose both a start and an end date/time'); return; }
+  if (startKey > endKey)    { showToast('Start must be earlier than end'); return; }
+  var t0 = keyToDate(startKey).getTime(), t1 = keyToDate(endKey).getTime();
+
+  showToast('Preparing bee count export...', 3000);
+  database.ref('hive/history').orderByChild('epoch_ms').startAt(t0).endAt(t1).once('value')
+    .then(function (snap) {
+      var rows = [];
+      snap.forEach(function (c) { var v = c.val(); if (v && v.epoch_ms) rows.push(v); });
+      rows.sort(function (a, b) { return a.epoch_ms - b.epoch_ms; });
+      if (!rows.length) { showToast('No bee count data in that range'); return; }
+
+      var sheet = [['Date', 'Time', 'IN', 'OUT', 'Net Bees Inside', 'Visible', 'Frame', 'Status']];
+      rows.forEach(function (r) {
+        var d = new Date(r.epoch_ms);
+        sheet.push([
+          formatDateIST(d), formatTimeIST(d),
+          r['in'] !== undefined ? r['in'] : '',
+          r.out   !== undefined ? r.out   : '',
+          r.net   !== undefined ? r.net   : ((r['in'] !== undefined && r.out !== undefined) ? r['in'] - r.out : ''),
+          r.visible !== undefined ? r.visible : '',
+          r.frame   !== undefined ? r.frame   : '',
+          r.status  || ''
+        ]);
+      });
+      var ws = XLSX.utils.aoa_to_sheet(sheet);
+      ws['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 8 }, { wch: 8 }, { wch: 16 }, { wch: 9 }, { wch: 9 }, { wch: 10 }];
+      var wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Bee Count');
+      var filename = 'hive_bee_count_' + istDateInputValue(0) + '.xlsx';
+      XLSX.writeFile(wb, filename);
+      showToast('Exported ' + rows.length + ' records to ' + filename, 4000);
+    })
+    .catch(function (e) { showToast('Could not export bee count: ' + e.message); });
 }
 
 // ============================ AUDIO INDEX ==================================
@@ -2025,28 +2219,24 @@ function initFirebase() {
   });
 
   // ---- Bee count --------------------------------------------------------
-  database.ref('hive_bee_count').on('value', function (snap) {
+  // Source: hive/latest  { in, out, net, epoch_ms, date, time, ... }
+  database.ref('hive/latest').on('value', function (snap) {
     var d = snap.val();
     if (!d) {
       setText('netValue', '--'); setText('inValue', '--'); setText('outValue', '--');
       setText('beeUpdated', 'No bee data available');
       return;
     }
-    // Only count_in / count_out / net are authoritative. The legacy in / out
-    // keys are from the old two-board firmware and are deliberately ignored.
-    var cin  = d.count_in  !== undefined ? d.count_in  : null;
-    var cout = d.count_out !== undefined ? d.count_out : null;
-    var net  = d.net !== undefined ? d.net
-                                   : ((cin !== null && cout !== null) ? cin - cout : null);
+    var cin  = (typeof d['in']  === 'number') ? d['in']  : null;
+    var cout = (typeof d.out    === 'number') ? d.out    : null;
+    var net  = (typeof d.net    === 'number') ? d.net
+                                              : ((cin !== null && cout !== null) ? cin - cout : null);
     setText('netValue', net  !== null ? net  : '--');
     setText('inValue',  cin  !== null ? cin  : '--');
     setText('outValue', cout !== null ? cout : '--');
 
-    var lu = d.last_updated_ms ? new Date(d.last_updated_ms)
-                               : parseFirebaseTimestampToDate(d.last_updated);
-    if (!lu) { setText('beeUpdated', 'Timestamp unavailable'); return; }
-    // The device re-pushes at least once a minute, so anything much older than
-    // that means the count on screen is not live - say so rather than imply it is.
+    var lu = d.epoch_ms ? new Date(d.epoch_ms) : null;
+    if (!lu || isNaN(lu.getTime())) { setText('beeUpdated', 'Timestamp unavailable'); return; }
     var ageMin = (Date.now() - lu.getTime()) / 60000;
     setText('beeUpdated', 'Updated ' + formatFull(lu) +
             (ageMin > 3 ? '  -  STALE (' + Math.round(ageMin) + ' min old)' : ''));
@@ -2112,8 +2302,14 @@ function initFirebase() {
   el('changeWifiBtn').addEventListener('click', requestWifiProvisioning);
   el('wifiModalClose').addEventListener('click', closeWifiModal);
 
+  el('pinSubmitBtn').addEventListener('click', submitPin);
+  el('pinCancelBtn').addEventListener('click', closePinModal);
+  el('pinModalClose').addEventListener('click', closePinModal);
+  el('pinInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') submitPin(); });
+
   el('applyRangeBtn').addEventListener('click', function () { loadAnalytics(); });
   el('exportEnvBtn').addEventListener('click', exportToExcel);
+  el('exportBeeBtn').addEventListener('click', requestBeeExport);
   el('tablePrevBtn').addEventListener('click', function () { analyticsPage--; renderAnalyticsTable(); });
   el('tableNextBtn').addEventListener('click', function () { analyticsPage++; renderAnalyticsTable(); });
 
