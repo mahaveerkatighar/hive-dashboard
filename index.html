@@ -2015,49 +2015,68 @@ function exportBeeCount() {
     .then(function (snap) {
       var rows = [];
       snap.forEach(function (dateSnap) {
-        var dateKey = dateSnap.key;  // e.g. "2026-10-15"
+        var dateKey = dateSnap.key;
         var val = dateSnap.val();
-        if (val && typeof val === 'object') {
-          // Each date node may contain child records or direct fields
-          // If it has child records (keyed by timestamp or ID), iterate them
-          var hasChildRecords = false;
-          Object.keys(val).forEach(function (childKey) {
-            var child = val[childKey];
-            if (child && typeof child === 'object') {
-              hasChildRecords = true;
-              child._dateKey = dateKey;
-              child._childKey = childKey;
-              rows.push(child);
-            }
+        if (!val || typeof val !== 'object') return;
+
+        // Parse records/ sub-node (individual time-keyed entries)
+        var recs = val.records;
+        if (recs && typeof recs === 'object') {
+          Object.keys(recs).forEach(function (timeKey) {
+            var rec = recs[timeKey];
+            if (!rec || typeof rec !== 'object') return;
+            rows.push({
+              _dateKey: dateKey, _timeKey: timeKey, _type: 'record',
+              in_count: (rec['in'] !== undefined) ? +rec['in'] : null,
+              out_count: (rec.out !== undefined) ? +rec.out : null,
+              activity: (rec.activity !== undefined) ? +rec.activity : null,
+              time: rec.time || timeKey
+            });
           });
-          // If the date node itself is a flat record (no child objects), treat it as one row
-          if (!hasChildRecords) {
-            val._dateKey = dateKey;
-            rows.push(val);
-          }
+        }
+        // Parse summary/ sub-node (daily totals)
+        var sum = val.summary;
+        if (sum && typeof sum === 'object') {
+          rows.push({
+            _dateKey: dateKey, _timeKey: 'summary', _type: 'summary',
+            in_count: (sum.total_in !== undefined) ? +sum.total_in : null,
+            out_count: (sum.total_out !== undefined) ? +sum.total_out : null,
+            total_activity: (sum.total_activity !== undefined) ? +sum.total_activity : null,
+            time: sum.last_update || '', date: sum.date || dateKey, day: sum.day || ''
+          });
+        }
+        // Fallback for flat date records
+        if (!recs && !sum) {
+          val._dateKey = dateKey; val._type = 'flat';
+          if (val.in_count === undefined && val['in'] !== undefined) val.in_count = +val['in'];
+          if (val.out_count === undefined && val.out !== undefined) val.out_count = +val.out;
+          rows.push(val);
         }
       });
-      // Sort by timestamp if available, otherwise by date key
       rows.sort(function (a, b) {
-        var ta = a.timestamp || a.epoch_ms || 0;
-        var tb = b.timestamp || b.epoch_ms || 0;
-        if (ta !== tb) return ta - tb;
-        return (a._dateKey + (a._childKey || '')) < (b._dateKey + (b._childKey || '')) ? -1 : 1;
+        var cmp = (a._dateKey || '').localeCompare(b._dateKey || '');
+        if (cmp !== 0) return cmp;
+        if (a._type === 'summary' && b._type !== 'summary') return 1;
+        if (b._type === 'summary' && a._type !== 'summary') return -1;
+        return (a._timeKey || '').localeCompare(b._timeKey || '');
       });
       if (!rows.length) { showToast('No bee count data in that range'); return; }
 
-      var sheet = [['Date', 'Time', 'IN', 'OUT', 'Net Bees Inside', 'Total Activity', 'Status']];
+      var sheet = [['Date', 'Time', 'Type', 'IN', 'OUT', 'Net Bees Inside', 'Activity', 'Status']];
       rows.forEach(function (r) {
-        var d = r.timestamp ? new Date(r.timestamp) : (r.epoch_ms ? new Date(r.epoch_ms) : null);
-        var dateStr = d ? formatDateIST(d) : (r._dateKey || r.date || '');
-        var timeStr = d ? formatTimeIST(d) : (r.time || '');
-        var cin  = r.in_count !== undefined ? r.in_count : (r['in'] !== undefined ? r['in'] : '');
-        var cout = r.out_count !== undefined ? r.out_count : (r.out !== undefined ? r.out : '');
-        var net  = (cin !== '' && cout !== '') ? cin - cout : '';
+        var isSummary = (r._type === 'summary');
+        var cin  = (r.in_count !== null && r.in_count !== undefined) ? r.in_count : '';
+        var cout = (r.out_count !== null && r.out_count !== undefined) ? r.out_count : '';
+        var act  = isSummary
+          ? (r.total_activity !== null && r.total_activity !== undefined ? r.total_activity : '')
+          : (r.activity !== null && r.activity !== undefined ? r.activity : '');
         sheet.push([
-          dateStr, timeStr, cin, cout, net,
-          r.total_activity !== undefined ? r.total_activity : '',
-          r.status || ''
+          r._dateKey || '',
+          isSummary ? 'Daily Total' : (r.time || r._timeKey || ''),
+          isSummary ? 'Summary' : 'Record',
+          cin, cout, (cin !== '' && cout !== '') ? cin - cout : '',
+          act,
+          isSummary ? (r.day || '') : (r.status || '')
         ]);
       });
       var ws = XLSX.utils.aoa_to_sheet(sheet);
@@ -2091,33 +2110,53 @@ function loadBeeHistory() {
       snap.forEach(function (dateSnap) {
         var dateKey = dateSnap.key;
         var val = dateSnap.val();
-        if (val && typeof val === 'object') {
-          var hasChildRecords = false;
-          Object.keys(val).forEach(function (childKey) {
-            var child = val[childKey];
-            if (child && typeof child === 'object') {
-              hasChildRecords = true;
-              child._dateKey = dateKey;
-              child._childKey = childKey;
-              rows.push(child);
-            }
+        if (!val || typeof val !== 'object') return;
+
+        var recs = val.records;
+        if (recs && typeof recs === 'object') {
+          Object.keys(recs).forEach(function (timeKey) {
+            var rec = recs[timeKey];
+            if (!rec || typeof rec !== 'object') return;
+            rows.push({
+              _dateKey: dateKey, _timeKey: timeKey, _type: 'record',
+              in_count: (rec['in'] !== undefined) ? +rec['in'] : null,
+              out_count: (rec.out !== undefined) ? +rec.out : null,
+              activity: (rec.activity !== undefined) ? +rec.activity : null,
+              time: rec.time || timeKey
+            });
           });
-          if (!hasChildRecords) {
-            val._dateKey = dateKey;
-            rows.push(val);
-          }
+        }
+        var sum = val.summary;
+        if (sum && typeof sum === 'object') {
+          rows.push({
+            _dateKey: dateKey, _timeKey: 'summary', _type: 'summary',
+            in_count: (sum.total_in !== undefined) ? +sum.total_in : null,
+            out_count: (sum.total_out !== undefined) ? +sum.total_out : null,
+            total_activity: (sum.total_activity !== undefined) ? +sum.total_activity : null,
+            time: sum.last_update || '', date: sum.date || dateKey, day: sum.day || ''
+          });
+        }
+        if (!recs && !sum) {
+          val._dateKey = dateKey; val._type = 'flat';
+          if (val.in_count === undefined && val['in'] !== undefined) val.in_count = +val['in'];
+          if (val.out_count === undefined && val.out !== undefined) val.out_count = +val.out;
+          rows.push(val);
         }
       });
       rows.sort(function (a, b) {
-        var ta = a.timestamp || a.epoch_ms || 0;
-        var tb = b.timestamp || b.epoch_ms || 0;
-        return ta - tb;
+        var cmp = (a._dateKey || '').localeCompare(b._dateKey || '');
+        if (cmp !== 0) return cmp;
+        if (a._type === 'summary' && b._type !== 'summary') return 1;
+        if (b._type === 'summary' && a._type !== 'summary') return -1;
+        return (a._timeKey || '').localeCompare(b._timeKey || '');
       });
       beeHistoryRows = rows;
       beeHistoryPage = 0;
       updateBeeChart(rows);
       renderBeeTable();
-      setText('beeHistoryInfo', rows.length + ' bee count records loaded');
+      var recCount = rows.filter(function (r) { return r._type === 'record'; }).length;
+      var sumCount = rows.filter(function (r) { return r._type === 'summary'; }).length;
+      setText('beeHistoryInfo', recCount + ' records, ' + sumCount + ' daily summaries');
       if (!rows.length) showToast('No bee count history in that range');
     })
     .catch(function (e) {
@@ -2132,11 +2171,10 @@ function updateBeeChart(rows) {
   var step = Math.max(1, Math.ceil(rows.length / 800));
   for (var i = 0; i < rows.length; i += step) {
     var r = rows[i];
-    var d = r.timestamp ? new Date(r.timestamp) : (r.epoch_ms ? new Date(r.epoch_ms) : null);
-    labels.push(d ? formatChartLabel(d) : (r._dateKey || ''));
-    inData.push(r.in_count !== undefined ? +r.in_count : null);
-    outData.push(r.out_count !== undefined ? +r.out_count : null);
-    totalData.push(r.total_activity !== undefined ? +r.total_activity : null);
+    labels.push(r._dateKey + ' ' + (r._timeKey || ''));
+    inData.push(r.in_count);
+    outData.push(r.out_count);
+    totalData.push(r.total_activity !== undefined ? r.total_activity : r.activity);
   }
   beeChart.data.labels = labels;
   beeChart.data.datasets[0].data = inData;
@@ -2161,18 +2199,24 @@ function renderBeeTable() {
   var slice = rows.slice(start, start + TABLE_PAGE_SIZE);
   var html = '';
   slice.forEach(function (r) {
-    var d = r.timestamp ? new Date(r.timestamp) : (r.epoch_ms ? new Date(r.epoch_ms) : null);
-    var cin  = r.in_count !== undefined ? r.in_count : '--';
-    var cout = r.out_count !== undefined ? r.out_count : '--';
-    var net  = (r.in_count !== undefined && r.out_count !== undefined) ? r.in_count - r.out_count : '--';
-    html += '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">' +
-      '<td class="py-3 px-4">' + (d ? formatDateIST(d) : (r._dateKey || '--')) + '</td>' +
-      '<td class="py-3 px-4">' + (d ? formatTimeIST(d) : (r.time || '--')) + '</td>' +
+    var isSummary = (r._type === 'summary');
+    var cin  = (r.in_count !== null && r.in_count !== undefined) ? r.in_count : '--';
+    var cout = (r.out_count !== null && r.out_count !== undefined) ? r.out_count : '--';
+    var net  = (cin !== '--' && cout !== '--') ? (cin - cout) : '--';
+    var act  = isSummary
+      ? (r.total_activity !== null && r.total_activity !== undefined ? r.total_activity : '--')
+      : (r.activity !== null && r.activity !== undefined ? r.activity : '--');
+    var rowClass = isSummary
+      ? 'border-b border-outline-variant/30 bg-primary/5 font-semibold'
+      : 'border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors';
+    html += '<tr class="' + rowClass + '">' +
+      '<td class="py-3 px-4">' + (r._dateKey || '--') + '</td>' +
+      '<td class="py-3 px-4">' + (isSummary ? 'Daily Total' : (r.time || r._timeKey || '--')) + '</td>' +
       '<td class="py-3 px-4">' + cin + '</td>' +
       '<td class="py-3 px-4">' + cout + '</td>' +
       '<td class="py-3 px-4">' + net + '</td>' +
-      '<td class="py-3 px-4">' + (r.total_activity !== undefined ? r.total_activity : '--') + '</td>' +
-      '<td class="py-3 px-4">' + (r.status || '--') + '</td></tr>';
+      '<td class="py-3 px-4">' + act + '</td>' +
+      '<td class="py-3 px-4">' + (isSummary ? (r.day || 'Summary') : (r.status || '--')) + '</td></tr>';
   });
   tbody.innerHTML = html;
   setText('beeTablePageInfo', 'Page ' + (beeHistoryPage + 1) + ' of ' + pages +
@@ -2345,6 +2389,10 @@ function loadAllHistory() {
 }
 
 // ---- Bee Count History (History Page) ----
+// Firebase structure:
+//   bee_counter/jetson_nano_01/history/<YYYY-MM-DD>/
+//     ├── records/<HH:MM:SS>/ → { in, out, activity, time }
+//     └── summary/            → { date, day, last_update, total_activity, total_in, total_out }
 function loadHistBee() {
   var startVal = el('historyStart').value;
   var endVal   = el('historyEnd').value;
@@ -2360,35 +2408,77 @@ function loadHistBee() {
     .then(function (snap) {
       var rows = [];
       snap.forEach(function (dateSnap) {
-        var dateKey = dateSnap.key;
+        var dateKey = dateSnap.key;   // e.g. "2026-10-15"
         var val = dateSnap.val();
-        if (val && typeof val === 'object') {
-          var hasChild = false;
-          Object.keys(val).forEach(function (ck) {
-            var child = val[ck];
-            if (child && typeof child === 'object') {
-              hasChild = true;
-              child._dateKey = dateKey; child._childKey = ck;
-              rows.push(child);
-            }
+        if (!val || typeof val !== 'object') return;
+
+        // Extract individual records from records/ sub-node
+        var recs = val.records;
+        if (recs && typeof recs === 'object') {
+          Object.keys(recs).forEach(function (timeKey) {
+            var rec = recs[timeKey];
+            if (!rec || typeof rec !== 'object') return;
+            rows.push({
+              _dateKey: dateKey,
+              _timeKey: timeKey,
+              _type: 'record',
+              in_count: (rec['in'] !== undefined) ? +rec['in'] : null,
+              out_count: (rec.out !== undefined) ? +rec.out : null,
+              activity: (rec.activity !== undefined) ? +rec.activity : null,
+              time: rec.time || timeKey
+            });
           });
-          if (!hasChild) { val._dateKey = dateKey; rows.push(val); }
+        }
+
+        // Also extract summary as a daily totals row
+        var sum = val.summary;
+        if (sum && typeof sum === 'object') {
+          rows.push({
+            _dateKey: dateKey,
+            _timeKey: 'summary',
+            _type: 'summary',
+            in_count: (sum.total_in !== undefined) ? +sum.total_in : null,
+            out_count: (sum.total_out !== undefined) ? +sum.total_out : null,
+            total_activity: (sum.total_activity !== undefined) ? +sum.total_activity : null,
+            time: sum.last_update || '',
+            date: sum.date || dateKey,
+            day: sum.day || ''
+          });
+        }
+
+        // Fallback: if no records/ and no summary/, treat direct children as rows
+        if (!recs && !sum) {
+          // Old format or flat date record
+          val._dateKey = dateKey;
+          val._type = 'flat';
+          if (val.in_count === undefined && val['in'] !== undefined) val.in_count = +val['in'];
+          if (val.out_count === undefined && val.out !== undefined) val.out_count = +val.out;
+          rows.push(val);
         }
       });
-      rows.sort(function (a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+
+      // Sort: individual records by date+time, summaries at end of their date
+      rows.sort(function (a, b) {
+        var cmp = (a._dateKey || '').localeCompare(b._dateKey || '');
+        if (cmp !== 0) return cmp;
+        if (a._type === 'summary' && b._type !== 'summary') return 1;
+        if (b._type === 'summary' && a._type !== 'summary') return -1;
+        return (a._timeKey || '').localeCompare(b._timeKey || '');
+      });
+
       histBeeRows = rows;
       histBeePage = 0;
+
       // Update chart
       if (histBeeChart2) {
         var labels = [], inD = [], outD = [], totD = [];
         var step = Math.max(1, Math.ceil(rows.length / 800));
         for (var i = 0; i < rows.length; i += step) {
           var r = rows[i];
-          var d = r.timestamp ? new Date(r.timestamp) : null;
-          labels.push(d ? formatChartLabel(d) : (r._dateKey || ''));
-          inD.push(r.in_count !== undefined ? +r.in_count : null);
-          outD.push(r.out_count !== undefined ? +r.out_count : null);
-          totD.push(r.total_activity !== undefined ? +r.total_activity : null);
+          labels.push(r._dateKey + ' ' + (r._timeKey || ''));
+          inD.push(r.in_count);
+          outD.push(r.out_count);
+          totD.push(r.total_activity !== undefined ? r.total_activity : r.activity);
         }
         histBeeChart2.data.labels = labels;
         histBeeChart2.data.datasets[0].data = inD;
@@ -2397,7 +2487,9 @@ function loadHistBee() {
         histBeeChart2.update('none');
       }
       renderHistBeeTable();
-      setText('histBeeInfo', rows.length + ' records');
+      var recCount = rows.filter(function (r) { return r._type === 'record'; }).length;
+      var sumCount = rows.filter(function (r) { return r._type === 'summary'; }).length;
+      setText('histBeeInfo', recCount + ' records, ' + sumCount + ' daily summaries');
     })
     .catch(function (e) { setText('histBeeInfo', 'Error'); showToast('Bee history: ' + e.message); });
 }
@@ -2409,7 +2501,7 @@ function renderHistBeeTable() {
     tbody.innerHTML = '<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="7">No data</td></tr>';
     setText('histBeePageInfo', ''); return;
   }
-  var rows = histBeeRows.slice().reverse();
+  var rows = histBeeRows.slice().reverse();   // newest first
   var pages = Math.ceil(rows.length / TABLE_PAGE_SIZE);
   if (histBeePage >= pages) histBeePage = pages - 1;
   if (histBeePage < 0) histBeePage = 0;
@@ -2417,17 +2509,24 @@ function renderHistBeeTable() {
   var slice = rows.slice(start, start + TABLE_PAGE_SIZE);
   var html = '';
   slice.forEach(function (r) {
-    var d = r.timestamp ? new Date(r.timestamp) : null;
-    var cin = r.in_count !== undefined ? r.in_count : '--';
-    var cout = r.out_count !== undefined ? r.out_count : '--';
-    var net = (r.in_count !== undefined && r.out_count !== undefined) ? r.in_count - r.out_count : '--';
-    html += '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">' +
-      '<td class="py-3 px-4">' + (d ? formatDateIST(d) : (r._dateKey || '--')) + '</td>' +
-      '<td class="py-3 px-4">' + (d ? formatTimeIST(d) : (r.time || '--')) + '</td>' +
-      '<td class="py-3 px-4">' + cin + '</td><td class="py-3 px-4">' + cout + '</td>' +
+    var isSummary = (r._type === 'summary');
+    var cin  = (r.in_count !== null && r.in_count !== undefined) ? r.in_count : '--';
+    var cout = (r.out_count !== null && r.out_count !== undefined) ? r.out_count : '--';
+    var net  = (cin !== '--' && cout !== '--') ? (cin - cout) : '--';
+    var act  = isSummary
+      ? (r.total_activity !== null && r.total_activity !== undefined ? r.total_activity : '--')
+      : (r.activity !== null && r.activity !== undefined ? r.activity : '--');
+    var rowClass = isSummary
+      ? 'border-b border-outline-variant/30 bg-primary/5 font-semibold'
+      : 'border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors';
+    html += '<tr class="' + rowClass + '">' +
+      '<td class="py-3 px-4">' + (r._dateKey || '--') + '</td>' +
+      '<td class="py-3 px-4">' + (isSummary ? 'Daily Total' : (r.time || r._timeKey || '--')) + '</td>' +
+      '<td class="py-3 px-4">' + cin + '</td>' +
+      '<td class="py-3 px-4">' + cout + '</td>' +
       '<td class="py-3 px-4">' + net + '</td>' +
-      '<td class="py-3 px-4">' + (r.total_activity !== undefined ? r.total_activity : '--') + '</td>' +
-      '<td class="py-3 px-4">' + (r.status || '--') + '</td></tr>';
+      '<td class="py-3 px-4">' + act + '</td>' +
+      '<td class="py-3 px-4">' + (isSummary ? (r.day || 'Summary') : (r.status || '--')) + '</td></tr>';
   });
   tbody.innerHTML = html;
   setText('histBeePageInfo', 'Page ' + (histBeePage + 1) + '/' + pages + ' (' + histBeeRows.length + ')');
@@ -2435,15 +2534,21 @@ function renderHistBeeTable() {
 
 function exportHistBee() {
   if (!histBeeRows.length) { showToast('No bee data. Load history first.'); return; }
-  var sheet = [['Date', 'Time', 'IN', 'OUT', 'Net Inside', 'Total Activity', 'Status']];
+  var sheet = [['Date', 'Time', 'Type', 'IN', 'OUT', 'Net Inside', 'Activity', 'Status']];
   histBeeRows.forEach(function (r) {
-    var d = r.timestamp ? new Date(r.timestamp) : null;
-    var cin = r.in_count !== undefined ? r.in_count : '';
-    var cout = r.out_count !== undefined ? r.out_count : '';
+    var isSummary = (r._type === 'summary');
+    var cin  = (r.in_count !== null && r.in_count !== undefined) ? r.in_count : '';
+    var cout = (r.out_count !== null && r.out_count !== undefined) ? r.out_count : '';
+    var act  = isSummary
+      ? (r.total_activity !== null && r.total_activity !== undefined ? r.total_activity : '')
+      : (r.activity !== null && r.activity !== undefined ? r.activity : '');
     sheet.push([
-      d ? formatDateIST(d) : (r._dateKey || ''), d ? formatTimeIST(d) : (r.time || ''),
+      r._dateKey || '',
+      isSummary ? 'Daily Total' : (r.time || r._timeKey || ''),
+      isSummary ? 'Summary' : 'Record',
       cin, cout, (cin !== '' && cout !== '') ? cin - cout : '',
-      r.total_activity !== undefined ? r.total_activity : '', r.status || ''
+      act,
+      isSummary ? (r.day || '') : (r.status || '')
     ]);
   });
   var ws = XLSX.utils.aoa_to_sheet(sheet);
