@@ -331,6 +331,7 @@
     <a class="nav-link text-primary font-semibold border-b-2 border-primary h-20 flex items-center px-2 font-label-sm text-label-sm cursor-pointer" data-target="dashboard" onclick="switchPage('dashboard')">Dashboard</a>
     <a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="analytics" onclick="switchPage('analytics')">Hive Analytics</a>
     <a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="acoustic" onclick="switchPage('acoustic')">Acoustic Data</a>
+    <a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="history" onclick="switchPage('history')">History</a>
     <a class="nav-link text-on-surface-variant font-medium h-20 flex items-center px-2 font-label-sm text-label-sm hover:bg-primary-container/10 transition-colors cursor-pointer" data-target="settings" onclick="switchPage('settings')">Settings</a>
     <div class="flex items-center gap-unit ml-4">
       <span class="material-symbols-outlined text-primary hover:bg-primary-container/10 transition-colors p-2 rounded-full cursor-pointer" title="Sensor Status" id="navSensorIcon">sensors</span>
@@ -352,6 +353,10 @@
   <button class="mobile-nav-item flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-colors text-on-surface-variant" data-target="acoustic" onclick="switchPage('acoustic')">
     <span class="material-symbols-outlined text-[22px]">graphic_eq</span>
     <span class="text-[10px] font-label-sm">Acoustic</span>
+  </button>
+  <button class="mobile-nav-item flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-colors text-on-surface-variant" data-target="history" onclick="switchPage('history')">
+    <span class="material-symbols-outlined text-[22px]">history</span>
+    <span class="text-[10px] font-label-sm">History</span>
   </button>
   <button class="mobile-nav-item flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-colors text-on-surface-variant" data-target="settings" onclick="switchPage('settings')">
     <span class="material-symbols-outlined text-[22px]">settings</span>
@@ -743,6 +748,179 @@
       </div>
     </div>
   </section>
+</div>
+
+<!-- PAGE: HISTORY -->
+<div class="page-section" id="page-history">
+
+  <!-- Date range controls -->
+  <section class="glass-card rounded-xl p-[24px] mb-gutter">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Data History</h2>
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center bg-surface-container-low border border-outline-variant rounded focus-within:border-secondary transition-colors">
+          <input class="bg-transparent border-none text-on-surface font-label-sm text-label-sm focus:ring-0 p-2" id="historyStart" type="datetime-local"/>
+        </div>
+        <span class="text-on-surface-variant font-label-sm">to</span>
+        <div class="flex items-center bg-surface-container-low border border-outline-variant rounded focus-within:border-secondary transition-colors">
+          <input class="bg-transparent border-none text-on-surface font-label-sm text-label-sm focus:ring-0 p-2" id="historyEnd" type="datetime-local"/>
+        </div>
+        <button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-2 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-2" id="historyLoadBtn">
+          <span class="material-symbols-outlined text-[18px]">search</span>
+          Load History
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 1: Bee Count History -->
+  <section class="glass-card rounded-xl p-[24px] mb-gutter">
+    <div class="flex justify-between items-center mb-4 cursor-pointer" onclick="toggleHistorySection('histBeeContent')">
+      <h3 class="font-headline-lg-mobile text-lg text-primary flex items-center gap-2">
+        <span class="material-symbols-outlined">hive</span>
+        Bee Count History
+      </h3>
+      <div class="flex items-center gap-3">
+        <span class="font-label-sm text-label-sm text-on-surface-variant" id="histBeeInfo">Not loaded</span>
+        <button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-3 py-1.5 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-1" id="histBeeExportBtn" onclick="event.stopPropagation()">
+          <span class="material-symbols-outlined text-[16px]">download</span>
+          Export
+        </button>
+        <span class="material-symbols-outlined text-on-surface-variant transition-transform" id="histBeeChevron">expand_more</span>
+      </div>
+    </div>
+    <div id="histBeeContent">
+      <!-- Bee Chart -->
+      <div class="w-full h-72 relative mb-6">
+        <canvas id="histBeeChart"></canvas>
+      </div>
+      <!-- Bee Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left font-label-sm text-label-sm text-on-surface">
+          <thead>
+            <tr class="border-b border-outline-variant text-on-surface-variant uppercase tracking-wider">
+              <th class="py-3 px-4 font-semibold">Date</th>
+              <th class="py-3 px-4 font-semibold">Time</th>
+              <th class="py-3 px-4 font-semibold">IN</th>
+              <th class="py-3 px-4 font-semibold">OUT</th>
+              <th class="py-3 px-4 font-semibold">Net Inside</th>
+              <th class="py-3 px-4 font-semibold">Total Activity</th>
+              <th class="py-3 px-4 font-semibold">Status</th>
+            </tr>
+          </thead>
+          <tbody id="histBeeTableBody">
+            <tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="7">Press "Load History" to load data</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex flex-wrap justify-between items-center gap-3 mt-4">
+        <span class="font-label-sm text-label-sm text-on-surface-variant" id="histBeePageInfo"></span>
+        <div class="flex gap-2">
+          <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="histBeePrevBtn">Previous</button>
+          <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="histBeeNextBtn">Next</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Temperature & Humidity History -->
+  <section class="glass-card rounded-xl p-[24px] mb-gutter">
+    <div class="flex justify-between items-center mb-4 cursor-pointer" onclick="toggleHistorySection('histEnvContent')">
+      <h3 class="font-headline-lg-mobile text-lg text-primary flex items-center gap-2">
+        <span class="material-symbols-outlined">thermostat</span>
+        Temperature &amp; Humidity History
+      </h3>
+      <div class="flex items-center gap-3">
+        <span class="font-label-sm text-label-sm text-on-surface-variant" id="histEnvInfo">Not loaded</span>
+        <button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-3 py-1.5 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-1" id="histEnvExportBtn" onclick="event.stopPropagation()">
+          <span class="material-symbols-outlined text-[16px]">download</span>
+          Export
+        </button>
+        <span class="material-symbols-outlined text-on-surface-variant transition-transform" id="histEnvChevron">expand_more</span>
+      </div>
+    </div>
+    <div id="histEnvContent">
+      <!-- Temp Chart -->
+      <h4 class="font-label-sm text-sm text-primary mb-2">Temperature — Inside vs Outside</h4>
+      <div class="w-full h-64 relative mb-6">
+        <canvas id="histTempChart"></canvas>
+      </div>
+      <!-- Humidity Chart -->
+      <h4 class="font-label-sm text-sm text-primary mb-2">Humidity — Inside vs Outside</h4>
+      <div class="w-full h-64 relative mb-6">
+        <canvas id="histHumChart"></canvas>
+      </div>
+      <!-- Env Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left font-label-sm text-label-sm text-on-surface">
+          <thead>
+            <tr class="border-b border-outline-variant text-on-surface-variant uppercase tracking-wider">
+              <th class="py-3 px-4 font-semibold">Date</th>
+              <th class="py-3 px-4 font-semibold">Time</th>
+              <th class="py-3 px-4 font-semibold">Inside Temp (°C)</th>
+              <th class="py-3 px-4 font-semibold">Inside Hum (%)</th>
+              <th class="py-3 px-4 font-semibold">Outside Temp (°C)</th>
+              <th class="py-3 px-4 font-semibold">Outside Hum (%)</th>
+            </tr>
+          </thead>
+          <tbody id="histEnvTableBody">
+            <tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="6">Press "Load History" to load data</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex flex-wrap justify-between items-center gap-3 mt-4">
+        <span class="font-label-sm text-label-sm text-on-surface-variant" id="histEnvPageInfo"></span>
+        <div class="flex gap-2">
+          <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="histEnvPrevBtn">Previous</button>
+          <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="histEnvNextBtn">Next</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Audio History -->
+  <section class="glass-card rounded-xl p-[24px] mb-gutter">
+    <div class="flex justify-between items-center mb-4 cursor-pointer" onclick="toggleHistorySection('histAudioContent')">
+      <h3 class="font-headline-lg-mobile text-lg text-primary flex items-center gap-2">
+        <span class="material-symbols-outlined">graphic_eq</span>
+        Audio Recording History
+      </h3>
+      <div class="flex items-center gap-3">
+        <span class="font-label-sm text-label-sm text-on-surface-variant" id="histAudioInfo">Not loaded</span>
+        <button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-3 py-1.5 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-1" id="histAudioExportBtn" onclick="event.stopPropagation()">
+          <span class="material-symbols-outlined text-[16px]">download</span>
+          Export
+        </button>
+        <span class="material-symbols-outlined text-on-surface-variant transition-transform" id="histAudioChevron">expand_more</span>
+      </div>
+    </div>
+    <div id="histAudioContent">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left font-label-sm text-label-sm text-on-surface">
+          <thead>
+            <tr class="border-b border-outline-variant text-on-surface-variant uppercase tracking-wider">
+              <th class="py-3 px-4 font-semibold">Date</th>
+              <th class="py-3 px-4 font-semibold">Time</th>
+              <th class="py-3 px-4 font-semibold">Duration</th>
+              <th class="py-3 px-4 font-semibold">Size</th>
+              <th class="py-3 px-4 font-semibold">Status</th>
+            </tr>
+          </thead>
+          <tbody id="histAudioTableBody">
+            <tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="5">Press "Load History" to load data</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex flex-wrap justify-between items-center gap-3 mt-4">
+        <span class="font-label-sm text-label-sm text-on-surface-variant" id="histAudioPageInfo"></span>
+        <div class="flex gap-2">
+          <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="histAudioPrevBtn">Previous</button>
+          <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="histAudioNextBtn">Next</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <!-- PAGE: SETTINGS -->
@@ -1302,6 +1480,13 @@ function switchPage(pageId) {
     setTimeout(function () {
       if (tempChart) tempChart.resize();
       if (humChart) humChart.resize();
+    }, 50);
+  }
+  if (pageId === 'history') {
+    setTimeout(function () {
+      if (histBeeChart2) histBeeChart2.resize();
+      if (histTempChart2) histTempChart2.resize();
+      if (histHumChart2) histHumChart2.resize();
     }, 50);
   }
 }
@@ -2083,6 +2268,361 @@ function exportAudioHistory() {
   showToast('Exported ' + audioHistoryRows.length + ' audio records to ' + filename, 4000);
 }
 
+// ============================ HISTORY PAGE =================================
+
+var histBeeRows   = [], histBeeChart2  = null, histBeePage  = 0;
+var histEnvRows   = [], histTempChart2 = null, histHumChart2 = null, histEnvPage  = 0;
+var histAudioRows = [], histAudioPage2 = 0;
+
+function toggleHistorySection(id) {
+  var section = el(id);
+  if (!section) return;
+  var isHidden = section.style.display === 'none';
+  section.style.display = isHidden ? '' : 'none';
+  // Rotate chevron
+  var chevronId = id.replace('Content', 'Chevron');
+  var chevron = el(chevronId);
+  if (chevron) chevron.style.transform = isHidden ? '' : 'rotate(-90deg)';
+}
+
+function initHistoryCharts() {
+  var bc = el('histBeeChart');
+  if (bc && !histBeeChart2) {
+    histBeeChart2 = new Chart(bc, {
+      type: 'line',
+      data: { labels: [], datasets: [
+        { label: 'IN Count',        data: [], borderColor: '#2e7d32',
+          backgroundColor: 'rgba(46,125,50,0.08)', tension: 0.35, fill: false,
+          pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, spanGaps: true },
+        { label: 'OUT Count',       data: [], borderColor: '#c62828',
+          backgroundColor: 'rgba(198,40,40,0.06)', tension: 0.35, fill: false,
+          pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, spanGaps: true },
+        { label: 'Total Activity',  data: [], borderColor: '#9c4400',
+          backgroundColor: 'rgba(156,68,0,0.06)', tension: 0.35, fill: true,
+          pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, borderDash: [5, 4], spanGaps: true }
+      ] },
+      options: cloneOpts('Bee Count', 'Count')
+    });
+  }
+  var tc = el('histTempChart');
+  if (tc && !histTempChart2) {
+    histTempChart2 = new Chart(tc, {
+      type: 'line',
+      data: { labels: [], datasets: [
+        { label: 'Inside Temp (°C)',  data: [], borderColor: '#9c4400',
+          backgroundColor: 'rgba(156,68,0,0.08)', tension: 0.35, fill: true,
+          pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, spanGaps: true },
+        { label: 'Outside Temp (°C)', data: [], borderColor: '#7c5800',
+          backgroundColor: 'rgba(124,88,0,0.06)', tension: 0.35, fill: false,
+          pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, borderDash: [5, 4], spanGaps: true }
+      ] },
+      options: cloneOpts('Temperature', '°C')
+    });
+  }
+  var hc = el('histHumChart');
+  if (hc && !histHumChart2) {
+    histHumChart2 = new Chart(hc, {
+      type: 'line',
+      data: { labels: [], datasets: [
+        { label: 'Inside Humidity (%)',  data: [], borderColor: '#e9762b',
+          backgroundColor: 'rgba(233,118,43,0.08)', tension: 0.35, fill: true,
+          pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, spanGaps: true },
+        { label: 'Outside Humidity (%)', data: [], borderColor: '#695c51',
+          backgroundColor: 'rgba(105,92,81,0.06)', tension: 0.35, fill: false,
+          pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, borderDash: [5, 4], spanGaps: true }
+      ] },
+      options: cloneOpts('Humidity', '%')
+    });
+  }
+}
+
+function loadAllHistory() {
+  if (!database) { showToast('Not connected to Firebase'); return; }
+  initHistoryCharts();
+  loadHistBee();
+  loadHistEnv();
+  loadHistAudio();
+}
+
+// ---- Bee Count History (History Page) ----
+function loadHistBee() {
+  var startVal = el('historyStart').value;
+  var endVal   = el('historyEnd').value;
+  if (!startVal || !endVal) { showToast('Choose a date range first'); return; }
+  var startDate = startVal.split('T')[0];
+  var endDate   = endVal.split('T')[0];
+  if (startDate > endDate) { showToast('Start must be before end'); return; }
+
+  setText('histBeeInfo', 'Loading...');
+  database.ref('bee_counter/jetson_nano_01/history')
+    .orderByKey().startAt(startDate).endAt(endDate)
+    .once('value')
+    .then(function (snap) {
+      var rows = [];
+      snap.forEach(function (dateSnap) {
+        var dateKey = dateSnap.key;
+        var val = dateSnap.val();
+        if (val && typeof val === 'object') {
+          var hasChild = false;
+          Object.keys(val).forEach(function (ck) {
+            var child = val[ck];
+            if (child && typeof child === 'object') {
+              hasChild = true;
+              child._dateKey = dateKey; child._childKey = ck;
+              rows.push(child);
+            }
+          });
+          if (!hasChild) { val._dateKey = dateKey; rows.push(val); }
+        }
+      });
+      rows.sort(function (a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+      histBeeRows = rows;
+      histBeePage = 0;
+      // Update chart
+      if (histBeeChart2) {
+        var labels = [], inD = [], outD = [], totD = [];
+        var step = Math.max(1, Math.ceil(rows.length / 800));
+        for (var i = 0; i < rows.length; i += step) {
+          var r = rows[i];
+          var d = r.timestamp ? new Date(r.timestamp) : null;
+          labels.push(d ? formatChartLabel(d) : (r._dateKey || ''));
+          inD.push(r.in_count !== undefined ? +r.in_count : null);
+          outD.push(r.out_count !== undefined ? +r.out_count : null);
+          totD.push(r.total_activity !== undefined ? +r.total_activity : null);
+        }
+        histBeeChart2.data.labels = labels;
+        histBeeChart2.data.datasets[0].data = inD;
+        histBeeChart2.data.datasets[1].data = outD;
+        histBeeChart2.data.datasets[2].data = totD;
+        histBeeChart2.update('none');
+      }
+      renderHistBeeTable();
+      setText('histBeeInfo', rows.length + ' records');
+    })
+    .catch(function (e) { setText('histBeeInfo', 'Error'); showToast('Bee history: ' + e.message); });
+}
+
+function renderHistBeeTable() {
+  var tbody = el('histBeeTableBody');
+  if (!tbody) return;
+  if (!histBeeRows.length) {
+    tbody.innerHTML = '<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="7">No data</td></tr>';
+    setText('histBeePageInfo', ''); return;
+  }
+  var rows = histBeeRows.slice().reverse();
+  var pages = Math.ceil(rows.length / TABLE_PAGE_SIZE);
+  if (histBeePage >= pages) histBeePage = pages - 1;
+  if (histBeePage < 0) histBeePage = 0;
+  var start = histBeePage * TABLE_PAGE_SIZE;
+  var slice = rows.slice(start, start + TABLE_PAGE_SIZE);
+  var html = '';
+  slice.forEach(function (r) {
+    var d = r.timestamp ? new Date(r.timestamp) : null;
+    var cin = r.in_count !== undefined ? r.in_count : '--';
+    var cout = r.out_count !== undefined ? r.out_count : '--';
+    var net = (r.in_count !== undefined && r.out_count !== undefined) ? r.in_count - r.out_count : '--';
+    html += '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">' +
+      '<td class="py-3 px-4">' + (d ? formatDateIST(d) : (r._dateKey || '--')) + '</td>' +
+      '<td class="py-3 px-4">' + (d ? formatTimeIST(d) : (r.time || '--')) + '</td>' +
+      '<td class="py-3 px-4">' + cin + '</td><td class="py-3 px-4">' + cout + '</td>' +
+      '<td class="py-3 px-4">' + net + '</td>' +
+      '<td class="py-3 px-4">' + (r.total_activity !== undefined ? r.total_activity : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (r.status || '--') + '</td></tr>';
+  });
+  tbody.innerHTML = html;
+  setText('histBeePageInfo', 'Page ' + (histBeePage + 1) + '/' + pages + ' (' + histBeeRows.length + ')');
+}
+
+function exportHistBee() {
+  if (!histBeeRows.length) { showToast('No bee data. Load history first.'); return; }
+  var sheet = [['Date', 'Time', 'IN', 'OUT', 'Net Inside', 'Total Activity', 'Status']];
+  histBeeRows.forEach(function (r) {
+    var d = r.timestamp ? new Date(r.timestamp) : null;
+    var cin = r.in_count !== undefined ? r.in_count : '';
+    var cout = r.out_count !== undefined ? r.out_count : '';
+    sheet.push([
+      d ? formatDateIST(d) : (r._dateKey || ''), d ? formatTimeIST(d) : (r.time || ''),
+      cin, cout, (cin !== '' && cout !== '') ? cin - cout : '',
+      r.total_activity !== undefined ? r.total_activity : '', r.status || ''
+    ]);
+  });
+  var ws = XLSX.utils.aoa_to_sheet(sheet);
+  ws['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 8 }, { wch: 8 }, { wch: 12 }, { wch: 14 }, { wch: 10 }];
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Bee Count');
+  XLSX.writeFile(wb, 'bee_count_history_' + istDateInputValue(0) + '.xlsx');
+  showToast('Exported ' + histBeeRows.length + ' bee records');
+}
+
+// ---- Environmental History (History Page) ----
+function loadHistEnv() {
+  var startVal = el('historyStart').value;
+  var endVal   = el('historyEnd').value;
+  var startKey = keyFromDatetimeLocal(startVal, false);
+  var endKey   = keyFromDatetimeLocal(endVal, true);
+  if (!startKey || !endKey) return;
+
+  setText('histEnvInfo', 'Loading...');
+  if (endKey > keyUpperBound()) endKey = keyUpperBound();
+  database.ref('hive_log').orderByKey().startAt(startKey).endAt(endKey).once('value')
+    .then(function (snap) {
+      var rows = [];
+      snap.forEach(function (c) {
+        var v = c.val(); if (!v) return;
+        v.__key = c.key;
+        if (rowDate(v) === null) return;
+        rows.push(v);
+      });
+      histEnvRows = rows;
+      histEnvPage = 0;
+      // Update charts
+      if (histTempChart2 && histHumChart2) {
+        var labels = [], tIn = [], tOut = [], hIn = [], hOut = [];
+        var step = Math.max(1, Math.ceil(rows.length / 800));
+        for (var i = 0; i < rows.length; i += step) {
+          var r = rows[i];
+          labels.push(formatChartLabel(rowDate(r)));
+          tIn.push(r.temp_C !== undefined ? +r.temp_C : null);
+          tOut.push(r.temp_outside_C !== undefined ? +r.temp_outside_C : null);
+          hIn.push(r.humidity_pct !== undefined ? +r.humidity_pct : null);
+          hOut.push(r.humidity_outside_pct !== undefined ? +r.humidity_outside_pct : null);
+        }
+        histTempChart2.data.labels = labels;
+        histTempChart2.data.datasets[0].data = tIn;
+        histTempChart2.data.datasets[1].data = tOut;
+        histTempChart2.update('none');
+        histHumChart2.data.labels = labels;
+        histHumChart2.data.datasets[0].data = hIn;
+        histHumChart2.data.datasets[1].data = hOut;
+        histHumChart2.update('none');
+      }
+      renderHistEnvTable();
+      setText('histEnvInfo', rows.length + ' records');
+    })
+    .catch(function (e) { setText('histEnvInfo', 'Error'); showToast('Env history: ' + e.message); });
+}
+
+function renderHistEnvTable() {
+  var tbody = el('histEnvTableBody');
+  if (!tbody) return;
+  if (!histEnvRows.length) {
+    tbody.innerHTML = '<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="6">No data</td></tr>';
+    setText('histEnvPageInfo', ''); return;
+  }
+  var rows = histEnvRows.slice().reverse();
+  var pages = Math.ceil(rows.length / TABLE_PAGE_SIZE);
+  if (histEnvPage >= pages) histEnvPage = pages - 1;
+  if (histEnvPage < 0) histEnvPage = 0;
+  var start = histEnvPage * TABLE_PAGE_SIZE;
+  var slice = rows.slice(start, start + TABLE_PAGE_SIZE);
+  var html = '';
+  slice.forEach(function (r) {
+    var d = rowDate(r);
+    html += '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">' +
+      '<td class="py-3 px-4">' + (d ? formatDateIST(d) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (d ? formatTimeIST(d) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (r.temp_C !== undefined ? (+r.temp_C).toFixed(1) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (r.humidity_pct !== undefined ? (+r.humidity_pct).toFixed(1) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (r.temp_outside_C !== undefined ? (+r.temp_outside_C).toFixed(1) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (r.humidity_outside_pct !== undefined ? (+r.humidity_outside_pct).toFixed(1) : '--') + '</td></tr>';
+  });
+  tbody.innerHTML = html;
+  setText('histEnvPageInfo', 'Page ' + (histEnvPage + 1) + '/' + pages + ' (' + histEnvRows.length + ')');
+}
+
+function exportHistEnv() {
+  if (!histEnvRows.length) { showToast('No env data. Load history first.'); return; }
+  var sheet = [['Date', 'Time', 'Inside Temp (°C)', 'Inside Hum (%)', 'Outside Temp (°C)', 'Outside Hum (%)']];
+  histEnvRows.forEach(function (r) {
+    var d = rowDate(r);
+    sheet.push([
+      d ? formatDateIST(d) : '--', d ? formatTimeIST(d) : '--',
+      r.temp_C !== undefined ? +r.temp_C : '', r.humidity_pct !== undefined ? +r.humidity_pct : '',
+      r.temp_outside_C !== undefined ? +r.temp_outside_C : '', r.humidity_outside_pct !== undefined ? +r.humidity_outside_pct : ''
+    ]);
+  });
+  var ws = XLSX.utils.aoa_to_sheet(sheet);
+  ws['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 16 }, { wch: 14 }, { wch: 18 }, { wch: 16 }];
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Environment');
+  XLSX.writeFile(wb, 'hive_environment_history_' + istDateInputValue(0) + '.xlsx');
+  showToast('Exported ' + histEnvRows.length + ' env records');
+}
+
+// ---- Audio History (History Page) ----
+function loadHistAudio() {
+  var startVal = el('historyStart').value;
+  var endVal   = el('historyEnd').value;
+  var startKey = keyFromDatetimeLocal(startVal, false);
+  var endKey   = keyFromDatetimeLocal(endVal, true);
+  if (!startKey || !endKey) return;
+
+  setText('histAudioInfo', 'Loading...');
+  database.ref('hive_audio').orderByKey().startAt(startKey).endAt(endKey).once('value')
+    .then(function (snap) {
+      var rows = [];
+      snap.forEach(function (c) {
+        var v = c.val(); if (!v) return;
+        v.__key = c.key;
+        rows.push(v);
+      });
+      histAudioRows = rows;
+      histAudioPage2 = 0;
+      renderHistAudioTable();
+      setText('histAudioInfo', rows.length + ' recordings');
+    })
+    .catch(function (e) { setText('histAudioInfo', 'Error'); showToast('Audio history: ' + e.message); });
+}
+
+function renderHistAudioTable() {
+  var tbody = el('histAudioTableBody');
+  if (!tbody) return;
+  if (!histAudioRows.length) {
+    tbody.innerHTML = '<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="5">No data</td></tr>';
+    setText('histAudioPageInfo', ''); return;
+  }
+  var rows = histAudioRows.slice().reverse();
+  var pages = Math.ceil(rows.length / TABLE_PAGE_SIZE);
+  if (histAudioPage2 >= pages) histAudioPage2 = pages - 1;
+  if (histAudioPage2 < 0) histAudioPage2 = 0;
+  var start = histAudioPage2 * TABLE_PAGE_SIZE;
+  var slice = rows.slice(start, start + TABLE_PAGE_SIZE);
+  var html = '';
+  slice.forEach(function (r) {
+    var d = keyToDate(r.__key);
+    var dur = r.duration_s ? (r.duration_s / 60).toFixed(1) + ' min' : (r.duration || '--');
+    var size = r.size_bytes ? formatBytes(r.size_bytes) : (r.size || '--');
+    html += '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">' +
+      '<td class="py-3 px-4">' + (d ? formatDateIST(d) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (d ? formatTimeIST(d) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + dur + '</td>' +
+      '<td class="py-3 px-4">' + size + '</td>' +
+      '<td class="py-3 px-4">' + (r.status || r.upload_status || '--') + '</td></tr>';
+  });
+  tbody.innerHTML = html;
+  setText('histAudioPageInfo', 'Page ' + (histAudioPage2 + 1) + '/' + pages + ' (' + histAudioRows.length + ')');
+}
+
+function exportHistAudio() {
+  if (!histAudioRows.length) { showToast('No audio data. Load history first.'); return; }
+  var sheet = [['Date', 'Time', 'Duration', 'Size', 'Status', 'URL']];
+  histAudioRows.forEach(function (r) {
+    var d = keyToDate(r.__key);
+    sheet.push([
+      d ? formatDateIST(d) : '--', d ? formatTimeIST(d) : '--',
+      r.duration_s ? (r.duration_s / 60).toFixed(1) + ' min' : (r.duration || ''),
+      r.size_bytes ? formatBytes(r.size_bytes) : (r.size || ''),
+      r.status || r.upload_status || '', r.url || r.download_url || ''
+    ]);
+  });
+  var ws = XLSX.utils.aoa_to_sheet(sheet);
+  ws['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 10 }, { wch: 12 }, { wch: 10 }, { wch: 60 }];
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Audio');
+  XLSX.writeFile(wb, 'hive_audio_history_' + istDateInputValue(0) + '.xlsx');
+  showToast('Exported ' + histAudioRows.length + ' audio records');
+}
+
 // ============================ AUDIO INDEX ==================================
 /* A "shallow" REST read returns ONLY the child keys of hive_audio - no URLs,
    no metadata. That gives an exact total and lets every search run against
@@ -2672,10 +3212,25 @@ function initFirebase() {
   });
   el('downloadMatchesBtn').addEventListener('click', downloadSelectedAudio);
 
+  // ---- History page listeners -------------------------------------------
+  el('historyLoadBtn').addEventListener('click', loadAllHistory);
+  el('histBeeExportBtn').addEventListener('click', function () { openPinModal(exportHistBee); });
+  el('histEnvExportBtn').addEventListener('click', function () { exportHistEnv(); });
+  el('histAudioExportBtn').addEventListener('click', function () { openPinModal(exportHistAudio); });
+  el('histBeePrevBtn').addEventListener('click', function () { histBeePage--; renderHistBeeTable(); });
+  el('histBeeNextBtn').addEventListener('click', function () { histBeePage++; renderHistBeeTable(); });
+  el('histEnvPrevBtn').addEventListener('click', function () { histEnvPage--; renderHistEnvTable(); });
+  el('histEnvNextBtn').addEventListener('click', function () { histEnvPage++; renderHistEnvTable(); });
+  el('histAudioPrevBtn').addEventListener('click', function () { histAudioPage--; renderHistAudioTable(); });
+  el('histAudioNextBtn').addEventListener('click', function () { histAudioPage++; renderHistAudioTable(); });
+
   // ---- Initial loads ----------------------------------------------------
   initCharts();
+  initHistoryCharts();
   el('exportStart').value = istDatetimeLocalValue(-24 * 3600 * 1000);   // last 24 h
   el('exportEnd').value   = istDatetimeLocalValue(60 * 1000);
+  el('historyStart').value = istDatetimeLocalValue(-7 * 24 * 3600 * 1000);  // last 7 days
+  el('historyEnd').value   = istDatetimeLocalValue(60 * 1000);
   loadAnalytics();
   loadAudioIndex();
 }
