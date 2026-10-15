@@ -488,7 +488,12 @@
             OUT: <span class="font-bold text-[14px]" id="outValue">--</span>
           </div>
         </div>
-        <div class="mt-3 text-xs text-on-surface-variant font-label-sm" id="beeUpdated"></div>
+        <div class="flex gap-6 mt-1 font-label-sm text-label-sm">
+          <div class="flex items-center gap-1 text-on-surface-variant">
+            Total Activity: <span class="font-bold" id="totalActivityValue">--</span>
+          </div>
+        </div>
+        <div class="mt-2 text-xs text-on-surface-variant font-label-sm" id="beeUpdated"></div>
       </div>
       <span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-primary/5 select-none">hive</span>
     </div>
@@ -549,6 +554,10 @@
           <span class="material-symbols-outlined text-[18px]">hive</span>
           Export Bee Count
         </button>
+        <button class="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-4 py-2 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-2" id="exportAudioBtn">
+          <span class="material-symbols-outlined text-[18px]">graphic_eq</span>
+          Export Audio
+        </button>
       </div>
     </div>
     <div class="font-label-sm text-label-sm text-on-surface-variant mb-6" id="analyticsRangeInfo">Loading...</div>
@@ -565,7 +574,8 @@
       <canvas id="humChart"></canvas>
     </div>
 
-    <!-- Data Table -->
+    <!-- Environmental Data Table -->
+    <h3 class="font-headline-lg-mobile text-lg text-primary mb-2 mt-4">Environmental Data</h3>
     <div class="overflow-x-auto">
       <table class="w-full text-left font-label-sm text-label-sm text-on-surface">
         <thead>
@@ -588,6 +598,74 @@
       <div class="flex gap-2">
         <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="tablePrevBtn">Previous</button>
         <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="tableNextBtn">Next</button>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <hr class="my-8 border-outline-variant/40">
+
+    <!-- Chart 3: Bee Count Activity -->
+    <h3 class="font-headline-lg-mobile text-lg text-primary mb-2">Bee Count — IN / OUT / Total Activity</h3>
+    <div class="font-label-sm text-label-sm text-on-surface-variant mb-4" id="beeHistoryInfo">No bee count data loaded</div>
+    <div class="w-full h-72 relative mb-8">
+      <canvas id="beeChart"></canvas>
+    </div>
+
+    <!-- Bee Count Data Table -->
+    <h3 class="font-headline-lg-mobile text-lg text-primary mb-2 mt-4">Bee Count Data</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left font-label-sm text-label-sm text-on-surface">
+        <thead>
+          <tr class="border-b border-outline-variant text-on-surface-variant uppercase tracking-wider">
+            <th class="py-3 px-4 font-semibold">Date</th>
+            <th class="py-3 px-4 font-semibold">Time</th>
+            <th class="py-3 px-4 font-semibold">IN</th>
+            <th class="py-3 px-4 font-semibold">OUT</th>
+            <th class="py-3 px-4 font-semibold">Net Inside</th>
+            <th class="py-3 px-4 font-semibold">Total Activity</th>
+            <th class="py-3 px-4 font-semibold">Status</th>
+          </tr>
+        </thead>
+        <tbody id="beeTableBody">
+          <tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="7">Press "Apply Range" to load bee count history</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex flex-wrap justify-between items-center gap-3 mt-4">
+      <span class="font-label-sm text-label-sm text-on-surface-variant" id="beeTablePageInfo"></span>
+      <div class="flex gap-2">
+        <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="beeTablePrevBtn">Previous</button>
+        <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="beeTableNextBtn">Next</button>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <hr class="my-8 border-outline-variant/40">
+
+    <!-- Audio History Summary -->
+    <h3 class="font-headline-lg-mobile text-lg text-primary mb-2">Audio Recordings</h3>
+    <div class="font-label-sm text-label-sm text-on-surface-variant mb-4" id="audioHistoryInfo">No audio data loaded</div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left font-label-sm text-label-sm text-on-surface">
+        <thead>
+          <tr class="border-b border-outline-variant text-on-surface-variant uppercase tracking-wider">
+            <th class="py-3 px-4 font-semibold">Date</th>
+            <th class="py-3 px-4 font-semibold">Time</th>
+            <th class="py-3 px-4 font-semibold">Duration</th>
+            <th class="py-3 px-4 font-semibold">Size</th>
+            <th class="py-3 px-4 font-semibold">Status</th>
+          </tr>
+        </thead>
+        <tbody id="audioHistoryTableBody">
+          <tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="5">Press "Apply Range" to load audio history</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex flex-wrap justify-between items-center gap-3 mt-4">
+      <span class="font-label-sm text-label-sm text-on-surface-variant" id="audioTablePageInfo"></span>
+      <div class="flex gap-2">
+        <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="audioTablePrevBtn">Previous</button>
+        <button class="bg-surface-container-high border border-outline text-on-surface font-label-sm text-label-sm uppercase px-4 py-2 rounded hover:bg-surface-variant transition-colors disabled:opacity-40" id="audioTableNextBtn">Next</button>
       </div>
     </div>
   </section>
@@ -952,6 +1030,11 @@ var analyticsRows    = [];        // currently loaded environmental rows
 var analyticsPage    = 0;
 var tempChart        = null;
 var humChart         = null;
+var beeChart         = null;
+var beeHistoryRows   = [];        // currently loaded bee count history rows
+var beeHistoryPage   = 0;
+var audioHistoryRows = [];        // currently loaded audio history rows
+var audioHistoryPage = 0;
 
 // ============================ UTILITIES ====================================
 
@@ -1554,6 +1637,24 @@ function initCharts() {
       options: cloneOpts('Humidity', '%')
     });
   }
+  var bc = el('beeChart');
+  if (bc) {
+    beeChart = new Chart(bc, {
+      type: 'line',
+      data: { labels: [], datasets: [
+        { label: 'IN Count',        data: [], borderColor: '#2e7d32',
+          backgroundColor: 'rgba(46,125,50,0.08)', tension: 0.35, fill: false,
+          pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, spanGaps: true },
+        { label: 'OUT Count',       data: [], borderColor: '#c62828',
+          backgroundColor: 'rgba(198,40,40,0.06)', tension: 0.35, fill: false,
+          pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, spanGaps: true },
+        { label: 'Total Activity',  data: [], borderColor: '#9c4400',
+          backgroundColor: 'rgba(156,68,0,0.06)', tension: 0.35, fill: true,
+          pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, borderDash: [5, 4], spanGaps: true }
+      ] },
+      options: cloneOpts('Bee Count', 'Count')
+    });
+  }
 }
 
 function updateCharts(rows) {
@@ -1656,9 +1757,12 @@ function loadAnalytics() {
       analyticsPage = 0;
       updateCharts(rows);
       renderAnalyticsTable();
-      setText('analyticsRangeInfo', rows.length + ' records  |  ' +
+      setText('analyticsRangeInfo', rows.length + ' environmental records  |  ' +
               formatFull(keyToDate(startKey)) + '  to  ' + formatFull(keyToDate(endKey)));
       if (!rows.length) showToast('No environmental data in that range');
+      // Also load bee count and audio history for the same range
+      loadBeeHistory();
+      loadAudioHistory();
     })
     .catch(function (e) {
       setText('analyticsRangeInfo', 'Query failed');
@@ -1701,49 +1805,282 @@ function exportToExcel() {
 }
 
 // ============================ BEE COUNT EXPORT =============================
-/* Asks for the PIN every time, then exports hive/history for the range chosen
-   in the date pickers above. */
+/* Asks for the PIN every time, then exports bee_counter/jetson_nano_01/history
+   for the date range chosen in the date pickers above. History is keyed by
+   date (e.g. "2026-10-15") with child records underneath. */
 
 function requestBeeExport() { openPinModal(exportBeeCount); }
 
 function exportBeeCount() {
   if (!database) { showToast('Not connected to Firebase yet'); return; }
-  var startKey = keyFromDatetimeLocal(el('exportStart').value, false);
-  var endKey   = keyFromDatetimeLocal(el('exportEnd').value, true);
-  if (!startKey || !endKey) { showToast('Please choose both a start and an end date/time'); return; }
-  if (startKey > endKey)    { showToast('Start must be earlier than end'); return; }
-  var t0 = keyToDate(startKey).getTime(), t1 = keyToDate(endKey).getTime();
+  var startVal = el('exportStart').value;
+  var endVal   = el('exportEnd').value;
+  if (!startVal || !endVal) { showToast('Please choose both a start and an end date/time'); return; }
+
+  // Extract date portion (YYYY-MM-DD) from datetime-local inputs
+  var startDate = startVal.split('T')[0];  // "2026-10-10"
+  var endDate   = endVal.split('T')[0];    // "2026-10-15"
+  if (startDate > endDate) { showToast('Start must be earlier than end'); return; }
 
   showToast('Preparing bee count export...', 3000);
-  database.ref('hive/history').orderByChild('epoch_ms').startAt(t0).endAt(t1).once('value')
+  // Query the date-keyed history: keys sort lexicographically as YYYY-MM-DD
+  database.ref('bee_counter/jetson_nano_01/history')
+    .orderByKey().startAt(startDate).endAt(endDate)
+    .once('value')
     .then(function (snap) {
       var rows = [];
-      snap.forEach(function (c) { var v = c.val(); if (v && v.epoch_ms) rows.push(v); });
-      rows.sort(function (a, b) { return a.epoch_ms - b.epoch_ms; });
+      snap.forEach(function (dateSnap) {
+        var dateKey = dateSnap.key;  // e.g. "2026-10-15"
+        var val = dateSnap.val();
+        if (val && typeof val === 'object') {
+          // Each date node may contain child records or direct fields
+          // If it has child records (keyed by timestamp or ID), iterate them
+          var hasChildRecords = false;
+          Object.keys(val).forEach(function (childKey) {
+            var child = val[childKey];
+            if (child && typeof child === 'object') {
+              hasChildRecords = true;
+              child._dateKey = dateKey;
+              child._childKey = childKey;
+              rows.push(child);
+            }
+          });
+          // If the date node itself is a flat record (no child objects), treat it as one row
+          if (!hasChildRecords) {
+            val._dateKey = dateKey;
+            rows.push(val);
+          }
+        }
+      });
+      // Sort by timestamp if available, otherwise by date key
+      rows.sort(function (a, b) {
+        var ta = a.timestamp || a.epoch_ms || 0;
+        var tb = b.timestamp || b.epoch_ms || 0;
+        if (ta !== tb) return ta - tb;
+        return (a._dateKey + (a._childKey || '')) < (b._dateKey + (b._childKey || '')) ? -1 : 1;
+      });
       if (!rows.length) { showToast('No bee count data in that range'); return; }
 
-      var sheet = [['Date', 'Time', 'IN', 'OUT', 'Net Bees Inside', 'Visible', 'Frame', 'Status']];
+      var sheet = [['Date', 'Time', 'IN', 'OUT', 'Net Bees Inside', 'Total Activity', 'Status']];
       rows.forEach(function (r) {
-        var d = new Date(r.epoch_ms);
+        var d = r.timestamp ? new Date(r.timestamp) : (r.epoch_ms ? new Date(r.epoch_ms) : null);
+        var dateStr = d ? formatDateIST(d) : (r._dateKey || r.date || '');
+        var timeStr = d ? formatTimeIST(d) : (r.time || '');
+        var cin  = r.in_count !== undefined ? r.in_count : (r['in'] !== undefined ? r['in'] : '');
+        var cout = r.out_count !== undefined ? r.out_count : (r.out !== undefined ? r.out : '');
+        var net  = (cin !== '' && cout !== '') ? cin - cout : '';
         sheet.push([
-          formatDateIST(d), formatTimeIST(d),
-          r['in'] !== undefined ? r['in'] : '',
-          r.out   !== undefined ? r.out   : '',
-          r.net   !== undefined ? r.net   : ((r['in'] !== undefined && r.out !== undefined) ? r['in'] - r.out : ''),
-          r.visible !== undefined ? r.visible : '',
-          r.frame   !== undefined ? r.frame   : '',
-          r.status  || ''
+          dateStr, timeStr, cin, cout, net,
+          r.total_activity !== undefined ? r.total_activity : '',
+          r.status || ''
         ]);
       });
       var ws = XLSX.utils.aoa_to_sheet(sheet);
-      ws['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 8 }, { wch: 8 }, { wch: 16 }, { wch: 9 }, { wch: 9 }, { wch: 10 }];
+      ws['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 8 }, { wch: 8 }, { wch: 16 }, { wch: 16 }, { wch: 10 }];
       var wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Bee Count');
-      var filename = 'hive_bee_count_' + istDateInputValue(0) + '.xlsx';
+      var filename = 'bee_count_' + istDateInputValue(0) + '.xlsx';
       XLSX.writeFile(wb, filename);
       showToast('Exported ' + rows.length + ' records to ' + filename, 4000);
     })
     .catch(function (e) { showToast('Could not export bee count: ' + e.message); });
+}
+
+// ============================ BEE COUNT HISTORY ============================
+
+function loadBeeHistory() {
+  if (!database) return;
+  var startVal = el('exportStart').value;
+  var endVal   = el('exportEnd').value;
+  if (!startVal || !endVal) return;
+  var startDate = startVal.split('T')[0];
+  var endDate   = endVal.split('T')[0];
+  if (startDate > endDate) return;
+
+  setText('beeHistoryInfo', 'Loading bee count history...');
+  database.ref('bee_counter/jetson_nano_01/history')
+    .orderByKey().startAt(startDate).endAt(endDate)
+    .once('value')
+    .then(function (snap) {
+      var rows = [];
+      snap.forEach(function (dateSnap) {
+        var dateKey = dateSnap.key;
+        var val = dateSnap.val();
+        if (val && typeof val === 'object') {
+          var hasChildRecords = false;
+          Object.keys(val).forEach(function (childKey) {
+            var child = val[childKey];
+            if (child && typeof child === 'object') {
+              hasChildRecords = true;
+              child._dateKey = dateKey;
+              child._childKey = childKey;
+              rows.push(child);
+            }
+          });
+          if (!hasChildRecords) {
+            val._dateKey = dateKey;
+            rows.push(val);
+          }
+        }
+      });
+      rows.sort(function (a, b) {
+        var ta = a.timestamp || a.epoch_ms || 0;
+        var tb = b.timestamp || b.epoch_ms || 0;
+        return ta - tb;
+      });
+      beeHistoryRows = rows;
+      beeHistoryPage = 0;
+      updateBeeChart(rows);
+      renderBeeTable();
+      setText('beeHistoryInfo', rows.length + ' bee count records loaded');
+      if (!rows.length) showToast('No bee count history in that range');
+    })
+    .catch(function (e) {
+      setText('beeHistoryInfo', 'Failed to load bee history');
+      showToast('Could not load bee history: ' + e.message);
+    });
+}
+
+function updateBeeChart(rows) {
+  if (!beeChart) return;
+  var labels = [], inData = [], outData = [], totalData = [];
+  var step = Math.max(1, Math.ceil(rows.length / 800));
+  for (var i = 0; i < rows.length; i += step) {
+    var r = rows[i];
+    var d = r.timestamp ? new Date(r.timestamp) : (r.epoch_ms ? new Date(r.epoch_ms) : null);
+    labels.push(d ? formatChartLabel(d) : (r._dateKey || ''));
+    inData.push(r.in_count !== undefined ? +r.in_count : null);
+    outData.push(r.out_count !== undefined ? +r.out_count : null);
+    totalData.push(r.total_activity !== undefined ? +r.total_activity : null);
+  }
+  beeChart.data.labels = labels;
+  beeChart.data.datasets[0].data = inData;
+  beeChart.data.datasets[1].data = outData;
+  beeChart.data.datasets[2].data = totalData;
+  beeChart.update('none');
+}
+
+function renderBeeTable() {
+  var tbody = el('beeTableBody');
+  if (!tbody) return;
+  if (!beeHistoryRows.length) {
+    tbody.innerHTML = '<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="7">No bee count data in this range</td></tr>';
+    setText('beeTablePageInfo', 'No records');
+    return;
+  }
+  var rows = beeHistoryRows.slice().reverse();
+  var pages = Math.ceil(rows.length / TABLE_PAGE_SIZE);
+  if (beeHistoryPage >= pages) beeHistoryPage = pages - 1;
+  if (beeHistoryPage < 0) beeHistoryPage = 0;
+  var start = beeHistoryPage * TABLE_PAGE_SIZE;
+  var slice = rows.slice(start, start + TABLE_PAGE_SIZE);
+  var html = '';
+  slice.forEach(function (r) {
+    var d = r.timestamp ? new Date(r.timestamp) : (r.epoch_ms ? new Date(r.epoch_ms) : null);
+    var cin  = r.in_count !== undefined ? r.in_count : '--';
+    var cout = r.out_count !== undefined ? r.out_count : '--';
+    var net  = (r.in_count !== undefined && r.out_count !== undefined) ? r.in_count - r.out_count : '--';
+    html += '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">' +
+      '<td class="py-3 px-4">' + (d ? formatDateIST(d) : (r._dateKey || '--')) + '</td>' +
+      '<td class="py-3 px-4">' + (d ? formatTimeIST(d) : (r.time || '--')) + '</td>' +
+      '<td class="py-3 px-4">' + cin + '</td>' +
+      '<td class="py-3 px-4">' + cout + '</td>' +
+      '<td class="py-3 px-4">' + net + '</td>' +
+      '<td class="py-3 px-4">' + (r.total_activity !== undefined ? r.total_activity : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (r.status || '--') + '</td></tr>';
+  });
+  tbody.innerHTML = html;
+  setText('beeTablePageInfo', 'Page ' + (beeHistoryPage + 1) + ' of ' + pages +
+          ' (' + beeHistoryRows.length + ' records)');
+}
+
+// ============================ AUDIO HISTORY =================================
+
+function loadAudioHistory() {
+  if (!database) return;
+  var startVal = el('exportStart').value;
+  var endVal   = el('exportEnd').value;
+  var startKey = keyFromDatetimeLocal(startVal, false);
+  var endKey   = keyFromDatetimeLocal(endVal, true);
+  if (!startKey || !endKey) return;
+
+  setText('audioHistoryInfo', 'Loading audio history...');
+  database.ref('hive_audio').orderByKey().startAt(startKey).endAt(endKey).once('value')
+    .then(function (snap) {
+      var rows = [];
+      snap.forEach(function (c) {
+        var v = c.val();
+        if (!v) return;
+        v.__key = c.key;
+        rows.push(v);
+      });
+      audioHistoryRows = rows;
+      audioHistoryPage = 0;
+      renderAudioHistoryTable();
+      setText('audioHistoryInfo', rows.length + ' audio recordings in range');
+      if (!rows.length) showToast('No audio recordings in that range');
+    })
+    .catch(function (e) {
+      setText('audioHistoryInfo', 'Failed to load audio history');
+      showToast('Could not load audio history: ' + e.message);
+    });
+}
+
+function renderAudioHistoryTable() {
+  var tbody = el('audioHistoryTableBody');
+  if (!tbody) return;
+  if (!audioHistoryRows.length) {
+    tbody.innerHTML = '<tr><td class="py-4 px-4 text-center italic text-on-surface-variant" colspan="5">No audio recordings in this range</td></tr>';
+    setText('audioTablePageInfo', 'No records');
+    return;
+  }
+  var rows = audioHistoryRows.slice().reverse();
+  var pages = Math.ceil(rows.length / TABLE_PAGE_SIZE);
+  if (audioHistoryPage >= pages) audioHistoryPage = pages - 1;
+  if (audioHistoryPage < 0) audioHistoryPage = 0;
+  var start = audioHistoryPage * TABLE_PAGE_SIZE;
+  var slice = rows.slice(start, start + TABLE_PAGE_SIZE);
+  var html = '';
+  slice.forEach(function (r) {
+    var d = keyToDate(r.__key);
+    var dur = r.duration_s ? (r.duration_s / 60).toFixed(1) + ' min' : (r.duration || '--');
+    var size = r.size_bytes ? formatBytes(r.size_bytes) : (r.size || '--');
+    html += '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high transition-colors">' +
+      '<td class="py-3 px-4">' + (d ? formatDateIST(d) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + (d ? formatTimeIST(d) : '--') + '</td>' +
+      '<td class="py-3 px-4">' + dur + '</td>' +
+      '<td class="py-3 px-4">' + size + '</td>' +
+      '<td class="py-3 px-4">' + (r.status || r.upload_status || '--') + '</td></tr>';
+  });
+  tbody.innerHTML = html;
+  setText('audioTablePageInfo', 'Page ' + (audioHistoryPage + 1) + ' of ' + pages +
+          ' (' + audioHistoryRows.length + ' recordings)');
+}
+
+function exportAudioHistory() {
+  if (!audioHistoryRows.length) {
+    showToast('No audio data loaded. Choose a range and press Apply Range first.');
+    return;
+  }
+  var sheet = [['Date', 'Time', 'Duration', 'Size', 'Status', 'URL']];
+  audioHistoryRows.forEach(function (r) {
+    var d = keyToDate(r.__key);
+    sheet.push([
+      d ? formatDateIST(d) : '--',
+      d ? formatTimeIST(d) : '--',
+      r.duration_s ? (r.duration_s / 60).toFixed(1) + ' min' : (r.duration || ''),
+      r.size_bytes ? formatBytes(r.size_bytes) : (r.size || ''),
+      r.status || r.upload_status || '',
+      r.url || r.download_url || ''
+    ]);
+  });
+  var ws = XLSX.utils.aoa_to_sheet(sheet);
+  ws['!cols'] = [{ wch: 14 }, { wch: 13 }, { wch: 10 }, { wch: 12 }, { wch: 10 }, { wch: 60 }];
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Audio Recordings');
+  var filename = 'hive_audio_' + istDateInputValue(0) + '.xlsx';
+  XLSX.writeFile(wb, filename);
+  showToast('Exported ' + audioHistoryRows.length + ' audio records to ' + filename, 4000);
 }
 
 // ============================ AUDIO INDEX ==================================
@@ -2155,6 +2492,7 @@ function initFirebase() {
     setText('settingsAudioUploaded', s.audio_uploaded !== undefined ? s.audio_uploaded : '--');
     setText('settingsAudioFailed',   s.audio_failed   !== undefined ? s.audio_failed   : '--');
     setText('settingsAudioLast',     s.audio_last || '--');
+    // bees_in/bees_out from hive_status (ESP32 reported values) — keep as fallback
     setText('settingsBeesLive', (s.bees_in !== undefined && s.bees_out !== undefined)
             ? ('IN ' + s.bees_in + '  /  OUT ' + s.bees_out) : '--');
 
@@ -2219,23 +2557,26 @@ function initFirebase() {
   });
 
   // ---- Bee count --------------------------------------------------------
-  // Source: hive/latest  { in, out, net, epoch_ms, date, time, ... }
-  database.ref('hive/latest').on('value', function (snap) {
+  // Source: bee_counter/jetson_nano_01/live  { in_count, out_count, total_activity, timestamp, date, time, day, status }
+  database.ref('bee_counter/jetson_nano_01/live').on('value', function (snap) {
     var d = snap.val();
     if (!d) {
       setText('netValue', '--'); setText('inValue', '--'); setText('outValue', '--');
       setText('beeUpdated', 'No bee data available');
       return;
     }
-    var cin  = (typeof d['in']  === 'number') ? d['in']  : null;
-    var cout = (typeof d.out    === 'number') ? d.out    : null;
-    var net  = (typeof d.net    === 'number') ? d.net
-                                              : ((cin !== null && cout !== null) ? cin - cout : null);
+    var cin  = (typeof d.in_count       === 'number') ? d.in_count       : null;
+    var cout = (typeof d.out_count      === 'number') ? d.out_count      : null;
+    var net  = (cin !== null && cout !== null) ? cin - cout : null;
     setText('netValue', net  !== null ? net  : '--');
     setText('inValue',  cin  !== null ? cin  : '--');
     setText('outValue', cout !== null ? cout : '--');
 
-    var lu = d.epoch_ms ? new Date(d.epoch_ms) : null;
+    // Show total_activity (includes ambiguous crossings)
+    var total = (typeof d.total_activity === 'number') ? d.total_activity : null;
+    setText('totalActivityValue', total !== null ? total : '--');
+
+    var lu = d.timestamp ? new Date(d.timestamp) : null;
     if (!lu || isNaN(lu.getTime())) { setText('beeUpdated', 'Timestamp unavailable'); return; }
     var ageMin = (Date.now() - lu.getTime()) / 60000;
     setText('beeUpdated', 'Updated ' + formatFull(lu) +
@@ -2310,8 +2651,13 @@ function initFirebase() {
   el('applyRangeBtn').addEventListener('click', function () { loadAnalytics(); });
   el('exportEnvBtn').addEventListener('click', exportToExcel);
   el('exportBeeBtn').addEventListener('click', requestBeeExport);
+  el('exportAudioBtn').addEventListener('click', function () { openPinModal(exportAudioHistory); });
   el('tablePrevBtn').addEventListener('click', function () { analyticsPage--; renderAnalyticsTable(); });
   el('tableNextBtn').addEventListener('click', function () { analyticsPage++; renderAnalyticsTable(); });
+  el('beeTablePrevBtn').addEventListener('click', function () { beeHistoryPage--; renderBeeTable(); });
+  el('beeTableNextBtn').addEventListener('click', function () { beeHistoryPage++; renderBeeTable(); });
+  el('audioTablePrevBtn').addEventListener('click', function () { audioHistoryPage--; renderAudioHistoryTable(); });
+  el('audioTableNextBtn').addEventListener('click', function () { audioHistoryPage++; renderAudioHistoryTable(); });
 
   el('searchBtn').addEventListener('click', runAudioSearch);
   el('clearSearchBtn').addEventListener('click', clearAudioSearch);
